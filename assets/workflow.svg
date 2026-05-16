@@ -82,7 +82,7 @@
   <circle cx="610" cy="118" r="16" fill="url(#g2)" opacity="0.2"/>
   <text x="610" y="123" text-anchor="middle" fill="#A78BFA" font-family="sans-serif" font-size="16" font-weight="700">3</text>
   <text x="660" y="125" fill="#F1F5F9" font-family="sans-serif" font-size="13" font-weight="600">SCORE &amp; SELECT</text>
-  <text x="660" y="145" fill="#94A3B8" font-family="sans-serif" font-size="10">score = conf &times; match / price</text>
+  <text x="660" y="145" fill="#94A3B8" font-family="sans-serif" font-size="10">score = conf × match / price</text>
   <text x="660" y="160" fill="#64748B" font-family="sans-serif" font-size="9">Filter by max-hbar cap</text>
   <text x="660" y="175" fill="#64748B" font-family="sans-serif" font-size="9">Highest score wins</text>
 
