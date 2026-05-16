@@ -1,4 +1,8 @@
-# Hedera VNX Paid Micro-Swarm
+<p align="center">
+  <img src="assets/banner-hero.png" alt="Hedera VNX Paid Micro-Swarm" width="1000"/>
+</p>
+
+<h1 align="center">Hedera VNX Paid Micro-Swarm</h1>
 
 <p align="center">
   <img src="assets/badge-swarm.png" alt="VNX Swarm Protocol"/>
@@ -72,6 +76,12 @@ Preview the entire swarm logic without touching the network:
 ```bash
 npm run demo:plan
 ```
+
+This runs the full flow without credentials — you see worker scores and the winner selection.
+
+<p align="center">
+  <img src="assets/terminal-demo.png" alt="CLI Demo" width="800"/>
+</p>
 
 ### Live Mainnet (requires credentials)
 
