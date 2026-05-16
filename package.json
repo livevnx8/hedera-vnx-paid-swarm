@@ -58,12 +58,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vera-lattice/hedera-vnx-paid-swarm.git"
+    "url": "https://github.com/livevnx8/hedera-vnx-paid-swarm.git"
   },
   "bugs": {
-    "url": "https://github.com/vera-lattice/hedera-vnx-paid-swarm/issues"
+    "url": "https://github.com/livevnx8/hedera-vnx-paid-swarm/issues"
   },
-  "homepage": "https://github.com/vera-lattice/hedera-vnx-paid-swarm#readme",
+  "homepage": "https://github.com/livevnx8/hedera-vnx-paid-swarm#readme",
   "dependencies": {
     "@hashgraph/sdk": "^2.60.1",
     "commander": "^12.1.0"
