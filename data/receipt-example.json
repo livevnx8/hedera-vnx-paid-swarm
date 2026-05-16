@@ -1,0 +1,59 @@
+{
+  "version": "1.0",
+  "network": "mainnet",
+  "timestamp": 1778958345039,
+  "taskHash": "d8779ea3f6750d565f07d5e014cd2b8ddc8b12b46847e9f981d90a7d42cba583",
+  "votes": [
+    {
+      "workerId": "onnx-primary",
+      "name": "BitLattice-ONNX",
+      "specialty": "prediction",
+      "confidence": 0.9,
+      "priceHbar": 0.005,
+      "score": 176.47058823529412
+    },
+    {
+      "workerId": "rsi-momentum",
+      "name": "RSI-Momentum",
+      "specialty": "momentum",
+      "confidence": 0.74,
+      "priceHbar": 0.003,
+      "score": 123.33
+    },
+    {
+      "workerId": "bb-volatility",
+      "name": "BB-Volatility",
+      "specialty": "volatility",
+      "confidence": 0.66,
+      "priceHbar": 0.003,
+      "score": 110.0
+    },
+    {
+      "workerId": "sma-trend",
+      "name": "SMA-Trend",
+      "specialty": "trend",
+      "confidence": 0.58,
+      "priceHbar": 0.002,
+      "score": 145.0
+    }
+  ],
+  "selected": {
+    "workerId": "onnx-primary",
+    "name": "BitLattice-ONNX",
+    "specialty": "prediction",
+    "priceHbar": 0.005,
+    "score": 176.47058823529412
+  },
+  "payment": {
+    "status": "success",
+    "transactionId": "0.0.10294360@1778958335.880736678",
+    "network": "mainnet",
+    "amountHbar": 0.005,
+    "recipient": "0.0.10294360",
+    "consensusTimestampMs": 1778958345039
+  },
+  "decisionHash": "8ce3ed55d9d59f70ab574d12513c32a7eb1ac334c31680d259edab4918e1e3e7",
+  "proofStatus": "mainnet_confirmed",
+  "explorerUrl": "https://hashscan.io/mainnet/transaction/0.0.10294360%401778958335.880736678",
+  "mirrorNodeUrl": "https://mainnet-public.mirrornode.hedera.com/api/v1/transactions/0.0.10294360-1778958335-880736678"
+}

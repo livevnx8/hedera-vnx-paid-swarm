@@ -1,0 +1,45 @@
+{
+  "name": "hedera-vnx-paid-swarm",
+  "version": "1.0.0",
+  "description": "Deterministic VNX agent swarm with Hedera mainnet HBAR payment and cryptographically verifiable proof receipts",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --verbose",
+    "demo:plan": "tsx scripts/vnx-paid-swarm-demo.ts --plan-only",
+    "demo:live": "tsx scripts/vnx-paid-swarm-demo.ts --live",
+    "e2e": "tsx scripts/vnx-paid-swarm-e2e.ts",
+    "verify": "tsx scripts/vnx-paid-swarm-verify-proof.ts",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "hedera",
+    "hiero",
+    "hbar",
+    "micro-swarm",
+    "agent",
+    "consensus",
+    "proof",
+    "typescript"
+  ],
+  "author": "Vera Lattice",
+  "license": "MIT",
+  "dependencies": {
+    "@hashgraph/sdk": "^2.60.1",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.13.14",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.6",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
