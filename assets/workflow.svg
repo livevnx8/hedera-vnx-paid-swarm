@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" width="1200" height="500">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0B1120"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1E293B" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#0F172A" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#0EA5E9"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#A78BFA"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#34D399"/>
+      <stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="g4" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FBBF24"/>
+      <stop offset="1" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#A78BFA"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10" fill="#22D3EE"/>
+    </marker>
+    <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10" fill="#A78BFA"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="500" fill="url(#bgGrad)" rx="8"/>
+
+  <!-- Header -->
+  <text x="600" y="38" text-anchor="middle" fill="#F1F5F9" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">VNX Paid Micro-Swarm — Execution Flow</text>
+  <line x1="300" y1="52" x2="900" y2="52" stroke="url(#accent)" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Step 1: Task -->
+  <rect x="60" y="85" width="180" height="110" rx="12" fill="url(#card)" stroke="url(#g1)" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="100" cy="118" r="16" fill="url(#g1)" opacity="0.2"/>
+  <text x="100" y="123" text-anchor="middle" fill="#22D3EE" font-family="sans-serif" font-size="16" font-weight="700">1</text>
+  <text x="150" y="125" fill="#F1F5F9" font-family="sans-serif" font-size="13" font-weight="600">TASK INPUT</text>
+  <text x="150" y="145" fill="#94A3B8" font-family="sans-serif" font-size="10">"Predict HBAR direction"</text>
+  <text x="150" y="160" fill="#64748B" font-family="sans-serif" font-size="9">Deterministic task ID</text>
+
+  <!-- Arrow -->
+  <line x1="240" y1="140" x2="280" y2="140" stroke="#22D3EE" stroke-width="2" marker-end="url(#arrow)" opacity="0.8"/>
+
+  <!-- Step 2: Workers -->
+  <rect x="295" y="75" width="220" height="130" rx="12" fill="url(#card)" stroke="#334155" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="405" y="100" text-anchor="middle" fill="#F1F5F9" font-family="sans-serif" font-size="13" font-weight="600">2. WORKER SWARM</text>
+
+  <!-- Worker mini cards -->
+  <rect x="310" y="112" width="90" height="26" rx="6" fill="#0F172A" stroke="url(#g1)" stroke-width="1"/>
+  <text x="355" y="129" text-anchor="middle" fill="#22D3EE" font-family="sans-serif" font-size="9" font-weight="600">ONNX 0.005ℏ</text>
+  <rect x="310" y="145" width="90" height="26" rx="6" fill="#0F172A" stroke="url(#g2)" stroke-width="1"/>
+  <text x="355" y="162" text-anchor="middle" fill="#A78BFA" font-family="sans-serif" font-size="9" font-weight="600">RSI 0.003ℏ</text>
+  <rect x="410" y="112" width="90" height="26" rx="6" fill="#0F172A" stroke="url(#g3)" stroke-width="1"/>
+  <text x="455" y="129" text-anchor="middle" fill="#34D399" font-family="sans-serif" font-size="9" font-weight="600">BB 0.003ℏ</text>
+  <rect x="410" y="145" width="90" height="26" rx="6" fill="#0F172A" stroke="url(#g4)" stroke-width="1"/>
+  <text x="455" y="162" text-anchor="middle" fill="#FBBF24" font-family="sans-serif" font-size="9" font-weight="600">SMA 0.002ℏ</text>
+
+  <!-- Arrow -->
+  <line x1="515" y1="140" x2="555" y2="140" stroke="#22D3EE" stroke-width="2" marker-end="url(#arrow)" opacity="0.8"/>
+
+  <!-- Step 3: Score -->
+  <rect x="570" y="85" width="180" height="110" rx="12" fill="url(#card)" stroke="url(#g2)" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="610" cy="118" r="16" fill="url(#g2)" opacity="0.2"/>
+  <text x="610" y="123" text-anchor="middle" fill="#A78BFA" font-family="sans-serif" font-size="16" font-weight="700">3</text>
+  <text x="660" y="125" fill="#F1F5F9" font-family="sans-serif" font-size="13" font-weight="600">SCORE & SELECT</text>
+  <text x="660" y="145" fill="#94A3B8" font-family="sans-serif" font-size="10">score = conf × match / price</text>
+  <text x="660" y="160" fill="#64748B" font-family="sans-serif" font-size="9">Filter by max-hbar cap</text>
+  <text x="660" y="175" fill="#64748B" font-family="sans-serif" font-size="9">Highest score wins</text>
+
+  <!-- Arrow -->
+  <line x1="750" y1="140" x2="790" y2="140" stroke="#A78BFA" stroke-width="2" marker-end="url(#arrow2)" opacity="0.8"/>
+
+  <!-- Step 4: Payment -->
+  <rect x="805" y="85" width="180" height="110" rx="12" fill="url(#card)" stroke="url(#g3)" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="845" cy="118" r="16" fill="url(#g3)" opacity="0.2"/>
+  <text x="845" y="123" text-anchor="middle" fill="#34D399" font-family="sans-serif" font-size="16" font-weight="700">4</text>
+  <text x="895" y="125" fill="#F1F5F9" font-family="sans-serif" font-size="13" font-weight="600">MAINNET PAYMENT</text>
+  <text x="895" y="145" fill="#94A3B8" font-family="sans-serif" font-size="10">HBAR transfer via SDK</text>
+  <text x="895" y="160" fill="#64748B" font-family="sans-serif" font-size="9">Enforced mainnet only</text>
+  <text x="895" y="175" fill="#64748B" font-family="sans-serif" font-size="9">Memo: VNX-swarm:{winner}</text>
+
+  <!-- Arrow down -->
+  <line x1="895" y1="195" x2="895" y2="230" stroke="#34D399" stroke-width="2" marker-end="url(#arrow)" opacity="0.8"/>
+
+  <!-- Step 5: Receipt -->
+  <rect x="740" y="245" width="310" height="100" rx="12" fill="url(#card)" stroke="url(#g4)" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="780" cy="280" r="16" fill="url(#g4)" opacity="0.2"/>
+  <text x="780" y="285" text-anchor="middle" fill="#FBBF24" font-family="sans-serif" font-size="16" font-weight="700">5</text>
+  <text x="830" y="280" fill="#F1F5F9" font-family="sans-serif" font-size="13" font-weight="600">CRYPTOGRAPHIC RECEIPT</text>
+  <text x="830" y="300" fill="#94A3B8" font-family="sans-serif" font-size="10">SHA-256(taskHash + decisionHash)</text>
+  <text x="830" y="318" fill="#64748B" font-family="sans-serif" font-size="9">HashScan URL · Mirror Node URL</text>
+  <text x="830" y="332" fill="#64748B" font-family="sans-serif" font-size="9">proofStatus: mainnet_confirmed</text>
+
+  <!-- Arrow left -->
+  <line x1="740" y1="295" x2="620" y2="295" stroke="#FBBF24" stroke-width="2" marker-end="url(#arrow)" opacity="0.6" stroke-dasharray="6,4"/>
+
+  <!-- Step 6: Verify -->
+  <rect x="380" y="245" width="220" height="100" rx="12" fill="url(#card)" stroke="#EF4444" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="420" cy="280" r="16" fill="#EF4444" opacity="0.2"/>
+  <text x="420" y="285" text-anchor="middle" fill="#EF4444" font-family="sans-serif" font-size="16" font-weight="700">6</text>
+  <text x="470" y="280" fill="#F1F5F9" font-family="sans-serif" font-size="13" font-weight="600">HIERO VERIFICATION</text>
+  <text x="470" y="300" fill="#94A3B8" font-family="sans-serif" font-size="10">Recompute hashes locally</text>
+  <text x="470" y="318" fill="#64748B" font-family="sans-serif" font-size="9">Mirror-node tx confirmation</text>
+  <text x="470" y="332" fill="#64748B" font-family="sans-serif" font-size="9">5 checks · all must PASS</text>
+
+  <!-- Bottom info bar -->
+  <rect x="60" y="380" width="1080" height="80" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+  <text x="90" y="410" fill="#F1F5F9" font-family="sans-serif" font-size="12" font-weight="600">Network: Hedera Mainnet</text>
+  <text x="90" y="430" fill="#94A3B8" font-family="sans-serif" font-size="10">Max Cap: 0.01 HBAR · HCS Topic: 0.0.10416185</text>
+  <text x="90" y="445" fill="#94A3B8" font-family="sans-serif" font-size="10">Account: 0.0.10294360 · Verification: hashscan.io + mirrornode.hedera.com</text>
+
+  <text x="700" y="415" fill="#F1F5F9" font-family="sans-serif" font-size="11" font-weight="600">Safety Guarantees</text>
+  <text x="700" y="432" fill="#94A3B8" font-family="sans-serif" font-size="10">✓ Mainnet enforcement</text>
+  <text x="700" y="448" fill="#94A3B8" font-family="sans-serif" font-size="10">✓ Amount cap validation</text>
+  <text x="700" y="420" fill="#94A3B8" font-family="sans-serif" font-size="10"></text>
+
+  <text x="900" y="432" fill="#94A3B8" font-family="sans-serif" font-size="10">✓ SHA-256 deterministic receipts</text>
+  <text x="900" y="448" fill="#94A3B8" font-family="sans-serif" font-size="10">✓ Live mirror-node verification</text>
+</svg>

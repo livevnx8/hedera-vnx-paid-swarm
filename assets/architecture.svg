@@ -1,112 +1,161 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" width="900" height="320">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" width="1000" height="420">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0a0e1a"/>
-      <stop offset="1" stop-color="#12182b"/>
+      <stop offset="0" stop-color="#0B1120"/>
+      <stop offset="1" stop-color="#111827"/>
     </linearGradient>
-    <linearGradient id="boxGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#1a2332"/>
-      <stop offset="1" stop-color="#111820"/>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1E293B" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#0F172A" stop-opacity="0.98"/>
+    </linearGradient>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#0EA5E9"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#A78BFA"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="g3" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#34D399"/>
+      <stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="g4" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FBBF24"/>
+      <stop offset="1" stop-color="#D97706"/>
     </linearGradient>
     <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#00d4aa"/>
-      <stop offset="1" stop-color="#00a8e8"/>
+      <stop offset="0" stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#A78BFA"/>
     </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.5"/>
     </filter>
+    <filter id="glow-cyan">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10" fill="#22D3EE"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10" fill="#A78BFA"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10" fill="#34D399"/>
+    </marker>
+    <marker id="arrow-yellow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10" fill="#FBBF24"/>
+    </marker>
   </defs>
 
-  <!-- Background -->
-  <rect width="900" height="320" fill="url(#bg)" rx="8"/>
+  <rect width="1000" height="420" fill="url(#bg)" rx="12"/>
 
-  <!-- Title -->
-  <text x="450" y="28" text-anchor="middle" fill="#e0e6ed" font-family="Segoe UI, sans-serif" font-size="16" font-weight="600">VNX Paid Micro-Swarm Architecture</text>
+  <!-- Header -->
+  <text x="500" y="36" text-anchor="middle" fill="#F8FAFC" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" letter-spacing="0.5">VNX Paid Micro-Swarm Architecture</text>
+  <line x1="200" y1="48" x2="800" y2="48" stroke="url(#accent)" stroke-width="1.5" opacity="0.5"/>
 
-  <!-- Task Input -->
-  <rect x="30" y="55" width="130" height="50" rx="6" fill="url(#boxGrad)" stroke="#3a4a5c" stroke-width="1" filter="url(#shadow)"/>
-  <text x="95" y="75" text-anchor="middle" fill="#00d4aa" font-family="Segoe UI, sans-serif" font-size="11" font-weight="600">TASK INPUT</text>
-  <text x="95" y="92" text-anchor="middle" fill="#8899aa" font-family="Segoe UI, sans-serif" font-size="9">Price signal query</text>
+  <!-- ========== LEFT: Task Input ========== -->
+  <rect x="40" y="70" width="160" height="80" rx="10" fill="url(#card)" stroke="url(#g1)" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="80" cy="100" r="14" fill="url(#g1)" opacity="0.15"/>
+  <text x="80" y="106" text-anchor="middle" fill="#22D3EE" font-family="sans-serif" font-size="14" font-weight="700">1</text>
+  <text x="125" y="100" fill="#F1F5F9" font-family="sans-serif" font-size="12" font-weight="700">Task Input</text>
+  <text x="125" y="118" fill="#94A3B8" font-family="sans-serif" font-size="10">Deterministic query</text>
+  <text x="125" y="132" fill="#64748B" font-family="sans-serif" font-size="9">SHA-256 hashed</text>
 
-  <!-- Arrow to Workers -->
-  <line x1="160" y1="80" x2="200" y2="80" stroke="#00d4aa" stroke-width="2"/>
-  <polygon points="200,80 194,76 194,84" fill="#00d4aa"/>
+  <line x1="200" y1="110" x2="240" y2="110" stroke="#22D3EE" stroke-width="2" marker-end="url(#arrow)" opacity="0.8"/>
 
-  <!-- Workers -->
-  <rect x="210" y="55" width="100" height="50" rx="6" fill="url(#boxGrad)" stroke="#00a8e8" stroke-width="1" filter="url(#shadow)"/>
-  <text x="260" y="72" text-anchor="middle" fill="#00a8e8" font-family="Segoe UI, sans-serif" font-size="10" font-weight="600">BitLattice-ONNX</text>
-  <text x="260" y="85" text-anchor="middle" fill="#8899aa" font-family="Segoe UI, sans-serif" font-size="8">prediction · 0.005 ℏ</text>
-  <text x="260" y="96" text-anchor="middle" fill="#667788" font-family="Segoe UI, sans-serif" font-size="8">score = conf×match/price</text>
+  <!-- ========== WORKERS COLUMN ========== -->
+  <text x="340" y="68" text-anchor="middle" fill="#94A3B8" font-family="sans-serif" font-size="11" font-weight="600" letter-spacing="1">WORKER SWARM</text>
 
-  <rect x="210" y="120" width="100" height="50" rx="6" fill="url(#boxGrad)" stroke="#5c7aea" stroke-width="1" filter="url(#shadow)"/>
-  <text x="260" y="137" text-anchor="middle" fill="#5c7aea" font-family="Segoe UI, sans-serif" font-size="10" font-weight="600">RSI-Momentum</text>
-  <text x="260" y="150" text-anchor="middle" fill="#8899aa" font-family="Segoe UI, sans-serif" font-size="8">momentum · 0.003 ℏ</text>
-  <text x="260" y="161" text-anchor="middle" fill="#667788" font-family="Segoe UI, sans-serif" font-size="8">score = conf×match/price</text>
+  <!-- ONNX -->
+  <rect x="250" y="78" width="180" height="56" rx="10" fill="url(#card)" stroke="url(#g1)" stroke-width="1.5" filter="url(#shadow)"/>
+  <circle cx="280" cy="96" r="5" fill="url(#g1)"/>
+  <text x="295" y="96" fill="#22D3EE" font-family="sans-serif" font-size="11" font-weight="700">BitLattice-ONNX</text>
+  <text x="295" y="110" fill="#94A3B8" font-family="sans-serif" font-size="9">prediction domain · 0.005 HBAR</text>
+  <text x="295" y="124" fill="#64748B" font-family="sans-serif" font-size="9">score = conf × match / price</text>
 
-  <rect x="210" y="185" width="100" height="50" rx="6" fill="url(#boxGrad)" stroke="#c084fc" stroke-width="1" filter="url(#shadow)"/>
-  <text x="260" y="202" text-anchor="middle" fill="#c084fc" font-family="Segoe UI, sans-serif" font-size="10" font-weight="600">BB-Volatility</text>
-  <text x="260" y="215" text-anchor="middle" fill="#8899aa" font-family="Segoe UI, sans-serif" font-size="8">volatility · 0.003 ℏ</text>
-  <text x="260" y="226" text-anchor="middle" fill="#667788" font-family="Segoe UI, sans-serif" font-size="8">score = conf×match/price</text>
+  <!-- RSI -->
+  <rect x="250" y="142" width="180" height="56" rx="10" fill="url(#card)" stroke="url(#g2)" stroke-width="1.5" filter="url(#shadow)"/>
+  <circle cx="280" cy="160" r="5" fill="url(#g2)"/>
+  <text x="295" y="160" fill="#A78BFA" font-family="sans-serif" font-size="11" font-weight="700">RSI-Momentum</text>
+  <text x="295" y="174" fill="#94A3B8" font-family="sans-serif" font-size="9">momentum domain · 0.003 HBAR</text>
+  <text x="295" y="188" fill="#64748B" font-family="sans-serif" font-size="9">score = conf × match / price</text>
 
-  <rect x="210" y="250" width="100" height="50" rx="6" fill="url(#boxGrad)" stroke="#f59e0b" stroke-width="1" filter="url(#shadow)"/>
-  <text x="260" y="267" text-anchor="middle" fill="#f59e0b" font-family="Segoe UI, sans-serif" font-size="10" font-weight="600">SMA-Trend</text>
-  <text x="260" y="280" text-anchor="middle" fill="#8899aa" font-family="Segoe UI, sans-serif" font-size="8">trend · 0.002 ℏ</text>
-  <text x="260" y="291" text-anchor="middle" fill="#667788" font-family="Segoe UI, sans-serif" font-size="8">score = conf×match/price</text>
+  <!-- BB -->
+  <rect x="250" y="206" width="180" height="56" rx="10" fill="url(#card)" stroke="url(#g3)" stroke-width="1.5" filter="url(#shadow)"/>
+  <circle cx="280" cy="224" r="5" fill="url(#g3)"/>
+  <text x="295" y="224" fill="#34D399" font-family="sans-serif" font-size="11" font-weight="700">BB-Volatility</text>
+  <text x="295" y="238" fill="#94A3B8" font-family="sans-serif" font-size="9">volatility domain · 0.003 HBAR</text>
+  <text x="295" y="252" fill="#64748B" font-family="sans-serif" font-size="9">score = conf × match / price</text>
+
+  <!-- SMA -->
+  <rect x="250" y="270" width="180" height="56" rx="10" fill="url(#card)" stroke="url(#g4)" stroke-width="1.5" filter="url(#shadow)"/>
+  <circle cx="280" cy="288" r="5" fill="url(#g4)"/>
+  <text x="295" y="288" fill="#FBBF24" font-family="sans-serif" font-size="11" font-weight="700">SMA-Trend</text>
+  <text x="295" y="302" fill="#94A3B8" font-family="sans-serif" font-size="9">trend domain · 0.002 HBAR</text>
+  <text x="295" y="316" fill="#64748B" font-family="sans-serif" font-size="9">score = conf × match / price</text>
 
   <!-- Arrows to Coordinator -->
-  <line x1="310" y1="80" x2="370" y2="145" stroke="#3a4a5c" stroke-width="1.5"/>
-  <polygon points="370,145 364,138 362,146" fill="#3a4a5c"/>
-  <line x1="310" y1="145" x2="370" y2="155" stroke="#3a4a5c" stroke-width="1.5"/>
-  <polygon points="370,155 363,149 363,157" fill="#3a4a5c"/>
-  <line x1="310" y1="210" x2="370" y2="165" stroke="#3a4a5c" stroke-width="1.5"/>
-  <polygon points="370,165 363,159 363,167" fill="#3a4a5c"/>
-  <line x1="310" y1="275" x2="370" y2="175" stroke="#3a4a5c" stroke-width="1.5"/>
-  <polygon points="370,175 363,169 363,177" fill="#3a4a5c"/>
+  <line x1="430" y1="106" x2="470" y2="180" stroke="#334155" stroke-width="1.5" opacity="0.6"/>
+  <polygon points="470,180 464,173 462,181" fill="#334155"/>
+  <line x1="430" y1="170" x2="470" y2="188" stroke="#334155" stroke-width="1.5" opacity="0.6"/>
+  <polygon points="470,188 463,182 463,190" fill="#334155"/>
+  <line x1="430" y1="234" x2="470" y2="196" stroke="#334155" stroke-width="1.5" opacity="0.6"/>
+  <polygon points="470,196 463,190 463,198" fill="#334155"/>
+  <line x1="430" y1="298" x2="470" y2="204" stroke="#334155" stroke-width="1.5" opacity="0.6"/>
+  <polygon points="470,204 463,198 463,206" fill="#334155"/>
 
-  <!-- Coordinator -->
-  <rect x="370" y="125" width="120" height="70" rx="8" fill="url(#boxGrad)" stroke="url(#accent)" stroke-width="2" filter="url(#shadow)"/>
-  <text x="430" y="150" text-anchor="middle" fill="#00d4aa" font-family="Segoe UI, sans-serif" font-size="12" font-weight="700">COORDINATOR</text>
-  <text x="430" y="168" text-anchor="middle" fill="#8899aa" font-family="Segoe UI, sans-serif" font-size="9">Filter by cap · Select winner</text>
-  <text x="430" y="182" text-anchor="middle" fill="#667788" font-family="Segoe UI, sans-serif" font-size="8">Trigger payment · Build receipt</text>
+  <!-- ========== CENTER: Coordinator ========== -->
+  <rect x="480" y="155" width="160" height="90" rx="12" fill="url(#card)" stroke="url(#accent)" stroke-width="2.5" filter="url(#shadow)"/>
+  <text x="560" y="185" text-anchor="middle" fill="#F8FAFC" font-family="sans-serif" font-size="13" font-weight="700">COORDINATOR</text>
+  <text x="560" y="205" text-anchor="middle" fill="#94A3B8" font-family="sans-serif" font-size="10">Filter by max-hbar cap</text>
+  <text x="560" y="220" text-anchor="middle" fill="#94A3B8" font-family="sans-serif" font-size="10">Select highest-score winner</text>
+  <text x="560" y="235" text-anchor="middle" fill="#64748B" font-family="sans-serif" font-size="9">Trigger payment · Build receipt</text>
 
   <!-- Arrow to Payment Rail -->
-  <line x1="490" y1="160" x2="540" y2="160" stroke="#00d4aa" stroke-width="2"/>
-  <polygon points="540,160 534,156 534,164" fill="#00d4aa"/>
+  <line x1="640" y1="200" x2="680" y2="200" stroke="url(#accent)" stroke-width="2.5" marker-end="url(#arrow-purple)" opacity="0.9"/>
 
-  <!-- Payment Rail -->
-  <rect x="540" y="125" width="130" height="70" rx="8" fill="url(#boxGrad)" stroke="#00a8e8" stroke-width="2" filter="url(#shadow)"/>
-  <text x="605" y="150" text-anchor="middle" fill="#00a8e8" font-family="Segoe UI, sans-serif" font-size="11" font-weight="700">HederaPaymentRail</text>
-  <text x="605" y="168" text-anchor="middle" fill="#8899aa" font-family="Segoe UI, sans-serif" font-size="9">Mainnet enforcement</text>
-  <text x="605" y="182" text-anchor="middle" fill="#667788" font-family="Segoe UI, sans-serif" font-size="8">Amount validation · Lazy init</text>
+  <!-- ========== RIGHT: Payment Rail ========== -->
+  <rect x="695" y="155" width="160" height="90" rx="12" fill="url(#card)" stroke="url(#g1)" stroke-width="2" filter="url(#shadow)"/>
+  <text x="775" y="185" text-anchor="middle" fill="#22D3EE" font-family="sans-serif" font-size="13" font-weight="700">Payment Rail</text>
+  <text x="775" y="205" text-anchor="middle" fill="#94A3B8" font-family="sans-serif" font-size="10">HederaClient wrapper</text>
+  <text x="775" y="220" text-anchor="middle" fill="#94A3B8" font-family="sans-serif" font-size="10">Mainnet enforcement</text>
+  <text x="775" y="235" text-anchor="middle" fill="#64748B" font-family="sans-serif" font-size="9">Lazy init · Amount validation</text>
 
   <!-- Arrow to Mainnet -->
-  <line x1="670" y1="145" x2="730" y2="110" stroke="#00d4aa" stroke-width="2"/>
-  <polygon points="730,110 723,108 726,115" fill="#00d4aa"/>
+  <line x1="775" y1="245" x2="775" y2="280" stroke="#34D399" stroke-width="2" marker-end="url(#arrow-green)" opacity="0.8"/>
 
-  <!-- Hedera Mainnet -->
-  <rect x="730" y="75" width="130" height="50" rx="8" fill="#0d1f15" stroke="#00d4aa" stroke-width="2" filter="url(#shadow)"/>
-  <text x="795" y="98" text-anchor="middle" fill="#00d4aa" font-family="Segoe UI, sans-serif" font-size="11" font-weight="700">Hedera Mainnet</text>
-  <text x="795" y="113" text-anchor="middle" fill="#8899aa" font-family="Segoe UI, sans-serif" font-size="9">HBAR transfer · Consensus</text>
+  <!-- ========== Hedera Mainnet ========== -->
+  <rect x="695" y="290" width="160" height="65" rx="12" fill="#064E3B" stroke="#34D399" stroke-width="2" filter="url(#shadow)"/>
+  <text x="775" y="318" text-anchor="middle" fill="#34D399" font-family="sans-serif" font-size="13" font-weight="700">Hedera Mainnet</text>
+  <text x="775" y="336" text-anchor="middle" fill="#A7F3D0" font-family="sans-serif" font-size="10">HBAR transfer · Consensus</text>
 
   <!-- Arrow to Receipt -->
-  <line x1="670" y1="175" x2="730" y2="210" stroke="#c084fc" stroke-width="2"/>
-  <polygon points="730,210 723,208 726,215" fill="#c084fc"/>
+  <line x1="695" y1="322" x2="640" y2="322" stroke="#FBBF24" stroke-width="2" marker-end="url(#arrow-yellow)" opacity="0.8"/>
 
-  <!-- Proof Receipt -->
-  <rect x="730" y="195" width="130" height="70" rx="8" fill="#1a1025" stroke="#c084fc" stroke-width="2" filter="url(#shadow)"/>
-  <text x="795" y="220" text-anchor="middle" fill="#c084fc" font-family="Segoe UI, sans-serif" font-size="11" font-weight="700">ProofReceiptBuilder</text>
-  <text x="795" y="238" text-anchor="middle" fill="#8899aa" font-family="Segoe UI, sans-serif" font-size="9">SHA-256 hashes · Task + Decision</text>
-  <text x="795" y="252" text-anchor="middle" fill="#667788" font-family="Segoe UI, sans-serif" font-size="8">HashScan URL · Mirror Node URL</text>
+  <!-- ========== BOTTOM: Proof Receipt ========== -->
+  <rect x="480" y="290" width="160" height="65" rx="12" fill="#451A03" stroke="#FBBF24" stroke-width="2" filter="url(#shadow)"/>
+  <text x="560" y="318" text-anchor="middle" fill="#FBBF24" font-family="sans-serif" font-size="13" font-weight="700">Proof Receipt</text>
+  <text x="560" y="336" text-anchor="middle" fill="#FDE68A" font-family="sans-serif" font-size="10">SHA-256 · HashScan · Mirror</text>
 
-  <!-- Verifier Box -->
-  <rect x="540" y="235" width="130" height="50" rx="6" fill="#1a1025" stroke="#5c7aea" stroke-width="1" filter="url(#shadow)"/>
-  <text x="605" y="255" text-anchor="middle" fill="#5c7aea" font-family="Segoe UI, sans-serif" font-size="10" font-weight="600">Proof Verifier</text>
-  <text x="605" y="270" text-anchor="middle" fill="#8899aa" font-family="Segoe UI, sans-serif" font-size="8">Recompute hashes · Mirror check</text>
+  <!-- Arrow to Verifier -->
+  <line x1="560" y1="290" x2="560" y2="260" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow)" opacity="0.6"/>
 
-  <!-- Arrow from Receipt to Verifier -->
-  <line x1="730" y1="240" x2="670" y2="255" stroke="#5c7aea" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <polygon points="670,255 677,252 677,260" fill="#5c7aea"/>
+  <!-- ========== Proof Verifier (floating) ========== -->
+  <rect x="480" y="60" width="160" height="65" rx="12" fill="url(#card)" stroke="#EF4444" stroke-width="2" filter="url(#shadow)"/>
+  <text x="560" y="85" text-anchor="middle" fill="#EF4444" font-family="sans-serif" font-size="13" font-weight="700">Proof Verifier</text>
+  <text x="560" y="103" text-anchor="middle" fill="#94A3B8" font-family="sans-serif" font-size="10">Recompute hashes</text>
+  <text x="560" y="117" text-anchor="middle" fill="#64748B" font-family="sans-serif" font-size="9">Mirror-node tx check</text>
 
-  <!-- Legend -->
-  <text x="30" y="315" fill="#556677" font-family="Segoe UI, sans-serif" font-size="8">Scoring: score = confidence × specialty_match / (price_hbar + 0.0001)  ·  Default cap: 0.01 ℏ  ·  Network: mainnet only</text>
+  <!-- ========== BOTTOM LEGEND BAR ========== -->
+  <rect x="40" y="375" width="920" height="30" rx="6" fill="#0F172A" stroke="#1E293B" stroke-width="1"/>
+  <text x="60" y="394" fill="#94A3B8" font-family="sans-serif" font-size="10">Scoring: </text>
+  <text x="115" y="394" fill="#22D3EE" font-family="sans-serif" font-size="10" font-weight="600">score = confidence × specialty_match / (price_hbar + 0.0001)</text>
+  <text x="520" y="394" fill="#64748B" font-family="sans-serif" font-size="10">|</text>
+  <text x="540" y="394" fill="#94A3B8" font-family="sans-serif" font-size="10">Default cap: </text>
+  <text x="610" y="394" fill="#34D399" font-family="sans-serif" font-size="10" font-weight="600">0.01 HBAR</text>
+  <text x="700" y="394" fill="#64748B" font-family="sans-serif" font-size="10">|</text>
+  <text x="720" y="394" fill="#94A3B8" font-family="sans-serif" font-size="10">Network: </text>
+  <text x="780" y="394" fill="#A78BFA" font-family="sans-serif" font-size="10" font-weight="600">mainnet only</text>
 </svg>
