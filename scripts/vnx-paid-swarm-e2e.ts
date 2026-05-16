@@ -16,7 +16,11 @@ const program = new Command()
   .description('End-to-end mainnet validation for VNX paid micro-swarm')
   .option('--dry-run', 'Simulate full flow without any network calls', true)
   .option('--live', 'Run on Hedera mainnet with real HBAR transfer')
-  .option('--task <text>', 'Task description', 'Predict the HBAR price direction and forecast the signal')
+  .option(
+    '--task <text>',
+    'Task description',
+    'Predict the HBAR price direction and forecast the signal',
+  )
   .option('--recipient <id>', 'Hedera account ID', '0.0.123456')
   .option('--max-hbar <n>', 'Maximum HBAR cap', '0.01')
   .parse();
@@ -30,7 +34,9 @@ async function validateEnv(): Promise<{ ok: boolean; errors: string[] }> {
     if (!process.env[key]) errors.push(`Missing env var: ${key}`);
   }
   if (process.env.HEDERA_NETWORK !== 'mainnet') {
-    errors.push(`HEDERA_NETWORK must be "mainnet" for live runs (got: ${process.env.HEDERA_NETWORK || 'undefined'})`);
+    errors.push(
+      `HEDERA_NETWORK must be "mainnet" for live runs (got: ${process.env.HEDERA_NETWORK || 'undefined'})`,
+    );
   }
   return { ok: errors.length === 0, errors };
 }
@@ -64,16 +70,29 @@ async function dryRunE2E() {
   // Step 2: Run swarm
   console.log('[2/5] Running swarm vote + selection...');
   const receipt = await coord.run(task, recipient);
-  console.log(`      ✅ Winner: ${receipt.selected.name} (score=${receipt.selected.score.toFixed(2)})`);
+  console.log(
+    `      ✅ Winner: ${receipt.selected.name} (score=${receipt.selected.score.toFixed(2)})`,
+  );
 
   // Step 3: Validate receipt structure
   console.log('[3/5] Validating receipt structure...');
-  const requiredFields = ['version', 'network', 'timestamp', 'taskHash', 'votes', 'selected', 'payment', 'decisionHash'];
+  const requiredFields = [
+    'version',
+    'network',
+    'timestamp',
+    'taskHash',
+    'votes',
+    'selected',
+    'payment',
+    'decisionHash',
+  ];
   const missing = requiredFields.filter(f => !(f in receipt));
   if (missing.length) throw new Error(`Receipt missing fields: ${missing.join(', ')}`);
   if (receipt.votes.length !== 4) throw new Error(`Expected 4 votes, got ${receipt.votes.length}`);
-  if (!receipt.taskHash.match(/^[a-f0-9]{64}$/)) throw new Error('taskHash is not valid SHA-256 hex');
-  if (!receipt.decisionHash.match(/^[a-f0-9]{64}$/)) throw new Error('decisionHash is not valid SHA-256 hex');
+  if (!receipt.taskHash.match(/^[a-f0-9]{64}$/))
+    throw new Error('taskHash is not valid SHA-256 hex');
+  if (!receipt.decisionHash.match(/^[a-f0-9]{64}$/))
+    throw new Error('decisionHash is not valid SHA-256 hex');
   console.log('      ✅ Receipt structure valid');
   console.log(`      ✅ Task Hash:     ${receipt.taskHash}`);
   console.log(`      ✅ Decision Hash: ${receipt.decisionHash}`);
@@ -106,7 +125,9 @@ async function dryRunE2E() {
   console.log(`  Task Hash:      ${receipt.taskHash}`);
   console.log(`  Decision Hash:  ${receipt.decisionHash}`);
   console.log(`  Network:        ${receipt.payment.network}`);
-  console.log(`\n  ✅ Dry-run E2E checks passed. This is structural evidence only, not mainnet proof.`);
+  console.log(
+    `\n  ✅ Dry-run E2E checks passed. This is structural evidence only, not mainnet proof.`,
+  );
   console.log(`\n  Next: Run with --live after setting env vars:`);
   console.log(`    export HEDERA_ACCOUNT_ID=0.0.xxx`);
   console.log(`    export HEDERA_PRIVATE_KEY=xxx`);

@@ -33,7 +33,7 @@ export class HederaPaymentRail implements PaymentRail {
     if (_config.requireMainnet && network !== 'mainnet') {
       throw new Error(
         `Competition run requires HEDERA_NETWORK=mainnet. Got: "${network}". ` +
-        `Use --plan-only for local development.`
+          `Use --plan-only for local development.`,
       );
     }
   }
@@ -49,7 +49,7 @@ export class HederaPaymentRail implements PaymentRail {
       if (!process.env['HEDERA_PRIVATE_KEY']) missing.push('HEDERA_PRIVATE_KEY');
       throw new Error(
         `Missing Hedera credentials: ${missing.join(', ')}. ` +
-        `Set them as environment variables or use --plan-only.`
+          `Set them as environment variables or use --plan-only.`,
       );
     }
     this._client = client;
@@ -70,7 +70,7 @@ export class HederaPaymentRail implements PaymentRail {
       return this._fail(
         `Amount ${amountHbar} HBAR exceeds cap ${this._config.maxHbar} HBAR`,
         toAccountId,
-        amountHbar
+        amountHbar,
       );
     }
 

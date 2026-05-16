@@ -29,7 +29,7 @@ export class VnxWorkerAgent {
       if (lower.includes(kw)) matches++;
     }
     // Base confidence 0.5, +0.08 per keyword match, cap at 0.95
-    const base = 0.50;
+    const base = 0.5;
     const perMatch = 0.08;
     const cap = 0.95;
     return Math.min(cap, base + matches * perMatch);

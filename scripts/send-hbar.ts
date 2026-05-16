@@ -88,7 +88,9 @@ async function main(): Promise<void> {
   if (result.status === 'success') {
     console.log(`  Status:    ✅ SUCCESS`);
     console.log(`  Tx ID:     ${result.transactionId}`);
-    console.log(`  Explorer:  https://hashscan.io/${result.network}/transaction/${result.transactionId?.replace(/@/, '-' )}`);
+    console.log(
+      `  Explorer:  https://hashscan.io/${result.network}/transaction/${result.transactionId?.replace(/@/, '-')}`,
+    );
     if (result.consensusTimestampMs) {
       console.log(`  Consensus: ${new Date(result.consensusTimestampMs).toISOString()}`);
     }
@@ -99,7 +101,7 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error(err);
   process.exit(1);
 });

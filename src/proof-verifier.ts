@@ -31,7 +31,10 @@ export interface MirrorTransactionCheck {
 }
 
 export interface ProofVerifierOptions {
-  fetchMirrorTransaction?: (transactionId: string, mirrorNodeUrl: string) => Promise<MirrorTransactionCheck>;
+  fetchMirrorTransaction?: (
+    transactionId: string,
+    mirrorNodeUrl: string,
+  ) => Promise<MirrorTransactionCheck>;
 }
 
 export interface ProofVerificationResult {
@@ -49,20 +52,22 @@ export async function verifySwarmProof(
   checks.push({
     name: 'task_hash',
     ok: receipt.taskHash === expectedTaskHash,
-    detail: receipt.taskHash === expectedTaskHash
-      ? expectedTaskHash
-      : `expected ${expectedTaskHash}, got ${receipt.taskHash}`,
+    detail:
+      receipt.taskHash === expectedTaskHash
+        ? expectedTaskHash
+        : `expected ${expectedTaskHash}, got ${receipt.taskHash}`,
   });
 
   const expectedDecisionHash = sha256(
-    `${receipt.selected.workerId}:${receipt.selected.score}:${receipt.payment.transactionId ?? 'no-tx'}:${receipt.taskHash}`
+    `${receipt.selected.workerId}:${receipt.selected.score}:${receipt.payment.transactionId ?? 'no-tx'}:${receipt.taskHash}`,
   );
   checks.push({
     name: 'decision_hash',
     ok: receipt.decisionHash === expectedDecisionHash,
-    detail: receipt.decisionHash === expectedDecisionHash
-      ? expectedDecisionHash
-      : `expected ${expectedDecisionHash}, got ${receipt.decisionHash}`,
+    detail:
+      receipt.decisionHash === expectedDecisionHash
+        ? expectedDecisionHash
+        : `expected ${expectedDecisionHash}, got ${receipt.decisionHash}`,
   });
 
   try {
@@ -86,25 +91,26 @@ export async function verifySwarmProof(
   checks.push({
     name: 'hashscan_url',
     ok: !!receipt.explorerUrl && receipt.explorerUrl === expectedExplorerUrl,
-    detail: receipt.explorerUrl && receipt.explorerUrl === expectedExplorerUrl
-      ? receipt.explorerUrl
-      : `expected ${expectedExplorerUrl || 'transaction id first'}, got ${receipt.explorerUrl ?? 'missing'}`,
+    detail:
+      receipt.explorerUrl && receipt.explorerUrl === expectedExplorerUrl
+        ? receipt.explorerUrl
+        : `expected ${expectedExplorerUrl || 'transaction id first'}, got ${receipt.explorerUrl ?? 'missing'}`,
   });
 
   const fetchMirrorTransaction = options.fetchMirrorTransaction ?? fetchMirrorTransactionFromHiero;
   const mirrorCheck = receipt.payment.transactionId
     ? await fetchMirrorTransaction(receipt.payment.transactionId, receipt.mirrorNodeUrl ?? '')
     : {
-      ok: false,
-      transactionId: 'missing',
-      error: 'missing payment transaction ID',
-    };
+        ok: false,
+        transactionId: 'missing',
+        error: 'missing payment transaction ID',
+      };
   checks.push({
     name: 'mirror_node_transaction',
     ok: mirrorCheck.ok,
     detail: mirrorCheck.ok
       ? `${mirrorCheck.transactionId} ${mirrorCheck.status ?? 'confirmed'}`
-      : mirrorCheck.error ?? 'mirror-node transaction lookup failed',
+      : (mirrorCheck.error ?? 'mirror-node transaction lookup failed'),
   });
 
   return {
@@ -129,7 +135,7 @@ export async function fetchMirrorTransactionFromHiero(
       };
     }
 
-    const body = await response.json() as {
+    const body = (await response.json()) as {
       transactions?: Array<{
         result?: string;
         transaction_id?: string;

@@ -51,9 +51,15 @@ export class HederaClient {
     this._privateKey = PrivateKey.fromStringECDSA(config.privateKey);
 
     switch (config.network) {
-      case 'mainnet':   this._client = Client.forMainnet(); break;
-      case 'testnet':   this._client = Client.forTestnet(); break;
-      case 'previewnet': this._client = Client.forPreviewnet(); break;
+      case 'mainnet':
+        this._client = Client.forMainnet();
+        break;
+      case 'testnet':
+        this._client = Client.forTestnet();
+        break;
+      case 'previewnet':
+        this._client = Client.forPreviewnet();
+        break;
     }
 
     this._client.setOperator(this._accountId, this._privateKey);
@@ -64,9 +70,7 @@ export class HederaClient {
   /** Fetch HBAR balance for the configured account */
   async getBalance(accountId?: string): Promise<HbarAccountBalance> {
     const id = accountId ? AccountId.fromString(accountId) : this._accountId;
-    const balance = await new AccountBalanceQuery()
-      .setAccountId(id)
-      .execute(this._client);
+    const balance = await new AccountBalanceQuery().setAccountId(id).execute(this._client);
 
     const tokens: Record<string, number> = {};
     if (balance.tokens) {
@@ -112,9 +116,9 @@ export class HederaClient {
 
   /** Build client from environment variables (returns null if vars missing) */
   static fromEnv(): HederaClient | null {
-    const accountId  = process.env['HEDERA_ACCOUNT_ID'];
+    const accountId = process.env['HEDERA_ACCOUNT_ID'];
     const privateKey = process.env['HEDERA_PRIVATE_KEY'];
-    const network    = (process.env['HEDERA_NETWORK'] ?? 'mainnet') as HederaClientConfig['network'];
+    const network = (process.env['HEDERA_NETWORK'] ?? 'mainnet') as HederaClientConfig['network'];
     if (!accountId || !privateKey) return null;
     try {
       return new HederaClient({ accountId, privateKey, network });

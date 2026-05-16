@@ -18,7 +18,11 @@ const program = new Command()
   .description('Verify VNX paid swarm hashes and Hedera/Hiero mainnet transaction proof')
   .requiredOption('--receipt <path>', 'Path to the live JSON receipt')
   .requiredOption('--task <text>', 'Original task text used to create the receipt')
-  .option('--skip-mirror', 'Skip live mirror-node lookup and verify local hashes/status only', false)
+  .option(
+    '--skip-mirror',
+    'Skip live mirror-node lookup and verify local hashes/status only',
+    false,
+  )
   .parse();
 
 const opts = program.opts<{
@@ -31,15 +35,19 @@ async function main() {
   const raw = await readFile(opts.receipt, 'utf8');
   const receipt = JSON.parse(raw) as SwarmReceipt;
 
-  const result = await verifySwarmProof(receipt, opts.task, opts.skipMirror
-    ? {
-      fetchMirrorTransaction: async transactionId => ({
-        ok: true,
-        transactionId,
-        status: 'SKIPPED',
-      }),
-    }
-    : undefined);
+  const result = await verifySwarmProof(
+    receipt,
+    opts.task,
+    opts.skipMirror
+      ? {
+          fetchMirrorTransaction: async transactionId => ({
+            ok: true,
+            transactionId,
+            status: 'SKIPPED',
+          }),
+        }
+      : undefined,
+  );
 
   console.log('\nVNX Paid Swarm Proof Verification\n');
   for (const check of result.checks) {

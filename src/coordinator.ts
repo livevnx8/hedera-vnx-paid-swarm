@@ -8,9 +8,9 @@ import { ProofReceiptBuilder } from './receipt-builder.js';
 
 const SPECIALTY_MATCH_WEIGHTS: Record<string, Record<string, number>> = {
   prediction: { prediction: 1.0, momentum: 0.5, volatility: 0.6, trend: 0.7 },
-  momentum:   { prediction: 0.5, momentum: 1.0, volatility: 0.7, trend: 0.6 },
+  momentum: { prediction: 0.5, momentum: 1.0, volatility: 0.7, trend: 0.6 },
   volatility: { prediction: 0.6, momentum: 0.7, volatility: 1.0, trend: 0.5 },
-  trend:      { prediction: 0.7, momentum: 0.6, volatility: 0.5, trend: 1.0 },
+  trend: { prediction: 0.7, momentum: 0.6, volatility: 0.5, trend: 1.0 },
 };
 
 export interface CoordinatorConfig {
@@ -52,9 +52,10 @@ export class PaidSwarmCoordinator {
 
     // 4. If plan-only, skip payment and return receipt with skipped status
     if (this._config.planOnly) {
-      const winner = eligible.length > 0
-        ? eligible.reduce((best, cur) => (cur.score! > best.score! ? cur : best))
-        : scoredVotes[0]; // fallback if all over cap
+      const winner =
+        eligible.length > 0
+          ? eligible.reduce((best, cur) => (cur.score! > best.score! ? cur : best))
+          : scoredVotes[0]; // fallback if all over cap
       const payment = {
         status: 'skipped_plan_only' as const,
         network: 'plan-only',

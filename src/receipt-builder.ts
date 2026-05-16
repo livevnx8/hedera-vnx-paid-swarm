@@ -17,9 +17,10 @@ export class ProofReceiptBuilder {
     const taskHash = this._sha256(taskDescription);
     const decisionPayload = `${selected.workerId}:${selected.score}:${payment.transactionId ?? 'no-tx'}:${taskHash}`;
     const decisionHash = this._sha256(decisionPayload);
-    const proofStatus = payment.status === 'success' && payment.network === 'mainnet' && !!payment.transactionId
-      ? 'mainnet_confirmed'
-      : 'not_mainnet_proof';
+    const proofStatus =
+      payment.status === 'success' && payment.network === 'mainnet' && !!payment.transactionId
+        ? 'mainnet_confirmed'
+        : 'not_mainnet_proof';
 
     return {
       version: '1.0',
@@ -44,12 +45,14 @@ export class ProofReceiptBuilder {
       payment,
       decisionHash,
       proofStatus,
-      explorerUrl: proofStatus === 'mainnet_confirmed'
-        ? toHashScanTransactionUrl(payment.transactionId!)
-        : undefined,
-      mirrorNodeUrl: proofStatus === 'mainnet_confirmed'
-        ? toMirrorNodeTransactionUrl(payment.transactionId!)
-        : undefined,
+      explorerUrl:
+        proofStatus === 'mainnet_confirmed'
+          ? toHashScanTransactionUrl(payment.transactionId!)
+          : undefined,
+      mirrorNodeUrl:
+        proofStatus === 'mainnet_confirmed'
+          ? toMirrorNodeTransactionUrl(payment.transactionId!)
+          : undefined,
     };
   }
 

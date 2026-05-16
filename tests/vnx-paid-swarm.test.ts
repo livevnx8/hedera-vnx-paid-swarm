@@ -59,8 +59,15 @@ describe('VnxWorkerAgent', () => {
 describe('PaidSwarmCoordinator — Winner Selection', () => {
   it('selects highest-score worker', async () => {
     const rail = new MockPaymentRail();
-    const coord = new PaidSwarmCoordinator(DEFAULT_WORKERS, { maxHbar: 0.1, planOnly: false }, rail);
-    const receipt = await coord.run('Predict the HBAR price direction and forecast the signal', '0.0.999');
+    const coord = new PaidSwarmCoordinator(
+      DEFAULT_WORKERS,
+      { maxHbar: 0.1, planOnly: false },
+      rail,
+    );
+    const receipt = await coord.run(
+      'Predict the HBAR price direction and forecast the signal',
+      '0.0.999',
+    );
 
     expect(receipt.selected.score).toBeGreaterThan(0);
     // ONNX-primary should win on price-signal tasks (higher confidence + match weight)
@@ -73,7 +80,11 @@ describe('PaidSwarmCoordinator — Winner Selection', () => {
   it('filters workers above max-hbar cap', async () => {
     const rail = new MockPaymentRail();
     // Cap below all worker prices
-    const coord = new PaidSwarmCoordinator(DEFAULT_WORKERS, { maxHbar: 0.001, planOnly: false }, rail);
+    const coord = new PaidSwarmCoordinator(
+      DEFAULT_WORKERS,
+      { maxHbar: 0.001, planOnly: false },
+      rail,
+    );
     const receipt = await coord.run('Any task', '0.0.999');
 
     expect(receipt.payment.status).toBe('payment_failed');
@@ -94,7 +105,11 @@ describe('PaidSwarmCoordinator — Winner Selection', () => {
   it('normalizes payment failure', async () => {
     const rail = new MockPaymentRail();
     rail.failNext = true;
-    const coord = new PaidSwarmCoordinator(DEFAULT_WORKERS, { maxHbar: 0.1, planOnly: false }, rail);
+    const coord = new PaidSwarmCoordinator(
+      DEFAULT_WORKERS,
+      { maxHbar: 0.1, planOnly: false },
+      rail,
+    );
     const receipt = await coord.run('Any task', '0.0.999');
 
     expect(receipt.payment.status).toBe('payment_failed');
@@ -111,7 +126,7 @@ describe('HederaPaymentRail — Credential Validation', () => {
       (async () => {
         const mod = await import('../src/payment-rail.js');
         new mod.HederaPaymentRail({ requireMainnet: true, maxHbar: 0.01 });
-      })()
+      })(),
     ).rejects.toThrow(/mainnet/);
 
     process.env['HEDERA_NETWORK'] = oldNetwork ?? 'mainnet';
@@ -122,7 +137,16 @@ describe('ProofReceiptBuilder', () => {
   it('produces stable hashes for identical inputs', () => {
     const builder = new ProofReceiptBuilder();
     const votes = [
-      { workerId: 'a', name: 'A', specialty: 'x', recommendation: 'r', confidence: 0.7, priceHbar: 0.01, evidence: 'e', score: 10 },
+      {
+        workerId: 'a',
+        name: 'A',
+        specialty: 'x',
+        recommendation: 'r',
+        confidence: 0.7,
+        priceHbar: 0.01,
+        evidence: 'e',
+        score: 10,
+      },
     ];
     const payment: PaymentResult = {
       status: 'success',
@@ -144,7 +168,16 @@ describe('ProofReceiptBuilder', () => {
   it('marks successful mainnet receipts as confirmed proof with verification URLs', () => {
     const builder = new ProofReceiptBuilder();
     const votes = [
-      { workerId: 'a', name: 'A', specialty: 'x', recommendation: 'r', confidence: 0.7, priceHbar: 0.01, evidence: 'e', score: 10 },
+      {
+        workerId: 'a',
+        name: 'A',
+        specialty: 'x',
+        recommendation: 'r',
+        confidence: 0.7,
+        priceHbar: 0.01,
+        evidence: 'e',
+        score: 10,
+      },
     ];
     const payment: PaymentResult = {
       status: 'success',
@@ -158,8 +191,12 @@ describe('ProofReceiptBuilder', () => {
     const receipt = builder.build('task', votes, votes[0], payment);
 
     expect(receipt.proofStatus).toBe('mainnet_confirmed');
-    expect(receipt.explorerUrl).toBe('https://hashscan.io/mainnet/transaction/0.0.123%401778951290.123456789');
-    expect(receipt.mirrorNodeUrl).toBe('https://mainnet-public.mirrornode.hedera.com/api/v1/transactions/0.0.123-1778951290-123456789');
+    expect(receipt.explorerUrl).toBe(
+      'https://hashscan.io/mainnet/transaction/0.0.123%401778951290.123456789',
+    );
+    expect(receipt.mirrorNodeUrl).toBe(
+      'https://mainnet-public.mirrornode.hedera.com/api/v1/transactions/0.0.123-1778951290-123456789',
+    );
     expect(receipt.votes[0].workerId).toBe('a');
     expect(receipt.selected.workerId).toBe('a');
   });
@@ -167,7 +204,16 @@ describe('ProofReceiptBuilder', () => {
   it('marks dry-run or mock receipts as not mainnet proof', () => {
     const builder = new ProofReceiptBuilder();
     const votes = [
-      { workerId: 'a', name: 'A', specialty: 'x', recommendation: 'r', confidence: 0.7, priceHbar: 0.01, evidence: 'e', score: 10 },
+      {
+        workerId: 'a',
+        name: 'A',
+        specialty: 'x',
+        recommendation: 'r',
+        confidence: 0.7,
+        priceHbar: 0.01,
+        evidence: 'e',
+        score: 10,
+      },
     ];
     const payment: PaymentResult = {
       status: 'success',
@@ -221,7 +267,14 @@ describe('Mainnet proof validation', () => {
     timestamp: 1778951290123,
     taskHash: 'a'.repeat(64),
     votes: [
-      { workerId: 'a', name: 'A', specialty: 'prediction', confidence: 0.7, priceHbar: 0.01, score: 10 },
+      {
+        workerId: 'a',
+        name: 'A',
+        specialty: 'prediction',
+        confidence: 0.7,
+        priceHbar: 0.01,
+        score: 10,
+      },
     ],
     selected: { workerId: 'a', name: 'A', specialty: 'prediction', priceHbar: 0.01, score: 10 },
     payment: {
@@ -235,7 +288,8 @@ describe('Mainnet proof validation', () => {
     decisionHash: 'b'.repeat(64),
     proofStatus: 'mainnet_confirmed',
     explorerUrl: 'https://hashscan.io/mainnet/transaction/0.0.123%401778951290.123456789',
-    mirrorNodeUrl: 'https://mainnet-public.mirrornode.hedera.com/api/v1/transactions/0.0.123-1778951290-123456789',
+    mirrorNodeUrl:
+      'https://mainnet-public.mirrornode.hedera.com/api/v1/transactions/0.0.123-1778951290-123456789',
   };
 
   it('accepts confirmed mainnet proof receipts', () => {
@@ -243,46 +297,52 @@ describe('Mainnet proof validation', () => {
   });
 
   it('rejects successful dry-run receipts', () => {
-    expect(() => assertMainnetProofReceipt({
-      ...baseReceipt,
-      network: 'dry-run',
-      proofStatus: 'not_mainnet_proof',
-      payment: {
-        ...baseReceipt.payment,
+    expect(() =>
+      assertMainnetProofReceipt({
+        ...baseReceipt,
         network: 'dry-run',
-        transactionId: 'dry-run-mock-tx',
-      },
-      explorerUrl: undefined,
-      mirrorNodeUrl: undefined,
-    })).toThrow(/not confirmed mainnet proof/);
+        proofStatus: 'not_mainnet_proof',
+        payment: {
+          ...baseReceipt.payment,
+          network: 'dry-run',
+          transactionId: 'dry-run-mock-tx',
+        },
+        explorerUrl: undefined,
+        mirrorNodeUrl: undefined,
+      }),
+    ).toThrow(/not confirmed mainnet proof/);
   });
 
   it('rejects mainnet receipts without transaction ids', () => {
-    expect(() => assertMainnetProofReceipt({
-      ...baseReceipt,
-      proofStatus: 'not_mainnet_proof',
-      payment: {
-        ...baseReceipt.payment,
-        transactionId: undefined,
-      },
-      explorerUrl: undefined,
-      mirrorNodeUrl: undefined,
-    })).toThrow(/transaction ID/);
+    expect(() =>
+      assertMainnetProofReceipt({
+        ...baseReceipt,
+        proofStatus: 'not_mainnet_proof',
+        payment: {
+          ...baseReceipt.payment,
+          transactionId: undefined,
+        },
+        explorerUrl: undefined,
+        mirrorNodeUrl: undefined,
+      }),
+    ).toThrow(/transaction ID/);
   });
 
   it('includes normalized payment errors when rejecting failed receipts', () => {
-    expect(() => assertMainnetProofReceipt({
-      ...baseReceipt,
-      proofStatus: 'not_mainnet_proof',
-      payment: {
-        ...baseReceipt.payment,
-        status: 'payment_failed',
-        transactionId: undefined,
-        error: 'invalid private key',
-      },
-      explorerUrl: undefined,
-      mirrorNodeUrl: undefined,
-    })).toThrow(/invalid private key/);
+    expect(() =>
+      assertMainnetProofReceipt({
+        ...baseReceipt,
+        proofStatus: 'not_mainnet_proof',
+        payment: {
+          ...baseReceipt.payment,
+          status: 'payment_failed',
+          transactionId: undefined,
+          error: 'invalid private key',
+        },
+        explorerUrl: undefined,
+        mirrorNodeUrl: undefined,
+      }),
+    ).toThrow(/invalid private key/);
   });
 });
 
@@ -335,16 +395,20 @@ describe('Swarm proof verifier', () => {
 
   it('rejects receipts with tampered decision hashes', async () => {
     const receipt = buildConfirmedReceipt();
-    const result = await verifySwarmProof({
-      ...receipt,
-      decisionHash: '0'.repeat(64),
-    }, task, {
-      fetchMirrorTransaction: async transactionId => ({
-        ok: true,
-        transactionId,
-        status: 'SUCCESS',
-      }),
-    });
+    const result = await verifySwarmProof(
+      {
+        ...receipt,
+        decisionHash: '0'.repeat(64),
+      },
+      task,
+      {
+        fetchMirrorTransaction: async transactionId => ({
+          ok: true,
+          transactionId,
+          status: 'SUCCESS',
+        }),
+      },
+    );
 
     expect(result.ok).toBe(false);
     expect(result.checks.find(c => c.name === 'decision_hash')).toMatchObject({

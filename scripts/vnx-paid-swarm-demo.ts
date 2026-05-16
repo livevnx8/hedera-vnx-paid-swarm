@@ -23,7 +23,11 @@ import {
 program
   .name('vnx-paid-swarm-demo')
   .description('VNX Paid Micro-Swarm — deterministic agent swarm with Hedera payment')
-  .option('--task <string>', 'Task description for the swarm', 'Find the best HBAR risk signal for the next 5 minutes')
+  .option(
+    '--task <string>',
+    'Task description for the swarm',
+    'Find the best HBAR risk signal for the next 5 minutes',
+  )
   .option('--recipient <string>', 'Hedera account ID to receive payment', '0.0.123456')
   .option('--max-hbar <number>', 'Maximum HBAR payment cap', '0.01')
   .option('--plan-only', 'Run in plan-only mode (no real payment)', false)
@@ -51,11 +55,7 @@ async function main() {
     maxHbar,
   });
 
-  const coordinator = new PaidSwarmCoordinator(
-    DEFAULT_WORKERS,
-    { maxHbar, planOnly },
-    paymentRail,
-  );
+  const coordinator = new PaidSwarmCoordinator(DEFAULT_WORKERS, { maxHbar, planOnly }, paymentRail);
 
   try {
     const receipt = await coordinator.run(task, recipient);
@@ -63,7 +63,9 @@ async function main() {
     console.log('─── WORKER VOTES ───');
     for (const v of receipt.votes) {
       const bar = '█'.repeat(Math.min(20, Math.round(v.confidence * 20)));
-      console.log(`  ${v.name.padEnd(18)} | conf=${v.confidence.toFixed(3)} | price=${v.priceHbar.toFixed(4)} HBAR | score=${v.score.toFixed(2)} ${bar}`);
+      console.log(
+        `  ${v.name.padEnd(18)} | conf=${v.confidence.toFixed(3)} | price=${v.priceHbar.toFixed(4)} HBAR | score=${v.score.toFixed(2)} ${bar}`,
+      );
     }
 
     console.log('\n─── SELECTED WINNER ───');
@@ -90,12 +92,16 @@ async function main() {
     console.log(JSON.stringify(receipt, null, 2));
 
     if (planOnly) {
-      console.log('\n✅ Plan-only preview complete. This is not mainnet proof and must not be used as a submission receipt.\n');
+      console.log(
+        '\n✅ Plan-only preview complete. This is not mainnet proof and must not be used as a submission receipt.\n',
+      );
       return;
     }
 
     assertMainnetProofReceipt(receipt);
-    console.log('\n✅ Confirmed mainnet proof complete. Paste the JSON receipt above into your competition submission.\n');
+    console.log(
+      '\n✅ Confirmed mainnet proof complete. Paste the JSON receipt above into your competition submission.\n',
+    );
   } catch (err) {
     console.error('\n❌ FAILED:', (err as Error).message);
     if (!planOnly) {
