@@ -14,6 +14,7 @@
 <p align="center">
   <a href="#quick-start">Quick Start</a> ·
   <a href="#architecture">Architecture</a> ·
+  <a href="#payment-sdk">Payment SDK</a> ·
   <a href="#proof-verification">Verification</a> ·
   <a href="#tests">Tests</a> ·
   <a href="#docs">Docs</a>
@@ -108,6 +109,36 @@ npm run demo:live -- \
 | **SMA-Trend** | trend | 0.002 HBAR | moving average, slope |
 
 **Scoring Formula:** `score = confidence × specialty_match / (price_hbar + 0.0001)`
+
+---
+
+## Payment SDK
+
+The `HederaPaymentRail` and `HederaClient` can be used independently of the swarm for any HBAR transfer.
+
+### Programmatic
+
+```ts
+import { HederaPaymentRail } from 'hedera-vnx-paid-swarm';
+
+const rail = new HederaPaymentRail({ requireMainnet: true, maxHbar: 0.01 });
+const result = await rail.transfer('0.0.10294360', 0.005, 'memo');
+
+console.log(result.status);        // 'success' | 'payment_failed'
+console.log(result.transactionId);  // '0.0.12345@1234567890.000000001'
+```
+
+### CLI
+
+```bash
+# Send HBAR from command line
+npm run send -- --to 0.0.10294360 --amount 0.005 --memo "VNX swarm winner"
+
+# Quick balance check
+npx tsx -e "const c=(await import('./src/hedera-client.js')).HederaClient.fromEnv(); console.log((await c?.getBalance())?.hbar + ' HBAR'); c?.close();"
+```
+
+See [`docs/PAYMENT.md`](docs/PAYMENT.md) for full SDK reference including `HederaClient` low-level API, dry-run validation, and safety guarantees.
 
 ---
 
@@ -255,7 +286,8 @@ hedera-vnx-paid-swarm/
 ├── scripts/
 │   ├── vnx-paid-swarm-demo.ts        # CLI demo entrypoint
 │   ├── vnx-paid-swarm-e2e.ts         # End-to-end validation
-│   └── vnx-paid-swarm-verify-proof.ts # CLI proof verifier
+│   ├── vnx-paid-swarm-verify-proof.ts # CLI proof verifier
+│   └── send-hbar.ts                   # Standalone HBAR transfer CLI
 ├── tests/
 │   └── vnx-paid-swarm.test.ts        # 18 passing Jest tests
 ├── assets/
@@ -280,7 +312,8 @@ hedera-vnx-paid-swarm/
 ├── data/
 │   └── receipt-example.json   # Verified example receipt
 ├── docs/
-│   └── HIERO.md              # Hiero compatibility & verification guide
+│   ├── HIERO.md              # Hiero compatibility & verification guide
+│   └── PAYMENT.md            # Payment SDK reference & examples
 ├── .env.example              # Environment variable template
 ├── CHANGELOG.md              # Version history
 ├── CONTRIBUTING.md           # Contribution guidelines

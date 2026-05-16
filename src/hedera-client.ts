@@ -32,6 +32,15 @@ export interface HbarTransferResult {
   consensusTimestampMs: number;
 }
 
+/**
+ * Low-level Hedera client wrapper for HBAR transfers and balance queries.
+ * Handles SDK client setup, operator configuration, and connection cleanup.
+ *
+ * @example
+ * const client = HederaClient.fromEnv();
+ * const result = await client?.transferHbar('0.0.12345', 0.01, 'memo');
+ * client?.close();
+ */
 export class HederaClient {
   private readonly _client: Client;
   private readonly _accountId: AccountId;

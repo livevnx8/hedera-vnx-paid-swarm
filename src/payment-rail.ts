@@ -5,14 +5,25 @@
 
 import { PaymentRail, PaymentResult } from './types.js';
 
+/** Configuration for HederaPaymentRail safety guards */
 export interface PaymentRailConfig {
+  /** If true, throws when HEDERA_NETWORK !== 'mainnet' */
   requireMainnet: boolean;
+  /** Maximum HBAR allowed per transfer */
   maxHbar: number;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type HederaClientType = any;
 
+/**
+ * High-level HBAR payment rail with validation, mainnet enforcement,
+ * and normalized error handling. Lazily initializes the HederaClient
+ * only when a real transfer is requested.
+ *
+ * @example
+ * const rail = new HederaPaymentRail({ requireMainnet: true, maxHbar: 0.01 });
+ * const result = await rail.transfer('0.0.12345', 0.005, 'memo');
+ */
 export class HederaPaymentRail implements PaymentRail {
   private _client: HederaClientType | null = null;
 
@@ -44,6 +55,13 @@ export class HederaPaymentRail implements PaymentRail {
     this._client = client;
   }
 
+  /**
+   * Transfer HBAR to a recipient with validation and error normalization.
+   * @param toAccountId Target Hedera account (e.g. '0.0.12345')
+   * @param amountHbar Amount in HBAR (must be positive and ≤ maxHbar)
+   * @param memo Optional transaction memo
+   * @returns Normalized PaymentResult with status, tx id, and error info
+   */
   async transfer(toAccountId: string, amountHbar: number, memo?: string): Promise<PaymentResult> {
     if (amountHbar <= 0) {
       return this._fail('Amount must be positive', toAccountId, amountHbar);

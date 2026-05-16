@@ -5,6 +5,7 @@
 export * from './types.js';
 export { VnxWorkerAgent, DEFAULT_WORKERS } from './workers.js';
 export { PaidSwarmCoordinator } from './coordinator.js';
+export { HederaClient } from './hedera-client.js';
 export { HederaPaymentRail } from './payment-rail.js';
 export { ProofReceiptBuilder } from './receipt-builder.js';
 export { assertMainnetProofReceipt } from './proof-validation.js';

@@ -47,7 +47,7 @@ async function dryRunE2E() {
   // Step 1: Validate coordinator
   console.log('[1/5] Initializing coordinator with mock payment rail...');
   const mockRail = {
-    async transfer(to: string, amount: number, memo?: string) {
+    async transfer(to: string, amount: number, _memo?: string) {
       return {
         status: 'success' as const,
         transactionId: 'dry-run-mock-tx',
