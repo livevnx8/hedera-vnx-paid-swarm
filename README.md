@@ -30,6 +30,15 @@ Task → 4 VNX Workers Vote → Highest-Score Winner → HBAR Paid on Mainnet �
 
 The VNX Paid Micro-Swarm is a deterministic, competition-grade system that dispatches trading-signal tasks to a swarm of specialized agent workers, selects the highest-confidence winner, pays them in HBAR on Hedera mainnet, and produces a **cryptographically verifiable proof receipt** with SHA-256 hashes and live mirror-node confirmation.
 
+**Features**
+
+- **4 deterministic VNX workers** with keyword-based confidence scoring
+- **HBAR payment rail** with mainnet enforcement and configurable amount caps
+- **Standalone Payment SDK** — send HBAR from CLI or code without swarm logic
+- **SHA-256 cryptographic receipts** with HashScan and mirror-node URLs
+- **Hiero-compatible proof verification** — 5 checks, live mirror-node confirmation
+- **18 passing Jest tests** covering edge cases and tamper detection
+
 **Live Verification**
 
 | Resource | Link / ID |
