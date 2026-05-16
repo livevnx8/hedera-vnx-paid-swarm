@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="900" height="520">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0B1120"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#1E293B"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <rect width="900" height="520" rx="12" fill="url(#bg)" filter="url(#shadow)"/>
+
+  <!-- Title bar -->
+  <rect x="0" y="0" width="900" height="36" rx="12" fill="url(#bar)"/>
+  <rect x="0" y="18" width="900" height="18" fill="url(#bar)"/>
+
+  <!-- Window controls -->
+  <circle cx="24" cy="18" r="6" fill="#EF4444"/>
+  <circle cx="44" cy="18" r="6" fill="#FBBF24"/>
+  <circle cx="64" cy="18" r="6" fill="#34D399"/>
+
+  <text x="450" y="24" text-anchor="middle" fill="#94A3B8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', monospace" font-size="11" font-weight="600">vera@lattice:~/hedera-vnx-paid-swarm — npm run demo:plan</text>
+
+  <!-- Terminal content -->
+  <text x="30" y="65" fill="#64748B" font-family="monospace" font-size="12">$</text>
+  <text x="50" y="65" fill="#F1F5F9" font-family="monospace" font-size="12">npm run demo:plan</text>
+
+  <text x="30" y="90" fill="#22D3EE" font-family="monospace" font-size="13" font-weight="700">╔════════════════════════════════════════════════════════════╗</text>
+  <text x="30" y="110" fill="#22D3EE" font-family="monospace" font-size="13" font-weight="700">║  VNX Paid Micro-Swarm — Competition Demo                  ║</text>
+  <text x="30" y="130" fill="#22D3EE" font-family="monospace" font-size="13" font-weight="700">╚════════════════════════════════════════════════════════════╝</text>
+
+  <text x="30" y="160" fill="#94A3B8" font-family="monospace" font-size="12">  Task:       Predict the HBAR price direction</text>
+  <text x="30" y="178" fill="#94A3B8" font-family="monospace" font-size="12">  Recipient:  0.0.10294360</text>
+  <text x="30" y="196" fill="#94A3B8" font-family="monospace" font-size="12">  Max HBAR:   0.01</text>
+  <text x="30" y="214" fill="#94A3B8" font-family="monospace" font-size="12">  Mode:       PLAN-ONLY (dev)</text>
+
+  <text x="30" y="245" fill="#F1F5F9" font-family="monospace" font-size="12" font-weight="700">  ─── WORKER VOTES ───</text>
+  <text x="30" y="268" fill="#A78BFA" font-family="monospace" font-size="12">    BitLattice-ONNX    | conf=0.900 | price=0.0050 | score=176.47 ██████████████</text>
+  <text x="30" y="286" fill="#34D399" font-family="monospace" font-size="12">    RSI-Momentum       | conf=0.500 | price=0.0030 | score=123.33 ██████████</text>
+  <text x="30" y="304" fill="#FBBF24" font-family="monospace" font-size="12">    BB-Volatility      | conf=0.500 | price=0.0030 | score=96.77  ████████</text>
+  <text x="30" y="322" fill="#22D3EE" font-family="monospace" font-size="12">    SMA-Trend          | conf=0.500 | price=0.0020 | score=166.67 ████████████</text>
+
+  <text x="30" y="355" fill="#F1F5F9" font-family="monospace" font-size="12" font-weight="700">  ─── SELECTED WINNER ───</text>
+  <text x="30" y="378" fill="#22D3EE" font-family="monospace" font-size="12" font-weight="700">    BitLattice-ONNX (prediction)</text>
+  <text x="30" y="396" fill="#94A3B8" font-family="monospace" font-size="12">    Price: 0.0050 HBAR · Score: 176.47</text>
+
+  <text x="30" y="425" fill="#F1F5F9" font-family="monospace" font-size="12" font-weight="700">  ─── RECEIPT ───</text>
+  <text x="30" y="445" fill="#34D399" font-family="monospace" font-size="12">    Task Hash:     d8779ea3...a7d42cba583</text>
+  <text x="30" y="463" fill="#34D399" font-family="monospace" font-size="12">    Decision Hash: 8ce3ed55...edab4918e1e3e7</text>
+  <text x="30" y="481" fill="#94A3B8" font-family="monospace" font-size="12">    Timestamp:     2026-05-16T20:21:13.213Z</text>
+</svg>

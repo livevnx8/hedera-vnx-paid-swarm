@@ -1,10 +1,10 @@
 # Hedera VNX Paid Micro-Swarm
 
 <p align="center">
-  <img src="assets/badge-swarm.svg" alt="VNX Swarm Protocol"/>
-  <img src="assets/badge-hedera.svg" alt="Verified on Hedera Mainnet"/>
-  <img src="assets/badge-hiero.svg" alt="Hiero Compatible"/>
-  <img src="assets/badge-tests.svg" alt="18 Tests Passing"/>
+  <img src="assets/badge-swarm.png" alt="VNX Swarm Protocol"/>
+  <img src="assets/badge-hedera.png" alt="Verified on Hedera Mainnet"/>
+  <img src="assets/badge-hiero.png" alt="Hiero Compatible"/>
+  <img src="assets/badge-tests.png" alt="18 Tests Passing"/>
 </p>
 
 <p align="center">
@@ -81,11 +81,11 @@ npm run demo:live -- \
 ## Architecture
 
 <p align="center">
-  <img src="assets/architecture.svg" alt="Architecture Diagram" width="1000"/>
+  <img src="assets/architecture.png" alt="Architecture Diagram" width="1000"/>
 </p>
 
 <p align="center">
-  <img src="assets/workflow.svg" alt="Execution Flow" width="1000"/>
+  <img src="assets/workflow.png" alt="Execution Flow" width="1000"/>
 </p>
 
 ### Component Reference
@@ -259,12 +259,24 @@ hedera-vnx-paid-swarm/
 ├── tests/
 │   └── vnx-paid-swarm.test.ts        # 18 passing Jest tests
 ├── assets/
-│   ├── architecture.svg      # System architecture diagram
-│   ├── workflow.svg          # Execution flow diagram
-│   ├── badge-swarm.svg       # VNX Swarm Protocol badge
-│   ├── badge-hedera.svg      # Verified on Hedera Mainnet badge
-│   ├── badge-hiero.svg       # Hiero Compatible badge
-│   └── badge-tests.svg       # 18 Tests Passing badge
+│   ├── architecture.svg      # System architecture diagram (source)
+│   ├── architecture.png      # System architecture diagram (rendered)
+│   ├── workflow.svg          # Execution flow diagram (source)
+│   ├── workflow.png          # Execution flow diagram (rendered)
+│   ├── banner-hero.svg       # GitHub social preview banner (source)
+│   ├── banner-hero.png       # GitHub social preview banner (rendered)
+│   ├── terminal-demo.svg     # CLI demo screenshot (source)
+│   ├── terminal-demo.png     # CLI demo screenshot (rendered)
+│   ├── leaderboard.svg       # Worker score leaderboard (source)
+│   ├── leaderboard.png       # Worker score leaderboard (rendered)
+│   ├── badge-swarm.svg       # VNX Swarm Protocol badge (source)
+│   ├── badge-swarm.png       # VNX Swarm Protocol badge (rendered)
+│   ├── badge-hedera.svg      # Verified on Hedera Mainnet badge (source)
+│   ├── badge-hedera.png      # Verified on Hedera Mainnet badge (rendered)
+│   ├── badge-hiero.svg       # Hiero Compatible badge (source)
+│   ├── badge-hiero.png       # Hiero Compatible badge (rendered)
+│   ├── badge-tests.svg       # 18 Tests Passing badge (source)
+│   └── badge-tests.png       # 18 Tests Passing badge (rendered)
 ├── data/
 │   └── receipt-example.json   # Verified example receipt
 ├── docs/
