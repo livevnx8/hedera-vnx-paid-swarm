@@ -9,7 +9,7 @@ All notable changes to this project are documented in this file.
 - Hedera mainnet payment rail with enforced mainnet validation
 - SHA-256 cryptographic receipt builder with HashScan + mirror-node URLs
 - Hiero-compatible proof verifier with live mirror-node transaction confirmation
-- CLI scripts: demo, end-to-end validation, proof verification
+- CLI scripts: demo, end-to-end validation, proof verification, standalone HBAR transfer
 - 18 comprehensive Jest tests covering all core logic paths
 - Professional visual assets: architecture diagram, workflow diagram, badges
 - Full documentation: README, HIERO compatibility guide, CONTRIBUTING guide

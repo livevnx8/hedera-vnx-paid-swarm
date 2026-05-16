@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <strong>Deterministic agent swarm with Hedera mainnet HBAR payment and cryptographically verifiable proof receipts.</strong>
+  <strong>Deterministic agent swarm with Hedera mainnet HBAR payment, cryptographically verifiable proof receipts, and a standalone Payment SDK for any HBAR transfer.</strong>
 </p>
 
 <p align="center">
