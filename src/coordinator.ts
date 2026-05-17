@@ -25,7 +25,7 @@ export class PaidSwarmCoordinator {
     private _paymentRail: PaymentRail,
   ) {}
 
-  async run(taskDescription: string, recipient: string): Promise<SwarmReceipt> {
+  async run(taskDescription: string): Promise<SwarmReceipt> {
     const builder = new ProofReceiptBuilder();
 
     // 1. Dispatch task to all workers
@@ -43,6 +43,7 @@ export class PaidSwarmCoordinator {
         confidence: r.confidence,
         priceHbar: r.priceHbar,
         evidence: r.evidence,
+        paymentAccount: r.paymentAccount,
         score,
       };
     });
@@ -60,7 +61,8 @@ export class PaidSwarmCoordinator {
         status: 'skipped_plan_only' as const,
         network: 'plan-only',
         amountHbar: winner.priceHbar,
-        recipient,
+        recipient: winner.paymentAccount,
+        consensusTimestampMs: 0,
       };
       return builder.build(taskDescription, scoredVotes, winner, payment);
     }
@@ -71,7 +73,7 @@ export class PaidSwarmCoordinator {
         status: 'payment_failed' as const,
         network: process.env['HEDERA_NETWORK'] ?? 'unknown',
         amountHbar: 0,
-        recipient,
+        recipient: '',
         error: 'No eligible worker: all quotes exceed max-hbar cap',
       };
       return builder.build(taskDescription, scoredVotes, scoredVotes[0], payment);
@@ -82,7 +84,7 @@ export class PaidSwarmCoordinator {
 
     // 7. Execute payment
     const memo = `VNX-swarm:${winner.workerId}:${taskDescription.slice(0, 50)}`;
-    const payment = await this._paymentRail.transfer(recipient, winner.priceHbar, memo);
+    const payment = await this._paymentRail.transfer(winner.paymentAccount, winner.priceHbar, memo);
 
     // 8. Build receipt
     return builder.build(taskDescription, scoredVotes, winner, payment);

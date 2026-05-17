@@ -79,7 +79,7 @@ export class VnxPredictionFirehose {
 
     for (let i = 0; i < taskCount; i++) {
       const task = generateTask(i);
-      const receipt = await this._coordinator.run(task, '0.0.10294360');
+      const receipt = await this._coordinator.run(task);
       receipts.push(receipt);
       taskDescriptions.push(task);
 

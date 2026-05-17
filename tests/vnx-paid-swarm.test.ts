@@ -44,7 +44,7 @@ class MockPaymentRail implements PaymentRail {
 
 describe('VnxWorkerAgent', () => {
   it('returns deterministic confidence for known keywords', () => {
-    const w = new VnxWorkerAgent('test', 'Test', 'prediction', 0.01, 'rec');
+    const w = new VnxWorkerAgent('test', 'Test', 'prediction', 0.01, '0.0.1', 'rec');
     const r1 = w.execute('Find the best price signal');
     const r2 = w.execute('Find the best price signal');
     expect(r1.confidence).toBe(r2.confidence);
@@ -52,8 +52,8 @@ describe('VnxWorkerAgent', () => {
   });
 
   it('gives higher confidence for matching specialty keywords', () => {
-    const pred = new VnxWorkerAgent('p', 'P', 'prediction', 0.01, 'r');
-    const mom = new VnxWorkerAgent('m', 'M', 'momentum', 0.01, 'r');
+    const pred = new VnxWorkerAgent('p', 'P', 'prediction', 0.01, '0.0.2', 'r');
+    const mom = new VnxWorkerAgent('m', 'M', 'momentum', 0.01, '0.0.3', 'r');
     const task = 'RSI momentum divergence analysis';
     expect(mom.execute(task).confidence).toBeGreaterThan(pred.execute(task).confidence);
   });
@@ -69,7 +69,6 @@ describe('PaidSwarmCoordinator — Winner Selection', () => {
     );
     const receipt = await coord.run(
       'Predict the HBAR price direction and forecast the signal',
-      '0.0.999',
     );
 
     expect(receipt.selected.score).toBeGreaterThan(0);
@@ -88,7 +87,7 @@ describe('PaidSwarmCoordinator — Winner Selection', () => {
       { maxHbar: 0.001, planOnly: false },
       rail,
     );
-    const receipt = await coord.run('Any task', '0.0.999');
+    const receipt = await coord.run('Any task');
 
     expect(receipt.payment.status).toBe('payment_failed');
     expect(receipt.payment.error).toContain('No eligible worker');
@@ -97,8 +96,12 @@ describe('PaidSwarmCoordinator — Winner Selection', () => {
 
   it('skips payment in plan-only mode', async () => {
     const rail = new MockPaymentRail();
-    const coord = new PaidSwarmCoordinator(DEFAULT_WORKERS, { maxHbar: 0.1, planOnly: true }, rail);
-    const receipt = await coord.run('Any task', '0.0.999');
+    const coord = new PaidSwarmCoordinator(
+      DEFAULT_WORKERS,
+      { maxHbar: 0.1, planOnly: true },
+      rail,
+    );
+    const receipt = await coord.run('Any task');
 
     expect(receipt.payment.status).toBe('skipped_plan_only');
     expect(receipt.payment.network).toBe('plan-only');
@@ -113,7 +116,7 @@ describe('PaidSwarmCoordinator — Winner Selection', () => {
       { maxHbar: 0.1, planOnly: false },
       rail,
     );
-    const receipt = await coord.run('Any task', '0.0.999');
+    const receipt = await coord.run('Any task');
 
     expect(receipt.payment.status).toBe('payment_failed');
     expect(receipt.payment.error).toBe('Mock transfer failure');
@@ -149,6 +152,7 @@ describe('ProofReceiptBuilder', () => {
         priceHbar: 0.01,
         evidence: 'e',
         score: 10,
+        paymentAccount: '0.0.1',
       },
     ];
     const payment: PaymentResult = {
@@ -180,6 +184,7 @@ describe('ProofReceiptBuilder', () => {
         priceHbar: 0.01,
         evidence: 'e',
         score: 10,
+        paymentAccount: '0.0.1',
       },
     ];
     const payment: PaymentResult = {
@@ -216,6 +221,7 @@ describe('ProofReceiptBuilder', () => {
         priceHbar: 0.01,
         evidence: 'e',
         score: 10,
+        paymentAccount: '0.0.1',
       },
     ];
     const payment: PaymentResult = {
@@ -245,6 +251,7 @@ describe('ProofReceiptBuilder', () => {
       priceHbar: w.priceHbar,
       evidence: 'e',
       score: 1,
+      paymentAccount: w.id,
     }));
     const payment: PaymentResult = {
       status: 'skipped_plan_only',
@@ -277,9 +284,10 @@ describe('Mainnet proof validation', () => {
         confidence: 0.7,
         priceHbar: 0.01,
         score: 10,
+        paymentAccount: '0.0.1',
       },
     ],
-    selected: { workerId: 'a', name: 'A', specialty: 'prediction', priceHbar: 0.01, score: 10 },
+    selected: { workerId: 'a', name: 'A', specialty: 'prediction', priceHbar: 0.01, score: 10, paymentAccount: '0.0.1' },
     payment: {
       status: 'success',
       transactionId: '0.0.123@1778951290.123456789',
@@ -364,6 +372,7 @@ describe('Swarm proof verifier', () => {
         priceHbar: 0.005,
         evidence: 'Matched prediction keywords',
         score: 176.47058823529412,
+        paymentAccount: '0.0.10294360',
       },
     ];
     return builder.build(task, votes, votes[0], {
@@ -451,6 +460,7 @@ describe('HieroVerifyVnxAgent', () => {
         recommendation: 'Use ONNX primary signal',
         confidence: 0.9,
         priceHbar: 0.005,
+        paymentAccount: '0.0.10294360',
         evidence: 'Matched prediction keywords',
         score: 176.47058823529412,
       },

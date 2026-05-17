@@ -187,6 +187,96 @@ See [`docs/PAYMENT.md`](docs/PAYMENT.md) for full SDK reference including `Heder
 
 ---
 
+## SDK Client
+
+One-liner setup for programmatic usage:
+
+```typescript
+import { VnxSwarmClient } from '@vnx/swarm-client';
+
+const client = new VnxSwarmClient({
+  accountId: '0.0.xxx',
+  privateKey: '...',
+  network: 'mainnet',
+  maxHbar: 0.01,
+});
+
+const receipt = await client.runTask('Predict BTC direction');
+console.log(receipt.selected.name, receipt.payment);
+```
+
+The `VnxSwarmClient` handles credential loading, coordinator wiring, and auto-records every task to the ledger.
+
+---
+
+## Agent Registry
+
+Dynamically register agents instead of hardcoding:
+
+```typescript
+import { AgentRegistry } from '@vnx/swarm-client';
+
+const registry = new AgentRegistry();
+registry.register({
+  id: 'my-onnx-bot',
+  name: 'ONNX Bot',
+  specialty: 'prediction',
+  priceHbar: 0.005,
+  paymentAccount: '0.0.999999',
+  endpoint: 'http://localhost:8000/predict',
+});
+
+const client = new VnxSwarmClient({
+  accountId: '0.0.xxx',
+  privateKey: '...',
+  registry,
+});
+```
+
+---
+
+## Agent Ledger & Leaderboard
+
+Every completed task updates a local reputation ledger:
+
+```bash
+npm run leaderboard
+```
+
+Sample output:
+
+```
+  #  | ID                | Name                | Reputation | Tasks | Won | Paid (HBAR) | Streak
+  --------------------------------------------------------------------------------------------------------------
+  1  | onnx-primary      | BitLattice-ONNX     | 0.823      | 12    | 8   | 0.040       | 3
+  2  | momentum-alpha    | Momentum Alpha      | 0.612      | 10    | 4   | 0.020       | 0
+```
+
+Formula: `reputation = 0.4×accuracy + 0.3×reliability + 0.2×volume + 0.1×recency`
+
+Persist to disk:
+
+```typescript
+import { writeFileSync } from 'fs';
+writeFileSync('ledger.json', JSON.stringify(client.ledger.export()));
+```
+
+---
+
+## Typed Errors
+
+All errors extend `SwarmError` with a `code` field:
+
+| Class | Code | When |
+|-------|------|------|
+| `SwarmError` | `CREDENTIALS_MISSING` | Missing `accountId` or `privateKey` |
+| `PaymentError` | `PAYMENT_FAILED` | HBAR transfer fails or exceeds cap |
+| `VerificationError` | `VERIFICATION_FAILED` | Mirror node cannot confirm transaction |
+| `NetworkError` | `NETWORK_ERROR` | Hedera node unreachable (may be retryable) |
+| `AgentError` | `AGENT_ERROR` | Worker execution or registry failure |
+
+---
+
 ## Why This Works For Hedera
 
 This package is designed around Hedera’s strengths: low-cost HBAR transfers, stable account IDs, public transaction IDs, and mirror-node verification.

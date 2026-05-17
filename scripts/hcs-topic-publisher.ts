@@ -23,6 +23,7 @@ const program = new Command()
   .name('hcs-topic-publisher')
   .description('Publish swarm proof events to an HCS topic')
   .option('--live', 'Submit real HCS messages (requires credentials)', false)
+  .option('--dry-run', 'Log to console without network calls (default)', true)
   .option('--topic <id>', 'HCS topic ID', '0.0.10416185')
   .option('--messages <n>', 'Number of messages to publish', '1')
   .option('--max-messages <n>', 'Maximum messages allowed', '10')
@@ -78,7 +79,19 @@ async function main(): Promise<void> {
     maxHbar: 0.01,
     planOnly: true,
   }, mockPaymentRail);
-  const receipt = await coordinator.run(task, '0.0.10294360');
+  const receipt = await coordinator.run(task);
+
+  if (isLive) {
+    const accountId = process.env.HEDERA_ACCOUNT_ID;
+    const privateKey = process.env.HEDERA_PRIVATE_KEY;
+    if (!accountId || !privateKey) {
+      console.error(
+        'Error: --live requires HEDERA_ACCOUNT_ID and HEDERA_PRIVATE_KEY environment variables.'
+      );
+      console.error('Set them in your .env file or export them in your shell.');
+      process.exit(1);
+    }
+  }
 
   const publisher = isLive
     ? new HcsTopicPublisher({

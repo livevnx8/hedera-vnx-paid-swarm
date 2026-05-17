@@ -97,7 +97,7 @@ export async function runLocalBenchmarks(
           { maxHbar: 0.01, planOnly: true },
           new BenchmarkPaymentRail(),
         );
-        await coordinator.run(task, '0.0.10294360');
+        await coordinator.run(task);
       }),
       await measureCase('receipt_build_sha256', iterations, () => {
         new ProofReceiptBuilder().build(task, votes, winner, payment);

@@ -27,12 +27,13 @@ export class ProofReceiptBuilder {
       network: payment.network,
       timestamp,
       taskHash,
-      votes: votes.map(v => ({
+      votes: votes.map((v) => ({
         workerId: v.workerId,
         name: v.name,
         specialty: v.specialty,
         confidence: v.confidence,
         priceHbar: v.priceHbar,
+        paymentAccount: v.paymentAccount,
         score: v.score ?? 0,
       })),
       selected: {
@@ -40,6 +41,7 @@ export class ProofReceiptBuilder {
         name: selected.name,
         specialty: selected.specialty,
         priceHbar: selected.priceHbar,
+        paymentAccount: selected.paymentAccount,
         score: selected.score ?? 0,
       },
       payment,

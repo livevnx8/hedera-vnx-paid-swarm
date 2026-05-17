@@ -23,7 +23,8 @@
     "vnx-prediction-firehose": "./scripts/vnx-prediction-firehose.ts",
     "hcs-topic-publisher": "./scripts/hcs-topic-publisher.ts",
     "hcs-verify-agent": "./scripts/hcs-verify-agent.ts",
-    "send-hbar": "./scripts/send-hbar.ts"
+    "send-hbar": "./scripts/send-hbar.ts",
+    "vnx-leaderboard": "./scripts/leaderboard.ts"
   },
   "scripts": {
     "build": "tsc",
@@ -40,6 +41,7 @@
     "demo:hcs": "tsx scripts/hcs-topic-publisher.ts",
     "verify:hcs": "tsx scripts/hcs-verify-agent.ts",
     "send": "tsx scripts/send-hbar.ts",
+    "leaderboard": "tsx scripts/leaderboard.ts",
     "lint": "eslint src/ scripts/ tests/",
     "lint:fix": "eslint src/ scripts/ tests/ --fix",
     "format": "prettier --write src/ scripts/ tests/",

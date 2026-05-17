@@ -58,7 +58,7 @@ async function main() {
   const coordinator = new PaidSwarmCoordinator(DEFAULT_WORKERS, { maxHbar, planOnly }, paymentRail);
 
   try {
-    const receipt = await coordinator.run(task, recipient);
+    const receipt = await coordinator.run(task);
 
     console.log('─── WORKER VOTES ───');
     for (const v of receipt.votes) {

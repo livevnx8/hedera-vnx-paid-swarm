@@ -47,7 +47,6 @@ async function dryRunE2E() {
   console.log('╚════════════════════════════════════════════════════════════╝\n');
 
   const task = opts.task as string;
-  const recipient = opts.recipient as string;
   const maxHbar = parseFloat(opts.maxHbar as string);
 
   // Step 1: Validate coordinator
@@ -69,7 +68,7 @@ async function dryRunE2E() {
 
   // Step 2: Run swarm
   console.log('[2/5] Running swarm vote + selection...');
-  const receipt = await coord.run(task, recipient);
+  const receipt = await coord.run(task);
   console.log(
     `      ✅ Winner: ${receipt.selected.name} (score=${receipt.selected.score.toFixed(2)})`,
   );
@@ -163,7 +162,7 @@ async function liveE2E() {
     paymentRail,
   );
 
-  const receipt = await coordinator.run(opts.task as string, opts.recipient as string);
+  const receipt = await coordinator.run(opts.task as string);
   assertMainnetProofReceipt(receipt);
 
   console.log('\n─── LIVE RECEIPT ───');

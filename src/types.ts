@@ -15,6 +15,7 @@ export interface WorkerVote {
   recommendation: string;
   confidence: number;
   priceHbar: number;
+  paymentAccount: string;
   evidence: string;
   score?: number;
 }
@@ -26,6 +27,7 @@ export interface WorkerResult {
   recommendation: string;
   confidence: number;
   priceHbar: number;
+  paymentAccount: string;
   evidence: string;
 }
 
@@ -50,6 +52,7 @@ export interface SwarmReceipt {
     specialty: string;
     confidence: number;
     priceHbar: number;
+    paymentAccount: string;
     score: number;
   }>;
   selected: {
@@ -57,6 +60,7 @@ export interface SwarmReceipt {
     name: string;
     specialty: string;
     priceHbar: number;
+    paymentAccount: string;
     score: number;
   };
   payment: PaymentResult;
