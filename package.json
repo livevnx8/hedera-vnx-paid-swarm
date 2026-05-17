@@ -32,6 +32,7 @@
     "e2e": "tsx scripts/vnx-paid-swarm-e2e.ts",
     "e2e:live": "tsx scripts/vnx-paid-swarm-e2e.ts --live",
     "verify": "tsx scripts/vnx-paid-swarm-verify-proof.ts",
+    "benchmark": "tsx scripts/benchmark.ts",
     "send": "tsx scripts/send-hbar.ts",
     "lint": "eslint src/ scripts/ tests/",
     "lint:fix": "eslint src/ scripts/ tests/ --fix",

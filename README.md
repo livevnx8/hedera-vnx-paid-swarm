@@ -8,7 +8,7 @@
   <img src="assets/badge-swarm.png" alt="VNX Swarm Protocol"/>
   <img src="assets/badge-hedera.png" alt="Verified on Hedera Mainnet"/>
   <img src="assets/badge-hiero.png" alt="Hiero Compatible"/>
-  <img src="assets/badge-tests.png" alt="18 Tests Passing"/>
+  <img src="assets/badge-tests.svg" alt="23 Tests Passing"/>
 </p>
 
 <p align="center">
@@ -19,7 +19,8 @@
   <a href="#quick-start">Quick Start</a> ·
   <a href="#architecture">Architecture</a> ·
   <a href="#payment-sdk">Payment SDK</a> ·
-  <a href="#proof-verification">Verification</a> ·
+  <a href="#hiero-verify-vnx-agent">Hiero Verify Agent</a> ·
+  <a href="#benchmarks">Benchmarks</a> ·
   <a href="#tests">Tests</a> ·
   <a href="#docs">Docs</a>
 </p>
@@ -40,8 +41,8 @@ The VNX Paid Micro-Swarm is a deterministic, competition-grade system that dispa
 - **HBAR payment rail** with mainnet enforcement and configurable amount caps
 - **Standalone Payment SDK** — send HBAR from CLI or code without swarm logic
 - **SHA-256 cryptographic receipts** with HashScan and mirror-node URLs
-- **Hiero-compatible proof verification** — 5 checks, live mirror-node confirmation
-- **18 passing Jest tests** covering edge cases and tamper detection
+- **Hiero Verify VNX Agent** — 5 independent checks with live mirror-node confirmation
+- **23 passing Jest tests** covering edge cases, tamper detection, verifier-agent verdicts, and benchmark invariants
 
 **Live Verification**
 
@@ -64,7 +65,7 @@ The VNX Paid Micro-Swarm is a deterministic, competition-grade system that dispa
 ### Install
 
 ```bash
-git clone https://github.com/your-org/hedera-vnx-paid-swarm.git
+git clone https://github.com/livevnx8/hedera-vnx-paid-swarm.git
 cd hedera-vnx-paid-swarm
 npm install
 ```
@@ -117,6 +118,31 @@ npm run demo:live -- \
 | `HederaPaymentRail` | [`src/payment-rail.ts`](src/payment-rail.ts) | Wraps `HederaClient`; enforces mainnet, validates amount cap |
 | `ProofReceiptBuilder` | [`src/receipt-builder.ts`](src/receipt-builder.ts) | SHA-256 hashed JSON receipt with HashScan + mirror-node URLs |
 | `ProofVerifier` | [`src/proof-verifier.ts`](src/proof-verifier.ts) | Recomputes hashes and verifies transactions via Hiero mirror node |
+| `HieroVerifyVnxAgent` | [`src/hiero-verify-agent.ts`](src/hiero-verify-agent.ts) | Agent-style proof verdict for saved receipts |
+| `BenchmarkRunner` | [`src/benchmark.ts`](src/benchmark.ts) | Reproducible local benchmarks for deterministic package operations |
+
+### NPM Package Architecture
+
+```text
+hedera-vnx-paid-swarm
+├─ Public API
+│  ├─ VnxWorkerAgent / DEFAULT_WORKERS
+│  ├─ PaidSwarmCoordinator
+│  ├─ HederaPaymentRail / HederaClient
+│  ├─ ProofReceiptBuilder
+│  ├─ HieroVerifyVnxAgent
+│  └─ runLocalBenchmarks
+├─ CLI Tools
+│  ├─ vnx-swarm-demo
+│  ├─ vnx-swarm-e2e
+│  ├─ vnx-swarm-verify
+│  ├─ send-hbar
+│  └─ npm run benchmark
+└─ Proof Data
+   ├─ SHA-256 task and decision hashes
+   ├─ HashScan transaction URL
+   └─ Hedera/Hiero mirror-node confirmation
+```
 
 ### Worker Swarm
 
@@ -161,6 +187,23 @@ See [`docs/PAYMENT.md`](docs/PAYMENT.md) for full SDK reference including `Heder
 
 ---
 
+## Why This Works For Hedera
+
+This package is designed around Hedera’s strengths: low-cost HBAR transfers, stable account IDs, public transaction IDs, and mirror-node verification.
+
+| Hedera capability | How the package uses it |
+|-------------------|-------------------------|
+| **HBAR transfers** | `HederaClient.transferHbar()` executes the winner payment through `@hashgraph/sdk` |
+| **Mainnet account model** | Receipts preserve payer/recipient style account IDs such as `0.0.10294360` |
+| **Transaction IDs** | Successful payments include `0.0.x@seconds.nanos` transaction IDs for explorer proof |
+| **HashScan** | `explorerUrl` links the receipt to a public Hedera mainnet transaction page |
+| **Hiero mirror node** | `HieroVerifyVnxAgent` confirms the transaction via `mainnet-public.mirrornode.hedera.com` |
+| **Deterministic audit trail** | Task hash and decision hash make the off-chain agent decision reproducible and tamper-evident |
+
+The live Hedera transaction proves settlement. The receipt hashes prove which deterministic worker decision caused that settlement.
+
+---
+
 ## Receipt Schema
 
 ```json
@@ -192,9 +235,20 @@ See [`data/receipt-example.json`](data/receipt-example.json) for a full verified
 
 ---
 
-## Proof Verification
+## Hiero Verify VNX Agent
 
-### CLI
+The **Hiero Verify VNX Agent** is the verification worker for the swarm. It reads a saved receipt, recomputes the local hashes, checks the proof status, validates the HashScan link, and confirms the transaction through the Hedera/Hiero mirror node.
+
+| Field | Value |
+|-------|-------|
+| Agent ID | `hiero-verify-vnx` |
+| Agent Name | `Hiero Verify VNX Agent` |
+| Specialty | `hiero-mainnet-proof` |
+| Verdicts | `accepted` or `rejected` |
+
+### Agent CLI
+
+Run the verifier agent against a saved receipt:
 
 ```bash
 npm run verify -- \
@@ -205,26 +259,32 @@ npm run verify -- \
 **Expected Output:**
 
 ```text
+Hiero Verify VNX Agent
+Verdict:   ACCEPTED
+Summary:   5/5 checks passed
+
 PASS  TASK HASH
 PASS  DECISION HASH
 PASS  MAINNET PROOF STATUS
 PASS  HASHSCAN URL
 PASS  MIRROR NODE TRANSACTION
 
-Proof verification passed.
+Hiero Verify VNX Agent accepted this proof.
 ```
 
-### Programmatic
+### Programmatic Agent
 
 ```typescript
-import { verifySwarmProof } from 'hedera-vnx-paid-swarm';
+import { HieroVerifyVnxAgent } from 'hedera-vnx-paid-swarm';
 
-const result = await verifySwarmProof(receipt, taskDescription);
-// result.ok: boolean
-// result.checks: Array<{ name, ok, detail }>
+const agent = new HieroVerifyVnxAgent();
+const report = await agent.verify(receipt, taskDescription);
+
+console.log(report.verdict); // 'accepted' | 'rejected'
+console.log(report.summary); // '5/5 checks passed for transaction ...'
 ```
 
-The verifier performs **5 independent checks**:
+The agent performs **5 independent checks**:
 
 1. **Task Hash** — Recomputes SHA-256 of the original task description
 2. **Decision Hash** — Recomputes `SHA-256(workerId:score:txId:taskHash)`
@@ -236,13 +296,47 @@ See [`docs/HIERO.md`](docs/HIERO.md) for the full proof standard and mirror-node
 
 ---
 
+## Benchmarks
+
+Benchmarks measure local deterministic package operations only. They do **not** claim Hedera network settlement latency or public mirror-node latency.
+
+Run:
+
+```bash
+npm run benchmark
+```
+
+Latest local result from this repo:
+
+```text
+VNX Paid Swarm Local Benchmarks
+Node: v20.20.2
+Iterations: 1000
+
+| Case | Runs | Avg ms | Min ms | Max ms | Ops/sec |
+|------|------|--------|--------|--------|---------|
+| worker_selection_plan_only | 1000 | 0.0112 | 0.0060 | 0.3693 | 88975.28 |
+| receipt_build_sha256 | 1000 | 0.0024 | 0.0017 | 0.0763 | 416466.94 |
+| hiero_verify_agent_local | 1000 | 0.0034 | 0.0022 | 0.4281 | 295338.70 |
+```
+
+Benchmark cases:
+
+| Case | What it measures |
+|------|------------------|
+| `worker_selection_plan_only` | Deterministic swarm vote, score, winner selection, and plan-only receipt path |
+| `receipt_build_sha256` | SHA-256 task/decision receipt construction |
+| `hiero_verify_agent_local` | Hiero Verify VNX Agent checks with mirror-node result injected locally |
+
+---
+
 ## Tests
 
 ```bash
 npm test
 ```
 
-**18 passing tests** covering:
+**23 passing tests** covering:
 
 - Worker confidence determinism and specialty keyword matching
 - Winner selection by highest score
@@ -254,6 +348,8 @@ npm test
 - HashScan + mirror-node URL generation
 - Hiero mirror-node transaction verification
 - Tampered hash detection
+- Hiero Verify VNX Agent accepted/rejected verdicts
+- Benchmark output shape, numeric timing fields, and invalid input handling
 
 ```bash
 npm run test:coverage   # coverage report
@@ -284,6 +380,7 @@ npm run test:watch      # watch mode
 | E2E Dry | `npm run e2e` | Structural validation, no network calls |
 | E2E Live | `npm run e2e:live` | Full live mainnet end-to-end run |
 | Verify | `npm run verify -- --receipt <file> --task <text>` | Verify a saved receipt |
+| Benchmark | `npm run benchmark` | Measure deterministic local package operations |
 
 ---
 
@@ -299,6 +396,8 @@ hedera-vnx-paid-swarm/
 │   ├── receipt-builder.ts    # ProofReceiptBuilder — SHA-256 receipts
 │   ├── proof-validation.ts   # assertMainnetProofReceipt guards
 │   ├── proof-verifier.ts     # verifySwarmProof + Hiero mirror-node lookup
+│   ├── hiero-verify-agent.ts # Hiero Verify VNX Agent wrapper
+│   ├── benchmark.ts          # Local deterministic benchmark runner
 │   ├── proof-urls.ts         # HashScan + mirror-node URL builders
 │   ├── hedera-client.ts      # Minimal HederaClient wrapper
 │   └── index.ts              # Barrel exports
@@ -306,9 +405,10 @@ hedera-vnx-paid-swarm/
 │   ├── vnx-paid-swarm-demo.ts        # CLI demo entrypoint
 │   ├── vnx-paid-swarm-e2e.ts         # End-to-end validation
 │   ├── vnx-paid-swarm-verify-proof.ts # CLI proof verifier
+│   ├── benchmark.ts                  # Benchmark CLI
 │   └── send-hbar.ts                   # Standalone HBAR transfer CLI
 ├── tests/
-│   └── vnx-paid-swarm.test.ts        # 18 passing Jest tests
+│   └── vnx-paid-swarm.test.ts        # 23 passing Jest tests
 ├── assets/
 │   ├── architecture.svg      # System architecture diagram (source)
 │   ├── architecture.png      # System architecture diagram (rendered)
@@ -326,8 +426,8 @@ hedera-vnx-paid-swarm/
 │   ├── badge-hedera.png      # Verified on Hedera Mainnet badge (rendered)
 │   ├── badge-hiero.svg       # Hiero Compatible badge (source)
 │   ├── badge-hiero.png       # Hiero Compatible badge (rendered)
-│   ├── badge-tests.svg       # 18 Tests Passing badge (source)
-│   └── badge-tests.png       # 18 Tests Passing badge (rendered)
+│   ├── badge-tests.svg       # Test badge source
+│   └── badge-tests.png       # Test badge rendered
 ├── data/
 │   └── receipt-example.json   # Verified example receipt
 ├── docs/

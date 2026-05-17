@@ -1,6 +1,26 @@
 # Hiero/Hedera Proof Verification
 
-This document describes how `hedera-vnx-paid-swarm` uses the Hiero ecosystem for verifiable mainnet proof.
+This document describes how `hedera-vnx-paid-swarm` uses the Hiero ecosystem for verifiable mainnet proof through the **Hiero Verify VNX Agent**.
+
+## Hiero Verify VNX Agent
+
+The verifier is exposed as a first-class VNX agent:
+
+| Field | Value |
+|-------|-------|
+| Agent ID | `hiero-verify-vnx` |
+| Agent Name | `Hiero Verify VNX Agent` |
+| Specialty | `hiero-mainnet-proof` |
+| Verdicts | `accepted` or `rejected` |
+
+The agent wraps the deterministic `verifySwarmProof()` function and returns an agent-style report with:
+
+- verifier identity
+- accepted/rejected verdict
+- pass/fail check list
+- HashScan proof URL
+- mirror-node proof URL
+- transaction ID and proof status
 
 ## Mirror Node API
 
@@ -42,6 +62,19 @@ A receipt is accepted as mainnet proof only when all fields below are present:
 
 ## API Usage
 
+### HieroVerifyVnxAgent
+
+```typescript
+import { HieroVerifyVnxAgent } from 'hedera-vnx-paid-swarm';
+
+const agent = new HieroVerifyVnxAgent();
+const report = await agent.verify(receipt, taskDescription);
+
+console.log(report.agentName); // "Hiero Verify VNX Agent"
+console.log(report.verdict);   // "accepted" | "rejected"
+console.log(report.summary);   // "5/5 checks passed for transaction ..."
+```
+
 ### verifySwarmProof()
 
 ```typescript
@@ -59,6 +92,8 @@ Checks performed:
 3. **mainnet_proof_status** — `proofStatus === "mainnet_confirmed"`
 4. **hashscan_url** — `explorerUrl` correctly derived from transaction ID
 5. **mirror_node_transaction** — Live lookup to `mainnet-public.mirrornode.hedera.com` confirms SUCCESS
+
+The agent uses these same checks and converts the result into a VNX-agent verdict.
 
 ### fetchMirrorTransactionFromHiero()
 

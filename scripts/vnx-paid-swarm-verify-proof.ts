@@ -10,7 +10,7 @@
 
 import { readFile } from 'fs/promises';
 import { Command } from 'commander';
-import { verifySwarmProof } from '../src/proof-verifier.js';
+import { HieroVerifyVnxAgent } from '../src/hiero-verify-agent.js';
 import { SwarmReceipt } from '../src/types.js';
 
 const program = new Command()
@@ -35,9 +35,7 @@ async function main() {
   const raw = await readFile(opts.receipt, 'utf8');
   const receipt = JSON.parse(raw) as SwarmReceipt;
 
-  const result = await verifySwarmProof(
-    receipt,
-    opts.task,
+  const agent = new HieroVerifyVnxAgent(
     opts.skipMirror
       ? {
           fetchMirrorTransaction: async transactionId => ({
@@ -48,25 +46,31 @@ async function main() {
         }
       : undefined,
   );
+  const report = await agent.verify(receipt, opts.task);
 
-  console.log('\nVNX Paid Swarm Proof Verification\n');
-  for (const check of result.checks) {
+  console.log(`\n${report.agentName}`);
+  console.log(`Agent ID:  ${report.agentId}`);
+  console.log(`Specialty: ${report.specialty}`);
+  console.log(`Verdict:   ${report.verdict.toUpperCase()}`);
+  console.log(`Summary:   ${report.summary}\n`);
+
+  for (const check of report.checks) {
     const label = check.name.replaceAll('_', ' ').toUpperCase().padEnd(24);
     console.log(`${check.ok ? 'PASS' : 'FAIL'}  ${label} ${check.detail}`);
   }
 
   console.log('\nReceipt:');
-  console.log(`  Transaction ID: ${receipt.payment.transactionId ?? 'missing'}`);
-  console.log(`  Proof Status:   ${receipt.proofStatus}`);
-  console.log(`  HashScan:       ${receipt.explorerUrl ?? 'missing'}`);
-  console.log(`  Mirror Node:    ${receipt.mirrorNodeUrl ?? 'missing'}`);
+  console.log(`  Transaction ID: ${report.proof.transactionId ?? 'missing'}`);
+  console.log(`  Proof Status:   ${report.proof.proofStatus}`);
+  console.log(`  HashScan:       ${report.proof.hashScanUrl ?? 'missing'}`);
+  console.log(`  Mirror Node:    ${report.proof.mirrorNodeUrl ?? 'missing'}`);
 
-  if (!result.ok) {
-    console.error('\nProof verification failed.');
+  if (report.verdict !== 'accepted') {
+    console.error('\nHiero Verify VNX Agent rejected this proof.');
     process.exit(1);
   }
 
-  console.log('\nProof verification passed.');
+  console.log('\nHiero Verify VNX Agent accepted this proof.');
 }
 
 main().catch(err => {

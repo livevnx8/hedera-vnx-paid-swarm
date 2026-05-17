@@ -7,6 +7,9 @@ import {
   DEFAULT_WORKERS,
   PaidSwarmCoordinator,
   ProofReceiptBuilder,
+  HieroVerifyVnxAgent,
+  runLocalBenchmarks,
+  formatBenchmarkSummary,
 } from '../src/index.js';
 import { PaymentRail, PaymentResult, SwarmReceipt } from '../src/types.js';
 import { assertMainnetProofReceipt } from '../src/proof-validation.js';
@@ -432,5 +435,111 @@ describe('Swarm proof verifier', () => {
       ok: false,
       detail: '404 Not Found',
     });
+  });
+});
+
+describe('HieroVerifyVnxAgent', () => {
+  const task = 'Predict the HBAR price direction and forecast the signal';
+
+  function buildConfirmedReceipt(): SwarmReceipt {
+    const builder = new ProofReceiptBuilder();
+    const votes = [
+      {
+        workerId: 'onnx-primary',
+        name: 'BitLattice-ONNX',
+        specialty: 'prediction',
+        recommendation: 'Use ONNX primary signal',
+        confidence: 0.9,
+        priceHbar: 0.005,
+        evidence: 'Matched prediction keywords',
+        score: 176.47058823529412,
+      },
+    ];
+    return builder.build(task, votes, votes[0], {
+      status: 'success',
+      transactionId: '0.0.10294360@1778958335.880736678',
+      network: 'mainnet',
+      amountHbar: 0.005,
+      recipient: '0.0.10294360',
+      consensusTimestampMs: 1778958345039,
+    });
+  }
+
+  it('returns an agent-style accepted verdict for confirmed mainnet receipts', async () => {
+    const agent = new HieroVerifyVnxAgent({
+      fetchMirrorTransaction: async transactionId => ({
+        ok: true,
+        transactionId,
+        status: 'SUCCESS',
+      }),
+    });
+
+    const report = await agent.verify(buildConfirmedReceipt(), task);
+
+    expect(report.agentId).toBe('hiero-verify-vnx');
+    expect(report.agentName).toBe('Hiero Verify VNX Agent');
+    expect(report.verdict).toBe('accepted');
+    expect(report.summary).toContain('5/5 checks passed');
+    expect(report.proof.transactionId).toBe('0.0.10294360@1778958335.880736678');
+    expect(report.proof.hashScanUrl).toContain('hashscan.io/mainnet/transaction');
+    expect(report.checks.every(check => check.ok)).toBe(true);
+  });
+
+  it('returns a rejected verdict when proof checks fail', async () => {
+    const agent = new HieroVerifyVnxAgent({
+      fetchMirrorTransaction: async transactionId => ({
+        ok: true,
+        transactionId,
+        status: 'SUCCESS',
+      }),
+    });
+    const receipt = {
+      ...buildConfirmedReceipt(),
+      decisionHash: '0'.repeat(64),
+    };
+
+    const report = await agent.verify(receipt, task);
+
+    expect(report.verdict).toBe('rejected');
+    expect(report.summary).toContain('4/5 checks passed');
+    expect(report.checks.find(check => check.name === 'decision_hash')).toMatchObject({
+      ok: false,
+    });
+  });
+});
+
+describe('Local benchmarks', () => {
+  it('runs reproducible local benchmark cases with numeric timing fields', async () => {
+    const summary = await runLocalBenchmarks({ iterations: 3 });
+
+    expect(summary.iterations).toBe(3);
+    expect(summary.cases.map(item => item.name)).toEqual([
+      'worker_selection_plan_only',
+      'receipt_build_sha256',
+      'hiero_verify_agent_local',
+    ]);
+    for (const item of summary.cases) {
+      expect(item.runs).toBe(3);
+      expect(Number.isFinite(item.totalMs)).toBe(true);
+      expect(Number.isFinite(item.avgMs)).toBe(true);
+      expect(Number.isFinite(item.minMs)).toBe(true);
+      expect(Number.isFinite(item.maxMs)).toBe(true);
+      expect(item.opsPerSecond).toBeGreaterThan(0);
+    }
+  });
+
+  it('formats benchmark results as a markdown table', async () => {
+    const summary = await runLocalBenchmarks({ iterations: 2 });
+    const output = formatBenchmarkSummary(summary);
+
+    expect(output).toContain('VNX Paid Swarm Local Benchmarks');
+    expect(output).toContain('| Case | Runs | Avg ms | Min ms | Max ms | Ops/sec |');
+    expect(output).toContain('| worker_selection_plan_only | 2 |');
+    expect(output).toContain('| receipt_build_sha256 | 2 |');
+    expect(output).toContain('| hiero_verify_agent_local | 2 |');
+  });
+
+  it('rejects invalid iteration counts', async () => {
+    await expect(runLocalBenchmarks({ iterations: 0 })).rejects.toThrow(/positive integer/);
   });
 });
