@@ -15,9 +15,7 @@ import { Command } from 'commander';
 import {
   HcsTopicPublisher,
   DryRunHcsPublisher,
-  HcsProofMessage,
 } from '../src/hcs-publisher.js';
-import { ProofReceiptBuilder } from '../src/receipt-builder.js';
 import { PaidSwarmCoordinator } from '../src/coordinator.js';
 import { DEFAULT_WORKERS } from '../src/workers.js';
 
@@ -31,23 +29,6 @@ const program = new Command()
   .option('--task <text>', 'Task description for proof message', 'Predict HBAR price direction')
   .option('--json', 'Output raw JSON')
   .option('--help', 'Show this help message');
-
-function parseArgs(argv: string[]): Record<string, string> {
-  const args: Record<string, string> = {};
-  for (let i = 2; i < argv.length; i++) {
-    const key = argv[i];
-    if (key.startsWith('--')) {
-      const val = argv[i + 1];
-      if (val && !val.startsWith('--')) {
-        args[key.replace(/^--/, '')] = val;
-        i++;
-      } else {
-        args[key.replace(/^--/, '')] = 'true';
-      }
-    }
-  }
-  return args;
-}
 
 async function main(): Promise<void> {
   program.parse(process.argv);

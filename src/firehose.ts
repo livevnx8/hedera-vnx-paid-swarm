@@ -6,9 +6,8 @@
  * No Hedera network calls. Pure local deterministic stack measurement.
  */
 
-import { VnxWorkerAgent, DEFAULT_WORKERS } from './workers.js';
+import { DEFAULT_WORKERS } from './workers.js';
 import { PaidSwarmCoordinator } from './coordinator.js';
-import { ProofReceiptBuilder } from './receipt-builder.js';
 import { HieroVerifyVnxAgent } from './hiero-verify-agent.js';
 import { SwarmReceipt, PaymentResult } from './types.js';
 
