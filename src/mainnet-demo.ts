@@ -2,11 +2,19 @@
  * Mainnet demo data and SVG rendering for the VNX paid swarm showcase.
  */
 
+import { createHash } from 'crypto';
 import { toHashScanTransactionUrl, toMirrorNodeTransactionId } from './proof-urls.js';
 
 export interface HbarTick {
   time: number;
   price: number;
+}
+
+export interface DataProvenance {
+  source: string;
+  fetchedAt: string;
+  dataHash: string;
+  sampleCount: number;
 }
 
 export interface MainnetDemoData {
@@ -20,6 +28,7 @@ export interface MainnetDemoData {
   hcsSequence?: number;
   hcsConsensusTimestamp?: string;
   hbarTicks: HbarTick[];
+  dataProvenance: DataProvenance;
   benchmark: {
     predictionsPerSecond: number;
     receiptBuildOpsPerSecond: number;
@@ -82,6 +91,11 @@ async function fetchWithRetry(
   throw new Error(`Failed after ${retries} retries: ${url}`);
 }
 
+function hashTicks(ticks: HbarTick[]): string {
+  const payload = ticks.map(t => `${t.time}:${t.price.toFixed(6)}`).join('|');
+  return createHash('sha256').update(payload).digest('hex').slice(0, 16);
+}
+
 export async function fetchMainnetDemoData(
   options: FetchMainnetDemoDataOptions,
 ): Promise<MainnetDemoData> {
@@ -94,6 +108,8 @@ export async function fetchMainnetDemoData(
     fetchHbarTicks(fetchFn),
   ]);
 
+  const fetchedAt = new Date().toISOString();
+
   return {
     transactionId: options.transactionId,
     hashScanUrl: toHashScanTransactionUrl(options.transactionId),
@@ -105,6 +121,12 @@ export async function fetchMainnetDemoData(
     hcsSequence: hcs.sequence,
     hcsConsensusTimestamp: hcs.consensusTimestamp,
     hbarTicks,
+    dataProvenance: {
+      source: 'CoinGecko API (public)',
+      fetchedAt,
+      dataHash: hashTicks(hbarTicks),
+      sampleCount: hbarTicks.length,
+    },
     benchmark: {
       predictionsPerSecond: 88975.28,
       receiptBuildOpsPerSecond: 416466.94,
@@ -128,7 +150,7 @@ export function renderMainnetDemoFrame(
     'HCS topic audit',
     'Verifier verdict accepted',
   ];
-  const chart = renderHbarChart(data.hbarTicks, 42, 148, 416, 174, progress);
+  const chart = renderHbarChart(data.hbarTicks, data.dataProvenance, 42, 148, 416, 174, progress);
   const workerBars = [0.9, 0.74, 0.66, 0.58].map((value, index) =>
     Math.max(0.08, Math.min(value, progress * 1.8 - index * 0.12)),
   );
@@ -211,6 +233,7 @@ export function renderMainnetDemoFrame(
 
 function renderHbarChart(
   ticks: HbarTick[],
+  provenance: DataProvenance,
   x: number,
   y: number,
   width: number,
@@ -280,7 +303,7 @@ function renderHbarChart(
     <circle cx="${current.px.toFixed(1)}" cy="${current.py.toFixed(1)}" r="2.5" fill="#fff"/>
     <text x="${current.px.toFixed(1)}" y="${(current.py - 12).toFixed(1)}" text-anchor="middle" fill="#22D3EE" font-family="Inter,Segoe UI,sans-serif" font-size="11" font-weight="600">$${current.price.toFixed(5)}</text>
     ${xAxisLabels}
-    <text x="${chartX}" y="${chartY + chartH + 16}" text-anchor="start" fill="#475569" font-family="Inter,Segoe UI,sans-serif" font-size="9">24h via CoinGecko</text>
+    <text x="${chartX}" y="${chartY + chartH + 16}" text-anchor="start" fill="#475569" font-family="Inter,Segoe UI,sans-serif" font-size="9">${escapeXml(provenance.source)} · ${provenance.sampleCount} samples · hash ${provenance.dataHash}</text>
   `;
 }
 

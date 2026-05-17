@@ -60,6 +60,9 @@ describe('mainnet demo data', () => {
     expect(data.hcsSequence).toBe(7);
     expect(data.hbarTicks).toHaveLength(2);
     expect(data.hashScanUrl).toContain('hashscan.io/mainnet/transaction');
+    expect(data.dataProvenance.source).toBe('CoinGecko API (public)');
+    expect(data.dataProvenance.sampleCount).toBe(2);
+    expect(data.dataProvenance.dataHash).toHaveLength(16);
   });
 
   it('renders a self-contained SVG frame with proof and HCS labels', () => {
@@ -77,6 +80,12 @@ describe('mainnet demo data', () => {
         { time: 1, price: 0.0505 },
         { time: 2, price: 0.051 },
       ],
+      dataProvenance: {
+        source: 'CoinGecko API (public)',
+        fetchedAt: '2026-05-17T11:00:00.000Z',
+        dataHash: 'a1b2c3d4e5f67890',
+        sampleCount: 2,
+      },
       benchmark: {
         predictionsPerSecond: 88975.28,
         receiptBuildOpsPerSecond: 416466.94,
