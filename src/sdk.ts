@@ -48,7 +48,7 @@ export class VnxSwarmClient {
     this._initialized = true;
   }
 
-  async runTask(taskDescription: string, opts?: { maxHbar?: number; planOnly?: boolean }): Promise<SwarmReceipt> {
+  async runTask(taskDescription: string, _opts?: { maxHbar?: number; planOnly?: boolean }): Promise<SwarmReceipt> {
     if (!this._initialized) await this.init();
     const receipt = await this._coordinator.run(taskDescription);
     this._ledger.recordTask(receipt);
