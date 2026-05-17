@@ -20,6 +20,9 @@
     "vnx-swarm-demo": "./scripts/vnx-paid-swarm-demo.ts",
     "vnx-swarm-e2e": "./scripts/vnx-paid-swarm-e2e.ts",
     "vnx-swarm-verify": "./scripts/vnx-paid-swarm-verify-proof.ts",
+    "vnx-prediction-firehose": "./scripts/vnx-prediction-firehose.ts",
+    "hcs-topic-publisher": "./scripts/hcs-topic-publisher.ts",
+    "hcs-verify-agent": "./scripts/hcs-verify-agent.ts",
     "send-hbar": "./scripts/send-hbar.ts"
   },
   "scripts": {
@@ -33,6 +36,9 @@
     "e2e:live": "tsx scripts/vnx-paid-swarm-e2e.ts --live",
     "verify": "tsx scripts/vnx-paid-swarm-verify-proof.ts",
     "benchmark": "tsx scripts/benchmark.ts",
+    "demo:firehose": "tsx scripts/vnx-prediction-firehose.ts",
+    "demo:hcs": "tsx scripts/hcs-topic-publisher.ts",
+    "verify:hcs": "tsx scripts/hcs-verify-agent.ts",
     "send": "tsx scripts/send-hbar.ts",
     "lint": "eslint src/ scripts/ tests/",
     "lint:fix": "eslint src/ scripts/ tests/ --fix",

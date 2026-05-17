@@ -11,6 +11,9 @@ export { ProofReceiptBuilder } from './receipt-builder.js';
 export { assertMainnetProofReceipt } from './proof-validation.js';
 export { verifySwarmProof, fetchMirrorTransactionFromHiero } from './proof-verifier.js';
 export { HieroVerifyVnxAgent } from './hiero-verify-agent.js';
+export { VnxPredictionFirehose, formatFirehoseSummary } from './firehose.js';
+export { HcsTopicPublisher, DryRunHcsPublisher, HcsProofMessage } from './hcs-publisher.js';
+export { HieroHcsVerifyAgent } from './hcs-verify-agent.js';
 export { runLocalBenchmarks, formatBenchmarkSummary } from './benchmark.js';
 export {
   toHashScanTransactionUrl,
