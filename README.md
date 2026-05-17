@@ -300,6 +300,10 @@ See [`docs/HIERO.md`](docs/HIERO.md) for the full proof standard and mirror-node
 
 Benchmarks measure local deterministic package operations only. They do **not** claim Hedera network settlement latency or public mirror-node latency.
 
+<p align="center">
+  <img src="assets/benchmarks.svg" alt="VNX Paid Swarm local benchmark results" width="1000"/>
+</p>
+
 Run:
 
 ```bash
