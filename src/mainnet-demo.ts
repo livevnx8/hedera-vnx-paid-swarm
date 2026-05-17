@@ -128,8 +128,7 @@ export function renderMainnetDemoFrame(
     'HCS topic audit',
     'Verifier verdict accepted',
   ];
-  const chart = chartPolyline(data.hbarTicks, 70, 150, 360, 120);
-  const pulse = 0.45 + Math.sin(progress * Math.PI * 12) * 0.18;
+  const chart = renderHbarChart(data.hbarTicks, 42, 148, 416, 174, progress);
   const workerBars = [0.9, 0.74, 0.66, 0.58].map((value, index) =>
     Math.max(0.08, Math.min(value, progress * 1.8 - index * 0.12)),
   );
@@ -164,11 +163,9 @@ export function renderMainnetDemoFrame(
   <text x="640" y="54" text-anchor="middle" fill="#F8FAFC" font-family="Inter,Segoe UI,sans-serif" font-size="30" font-weight="800">VNX Paid Micro-Swarm · Live Mainnet Proof Demo</text>
   <text x="640" y="84" text-anchor="middle" fill="#94A3B8" font-family="Inter,Segoe UI,sans-serif" font-size="14">${escapeXml(phaseLabels[phase])} · ${Math.round(progress * 30)}s / 30s</text>
 
-  <rect x="42" y="112" width="416" height="210" rx="14" fill="#0F172A" stroke="#1E293B" filter="url(#shadow)"/>
+  <rect x="42" y="112" width="416" height="250" rx="14" fill="#0F172A" stroke="#1E293B" filter="url(#shadow)"/>
   <text x="70" y="142" fill="#22D3EE" font-family="Inter,Segoe UI,sans-serif" font-size="16" font-weight="700">HBAR/USD Public Market Feed</text>
-  <polyline points="${chart}" fill="none" stroke="url(#cyan)" stroke-width="4"/>
-  <circle cx="${70 + progress * 360}" cy="210" r="${8 + pulse * 4}" fill="#22D3EE" opacity="0.65"/>
-  <text x="70" y="298" fill="#CBD5E1" font-family="Inter,Segoe UI,sans-serif" font-size="13">Latest tick: $${data.hbarTicks.at(-1)?.price.toFixed(5) ?? 'n/a'}</text>
+  ${chart}
 
   <rect x="486" y="112" width="350" height="210" rx="14" fill="#0F172A" stroke="#1E293B" filter="url(#shadow)"/>
   <text x="514" y="142" fill="#A78BFA" font-family="Inter,Segoe UI,sans-serif" font-size="16" font-weight="700">Prediction Firehose</text>
@@ -212,16 +209,79 @@ export function renderMainnetDemoFrame(
 </svg>`;
 }
 
-function chartPolyline(ticks: HbarTick[], x: number, y: number, width: number, height: number): string {
-  if (ticks.length === 0) return `${x},${y + height / 2}`;
-  const min = Math.min(...ticks.map(tick => tick.price));
-  const max = Math.max(...ticks.map(tick => tick.price));
+function renderHbarChart(
+  ticks: HbarTick[],
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  progress: number,
+): string {
+  if (ticks.length === 0) {
+    return `<text x="${x + width / 2}" y="${y + height / 2}" text-anchor="middle" fill="#64748B" font-family="Inter,Segoe UI,sans-serif" font-size="13">No market data</text>`;
+  }
+
+  const min = Math.min(...ticks.map(t => t.price));
+  const max = Math.max(...ticks.map(t => t.price));
   const span = max - min || 1;
-  return ticks.map((tick, index) => {
-    const px = x + (index / Math.max(1, ticks.length - 1)) * width;
-    const py = y + height - ((tick.price - min) / span) * height;
-    return `${px.toFixed(1)},${py.toFixed(1)}`;
-  }).join(' ');
+  const padding = { top: 20, right: 12, bottom: 28, left: 52 };
+  const chartW = width - padding.left - padding.right;
+  const chartH = height - padding.top - padding.bottom;
+  const chartX = x + padding.left;
+  const chartY = y + padding.top;
+
+  // Build points for line and area
+  const points = ticks.map((tick, index) => {
+    const px = chartX + (index / Math.max(1, ticks.length - 1)) * chartW;
+    const py = chartY + chartH - ((tick.price - min) / span) * chartH;
+    return { px, py, price: tick.price };
+  });
+
+  const linePoints = points.map(p => `${p.px.toFixed(1)},${p.py.toFixed(1)}`).join(' ');
+  const areaPoints = `${points[0].px.toFixed(1)},${chartY + chartH} ${linePoints} ${points[points.length - 1].px.toFixed(1)},${chartY + chartH}`;
+
+  // Current index based on progress
+  const currentIndex = Math.min(points.length - 1, Math.floor(progress * points.length));
+  const current = points[currentIndex] ?? points[points.length - 1];
+
+  // Y-axis labels (4 levels)
+  const yLabels = [min, min + span * 0.33, min + span * 0.67, max];
+  const gridLines = yLabels.map((price) => {
+    const gy = chartY + chartH - ((price - min) / span) * chartH;
+    return `<line x1="${chartX}" y1="${gy.toFixed(1)}" x2="${chartX + chartW}" y2="${gy.toFixed(1)}" stroke="#1E293B" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="${chartX - 8}" y="${gy.toFixed(1)}" text-anchor="end" dominant-baseline="middle" fill="#64748B" font-family="Inter,Segoe UI,sans-serif" font-size="10">$${price.toFixed(4)}</text>`;
+  }).join('');
+
+  // X-axis time labels (start, middle, end)
+  const timeLabels = [0, Math.floor(ticks.length / 2), ticks.length - 1];
+  const xAxisLabels = timeLabels.map(idx => {
+    const px = chartX + (idx / Math.max(1, ticks.length - 1)) * chartW;
+    const date = new Date(ticks[idx].time);
+    const label = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    return `<text x="${px.toFixed(1)}" y="${chartY + chartH + 16}" text-anchor="middle" fill="#64748B" font-family="Inter,Segoe UI,sans-serif" font-size="10">${label}</text>`;
+  }).join('');
+
+  return `
+    <defs>
+      <linearGradient id="chartArea" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#22D3EE" stop-opacity="0.25"/>
+        <stop offset="1" stop-color="#22D3EE" stop-opacity="0.02"/>
+      </linearGradient>
+      <filter id="lineGlow">
+        <feGaussianBlur stdDeviation="2.5" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    ${gridLines}
+    <polyline points="${areaPoints}" fill="url(#chartArea)" stroke="none"/>
+    <polyline points="${linePoints}" fill="none" stroke="url(#cyan)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" filter="url(#lineGlow)"/>
+    <line x1="${current.px.toFixed(1)}" y1="${chartY}" x2="${current.px.toFixed(1)}" y2="${chartY + chartH}" stroke="#22D3EE" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+    <circle cx="${current.px.toFixed(1)}" cy="${current.py.toFixed(1)}" r="5" fill="#22D3EE" filter="url(#lineGlow)"/>
+    <circle cx="${current.px.toFixed(1)}" cy="${current.py.toFixed(1)}" r="2.5" fill="#fff"/>
+    <text x="${current.px.toFixed(1)}" y="${(current.py - 12).toFixed(1)}" text-anchor="middle" fill="#22D3EE" font-family="Inter,Segoe UI,sans-serif" font-size="11" font-weight="600">$${current.price.toFixed(5)}</text>
+    ${xAxisLabels}
+    <text x="${chartX}" y="${chartY + chartH + 16}" text-anchor="start" fill="#475569" font-family="Inter,Segoe UI,sans-serif" font-size="9">24h via CoinGecko</text>
+  `;
 }
 
 function renderWorkerBar(x: number, y: number, name: string, value: number, color: string): string {
