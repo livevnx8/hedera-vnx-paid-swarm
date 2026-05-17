@@ -12,20 +12,20 @@ npm install
 
 ## Scripts
 
-| Command | Purpose |
-|---------|---------|
-| `npm test` | Run Jest test suite |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run demo:plan` | Preview swarm without credentials |
-| `npm run e2e` | Dry-run end-to-end validation |
-| `npm run verify` | CLI proof verification |
-| `npm run send` | Standalone HBAR transfer |
-| `npm run lint` | Run ESLint |
-| `npm run lint:fix` | Auto-fix ESLint issues |
-| `npm run format` | Run Prettier |
-| `npm run format:check` | Check Prettier formatting |
-| `npm run typecheck` | TypeScript strict check |
-| `npm run clean` | Remove dist/ and coverage/ |
+| Command                | Purpose                           |
+| ---------------------- | --------------------------------- |
+| `npm test`             | Run Jest test suite               |
+| `npm run test:watch`   | Run tests in watch mode           |
+| `npm run demo:plan`    | Preview swarm without credentials |
+| `npm run e2e`          | Dry-run end-to-end validation     |
+| `npm run verify`       | CLI proof verification            |
+| `npm run send`         | Standalone HBAR transfer          |
+| `npm run lint`         | Run ESLint                        |
+| `npm run lint:fix`     | Auto-fix ESLint issues            |
+| `npm run format`       | Run Prettier                      |
+| `npm run format:check` | Check Prettier formatting         |
+| `npm run typecheck`    | TypeScript strict check           |
+| `npm run clean`        | Remove dist/ and coverage/        |
 
 ## Style Guide
 

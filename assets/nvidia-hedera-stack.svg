@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="0.55" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#101827"/>
+    </linearGradient>
+    <linearGradient id="nvidia" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#76b900"/>
+      <stop offset="1" stop-color="#34d399"/>
+    </linearGradient>
+    <linearGradient id="hedera" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="vnx" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fbbf24"/>
+      <stop offset="1" stop-color="#f97316"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="980" fill="url(#bg)"/>
+  <rect x="60" y="52" width="1480" height="876" rx="32" fill="#0b1220" stroke="#1e293b" stroke-width="2" filter="url(#shadow)"/>
+
+  <text x="100" y="122" fill="#f8fafc" font-family="Inter, Segoe UI, sans-serif" font-size="44" font-weight="800">NVIDIA + Hedera Bare-Metal VNX Stack</text>
+  <text x="100" y="160" fill="#94a3b8" font-family="Inter, Segoe UI, sans-serif" font-size="18">GPU acceleration for intelligence. Hedera mainnet for payment, ordering, and proof. VNX coordinates the business workflow.</text>
+
+  <g transform="translate(100 218)">
+    <rect width="420" height="240" rx="22" fill="#0f172a" stroke="#1e293b"/>
+    <rect width="420" height="8" rx="4" fill="url(#nvidia)"/>
+    <text x="30" y="52" fill="#a7f3d0" font-family="Inter, Segoe UI, sans-serif" font-size="22" font-weight="800">NVIDIA Compute Plane</text>
+    <text x="30" y="90" fill="#f8fafc" font-family="Inter, Segoe UI, sans-serif" font-size="31" font-weight="800">CUDA · Triton · NIM</text>
+    <text x="30" y="126" fill="#cbd5e1" font-family="Inter, Segoe UI, sans-serif" font-size="16">Private inference, prediction fan-out, simulation, embeddings, LLM/ONNX endpoints</text>
+    <rect x="30" y="166" width="150" height="36" rx="10" fill="#052e16" stroke="#22c55e"/>
+    <text x="105" y="190" text-anchor="middle" fill="#dcfce7" font-family="Inter, Segoe UI, sans-serif" font-size="14" font-weight="700">GPU throughput</text>
+    <rect x="194" y="166" width="176" height="36" rx="10" fill="#172554" stroke="#38bdf8"/>
+    <text x="282" y="190" text-anchor="middle" fill="#dbeafe" font-family="Inter, Segoe UI, sans-serif" font-size="14" font-weight="700">HTTP/gRPC inference</text>
+  </g>
+
+  <g transform="translate(590 218)">
+    <rect width="420" height="240" rx="22" fill="#0f172a" stroke="#1e293b"/>
+    <rect width="420" height="8" rx="4" fill="url(#vnx)"/>
+    <text x="30" y="52" fill="#fde68a" font-family="Inter, Segoe UI, sans-serif" font-size="22" font-weight="800">VNX Coordination Plane</text>
+    <text x="30" y="90" fill="#f8fafc" font-family="Inter, Segoe UI, sans-serif" font-size="31" font-weight="800">Swarm · Score · Pay</text>
+    <text x="30" y="126" fill="#cbd5e1" font-family="Inter, Segoe UI, sans-serif" font-size="16">Deterministic worker selection, HBAR caps, SHA-256 receipts, verifier agents</text>
+    <rect x="30" y="166" width="154" height="36" rx="10" fill="#422006" stroke="#fbbf24"/>
+    <text x="107" y="190" text-anchor="middle" fill="#fef3c7" font-family="Inter, Segoe UI, sans-serif" font-size="14" font-weight="700">88,975 tasks/sec</text>
+    <rect x="198" y="166" width="176" height="36" rx="10" fill="#431407" stroke="#fb923c"/>
+    <text x="286" y="190" text-anchor="middle" fill="#ffedd5" font-family="Inter, Segoe UI, sans-serif" font-size="14" font-weight="700">416k receipts/sec</text>
+  </g>
+
+  <g transform="translate(1080 218)">
+    <rect width="420" height="240" rx="22" fill="#0f172a" stroke="#1e293b"/>
+    <rect width="420" height="8" rx="4" fill="url(#hedera)"/>
+    <text x="30" y="52" fill="#c4b5fd" font-family="Inter, Segoe UI, sans-serif" font-size="22" font-weight="800">Hedera Proof Plane</text>
+    <text x="30" y="90" fill="#f8fafc" font-family="Inter, Segoe UI, sans-serif" font-size="31" font-weight="800">HBAR · HCS · Mirror</text>
+    <text x="30" y="126" fill="#cbd5e1" font-family="Inter, Segoe UI, sans-serif" font-size="16">Mainnet payment, consensus timestamp, ordered audit messages, public replay</text>
+    <rect x="30" y="166" width="164" height="36" rx="10" fill="#2e1065" stroke="#a78bfa"/>
+    <text x="112" y="190" text-anchor="middle" fill="#ede9fe" font-family="Inter, Segoe UI, sans-serif" font-size="14" font-weight="700">mainnet tx proof</text>
+    <rect x="208" y="166" width="176" height="36" rx="10" fill="#083344" stroke="#22d3ee"/>
+    <text x="296" y="190" text-anchor="middle" fill="#cffafe" font-family="Inter, Segoe UI, sans-serif" font-size="14" font-weight="700">HCS topic replay</text>
+  </g>
+
+  <path d="M520 338 H590" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+  <path d="M1010 338 H1080" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+  <polygon points="584,330 600,338 584,346" fill="#64748b"/>
+  <polygon points="1074,330 1090,338 1074,346" fill="#64748b"/>
+
+  <g transform="translate(100 520)">
+    <rect width="1400" height="254" rx="24" fill="#0f172a" stroke="#1e293b"/>
+    <text x="34" y="52" fill="#f8fafc" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800">Data and Proof Flow</text>
+    <text x="34" y="84" fill="#94a3b8" font-family="Inter, Segoe UI, sans-serif" font-size="16">Private compute stays local. Public proof is compact, timestamped, and independently replayable.</text>
+
+    <g transform="translate(44 126)">
+      <rect width="158" height="70" rx="14" fill="#111827" stroke="#334155"/>
+      <text x="79" y="32" text-anchor="middle" fill="#e2e8f0" font-family="Inter, Segoe UI, sans-serif" font-size="14" font-weight="700">Task / Market</text>
+      <text x="79" y="54" text-anchor="middle" fill="#94a3b8" font-family="Inter, Segoe UI, sans-serif" font-size="12">input</text>
+    </g>
+    <g transform="translate(260 126)">
+      <rect width="158" height="70" rx="14" fill="#052e16" stroke="#22c55e"/>
+      <text x="79" y="32" text-anchor="middle" fill="#dcfce7" font-family="Inter, Segoe UI, sans-serif" font-size="14" font-weight="700">GPU Agent</text>
+      <text x="79" y="54" text-anchor="middle" fill="#bbf7d0" font-family="Inter, Segoe UI, sans-serif" font-size="12">inference</text>
+    </g>
+    <g transform="translate(476 126)">
+      <rect width="158" height="70" rx="14" fill="#422006" stroke="#fbbf24"/>
+      <text x="79" y="32" text-anchor="middle" fill="#fef3c7" font-family="Inter, Segoe UI, sans-serif" font-size="14" font-weight="700">VNX Vote</text>
+      <text x="79" y="54" text-anchor="middle" fill="#fde68a" font-family="Inter, Segoe UI, sans-serif" font-size="12">score</text>
+    </g>
+    <g transform="translate(692 126)">
+      <rect width="158" height="70" rx="14" fill="#431407" stroke="#fb923c"/>
+      <text x="79" y="32" text-anchor="middle" fill="#ffedd5" font-family="Inter, Segoe UI, sans-serif" font-size="14" font-weight="700">Winner Paid</text>
+      <text x="79" y="54" text-anchor="middle" fill="#fed7aa" font-family="Inter, Segoe UI, sans-serif" font-size="12">HBAR</text>
+    </g>
+    <g transform="translate(908 126)">
+      <rect width="158" height="70" rx="14" fill="#2e1065" stroke="#a78bfa"/>
+      <text x="79" y="32" text-anchor="middle" fill="#ede9fe" font-family="Inter, Segoe UI, sans-serif" font-size="14" font-weight="700">HCS Proof</text>
+      <text x="79" y="54" text-anchor="middle" fill="#ddd6fe" font-family="Inter, Segoe UI, sans-serif" font-size="12">timestamp</text>
+    </g>
+    <g transform="translate(1124 126)">
+      <rect width="158" height="70" rx="14" fill="#083344" stroke="#22d3ee"/>
+      <text x="79" y="32" text-anchor="middle" fill="#cffafe" font-family="Inter, Segoe UI, sans-serif" font-size="14" font-weight="700">Mirror Replay</text>
+      <text x="79" y="54" text-anchor="middle" fill="#a5f3fc" font-family="Inter, Segoe UI, sans-serif" font-size="12">verify</text>
+    </g>
+
+    <path d="M202 161 H260 M418 161 H476 M634 161 H692 M850 161 H908 M1066 161 H1124" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(100 812)">
+    <text x="0" y="0" fill="#94a3b8" font-family="Inter, Segoe UI, sans-serif" font-size="15">Boundary: NVIDIA accelerates private inference. Hedera verifies payment/order/proof. VNX binds the two into a deterministic paid-agent workflow.</text>
+    <text x="0" y="30" fill="#64748b" font-family="Inter, Segoe UI, sans-serif" font-size="13">Public proof assets are hashes, transaction IDs, HCS sequence/timestamp, and mirror-node URLs; raw model inputs stay off-chain.</text>
+  </g>
+</svg>

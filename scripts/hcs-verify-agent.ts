@@ -77,7 +77,7 @@ async function main(): Promise<void> {
   console.log('\nHiero HCS Verify Agent accepted this message.');
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error(err);
   process.exit(1);
 });

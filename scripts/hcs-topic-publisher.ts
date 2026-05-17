@@ -12,10 +12,7 @@
  */
 
 import { Command } from 'commander';
-import {
-  HcsTopicPublisher,
-  DryRunHcsPublisher,
-} from '../src/hcs-publisher.js';
+import { HcsTopicPublisher, DryRunHcsPublisher } from '../src/hcs-publisher.js';
 import { PaidSwarmCoordinator } from '../src/coordinator.js';
 import { DEFAULT_WORKERS } from '../src/workers.js';
 
@@ -48,7 +45,7 @@ async function main(): Promise<void> {
 
   if (messages > maxMessages) {
     console.error(
-      `Error: --messages (${messages}) exceeds --max-messages (${maxMessages}). Use --max-messages to override.`
+      `Error: --messages (${messages}) exceeds --max-messages (${maxMessages}). Use --max-messages to override.`,
     );
     process.exit(1);
   }
@@ -75,10 +72,14 @@ async function main(): Promise<void> {
       };
     },
   };
-  const coordinator = new PaidSwarmCoordinator(DEFAULT_WORKERS, {
-    maxHbar: 0.01,
-    planOnly: true,
-  }, mockPaymentRail);
+  const coordinator = new PaidSwarmCoordinator(
+    DEFAULT_WORKERS,
+    {
+      maxHbar: 0.01,
+      planOnly: true,
+    },
+    mockPaymentRail,
+  );
   const receipt = await coordinator.run(task);
 
   if (isLive) {
@@ -86,7 +87,7 @@ async function main(): Promise<void> {
     const privateKey = process.env.HEDERA_PRIVATE_KEY;
     if (!accountId || !privateKey) {
       console.error(
-        'Error: --live requires HEDERA_ACCOUNT_ID and HEDERA_PRIVATE_KEY environment variables.'
+        'Error: --live requires HEDERA_ACCOUNT_ID and HEDERA_PRIVATE_KEY environment variables.',
       );
       console.error('Set them in your .env file or export them in your shell.');
       process.exit(1);
@@ -116,7 +117,9 @@ async function main(): Promise<void> {
     results.push(result);
 
     if (result.status === 'success') {
-      console.log(`  ✅ Message ${i + 1}/${messages} — Seq: ${result.sequenceNumber} — Tx: ${result.transactionId}`);
+      console.log(
+        `  ✅ Message ${i + 1}/${messages} — Seq: ${result.sequenceNumber} — Tx: ${result.transactionId}`,
+      );
     } else {
       console.log(`  ❌ Message ${i + 1}/${messages} — Error: ${result.error}`);
     }
@@ -133,7 +136,7 @@ ${isLive ? 'HCS messages published to Hedera mainnet.' : 'Dry run complete. No n
 `);
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error(err);
   process.exit(1);
 });

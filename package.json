@@ -3,32 +3,39 @@
   "version": "1.0.0",
   "description": "Deterministic VNX agent swarm with Hedera mainnet HBAR payment and cryptographically verifiable proof receipts",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
-    "dist/",
-    "src/",
-    "scripts/",
+    "dist/src/",
+    "dist/scripts/",
     "docs/",
     "assets/",
     "data/",
     "README.md",
     "LICENSE",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "SECURITY.md"
   ],
   "bin": {
-    "vnx-swarm-demo": "./scripts/vnx-paid-swarm-demo.ts",
-    "vnx-swarm-e2e": "./scripts/vnx-paid-swarm-e2e.ts",
-    "vnx-swarm-verify": "./scripts/vnx-paid-swarm-verify-proof.ts",
-    "vnx-prediction-firehose": "./scripts/vnx-prediction-firehose.ts",
-    "hcs-topic-publisher": "./scripts/hcs-topic-publisher.ts",
-    "hcs-verify-agent": "./scripts/hcs-verify-agent.ts",
-    "vnx-mainnet-demo": "./scripts/render-mainnet-demo.ts",
-    "send-hbar": "./scripts/send-hbar.ts",
-    "vnx-leaderboard": "./scripts/leaderboard.ts"
+    "vnx-swarm-demo": "./dist/scripts/vnx-paid-swarm-demo.js",
+    "vnx-swarm-e2e": "./dist/scripts/vnx-paid-swarm-e2e.js",
+    "vnx-swarm-verify": "./dist/scripts/vnx-paid-swarm-verify-proof.js",
+    "vnx-prediction-firehose": "./dist/scripts/vnx-prediction-firehose.js",
+    "hcs-topic-publisher": "./dist/scripts/hcs-topic-publisher.js",
+    "hcs-verify-agent": "./dist/scripts/hcs-verify-agent.js",
+    "vnx-mainnet-demo": "./dist/scripts/render-mainnet-demo.js",
+    "send-hbar": "./dist/scripts/send-hbar.js",
+    "vnx-leaderboard": "./dist/scripts/leaderboard.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest --verbose",
     "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch",
     "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
@@ -46,8 +53,9 @@
     "leaderboard": "tsx scripts/leaderboard.ts",
     "lint": "eslint src/ scripts/ tests/",
     "lint:fix": "eslint src/ scripts/ tests/ --fix",
-    "format": "prettier --write src/ scripts/ tests/",
-    "format:check": "prettier --check src/ scripts/ tests/",
+    "format": "prettier --write \"**/*.{ts,js,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md,yml,yaml}\"",
+    "prepack": "npm run build",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist/ coverage/ .tsbuildinfo"
   },

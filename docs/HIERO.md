@@ -6,12 +6,12 @@ This document describes how `hedera-vnx-paid-swarm` uses the Hiero ecosystem for
 
 The verifier is exposed as a first-class VNX agent:
 
-| Field | Value |
-|-------|-------|
-| Agent ID | `hiero-verify-vnx` |
+| Field      | Value                    |
+| ---------- | ------------------------ |
+| Agent ID   | `hiero-verify-vnx`       |
 | Agent Name | `Hiero Verify VNX Agent` |
-| Specialty | `hiero-mainnet-proof` |
-| Verdicts | `accepted` or `rejected` |
+| Specialty  | `hiero-mainnet-proof`    |
+| Verdicts   | `accepted` or `rejected` |
 
 The agent wraps the deterministic `verifySwarmProof()` function and returns an agent-style report with:
 
@@ -71,8 +71,8 @@ const agent = new HieroVerifyVnxAgent();
 const report = await agent.verify(receipt, taskDescription);
 
 console.log(report.agentName); // "Hiero Verify VNX Agent"
-console.log(report.verdict);   // "accepted" | "rejected"
-console.log(report.summary);   // "5/5 checks passed for transaction ..."
+console.log(report.verdict); // "accepted" | "rejected"
+console.log(report.summary); // "5/5 checks passed for transaction ..."
 ```
 
 ### verifySwarmProof()

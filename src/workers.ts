@@ -19,11 +19,21 @@ export class VnxWorkerAgent {
   private _paymentAccount: string;
   private _responseTemplate: string;
 
-  get id() { return this._id; }
-  get name() { return this._name; }
-  get specialty() { return this._specialty; }
-  get priceHbar() { return this._priceHbar; }
-  get paymentAccount() { return this._paymentAccount; }
+  get id() {
+    return this._id;
+  }
+  get name() {
+    return this._name;
+  }
+  get specialty() {
+    return this._specialty;
+  }
+  get priceHbar() {
+    return this._priceHbar;
+  }
+  get paymentAccount() {
+    return this._paymentAccount;
+  }
 
   constructor(
     id: string,

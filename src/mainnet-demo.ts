@@ -130,7 +130,7 @@ export async function fetchMainnetDemoData(
     benchmark: {
       predictionsPerSecond: 88975.28,
       receiptBuildOpsPerSecond: 416466.94,
-      verifierOpsPerSecond: 295338.70,
+      verifierOpsPerSecond: 295338.7,
     },
   };
 }
@@ -155,9 +155,10 @@ export function renderMainnetDemoFrame(
     Math.max(0.08, Math.min(value, progress * 1.8 - index * 0.12)),
   );
   const streamCount = Math.floor(progress * 10000).toLocaleString();
-  const hcsLabel = data.hcsStatus === 'verified'
-    ? `HCS ${data.hcsTopicId} #${data.hcsSequence}`
-    : `HCS ${data.hcsTopicId} ${data.hcsStatus}`;
+  const hcsLabel =
+    data.hcsStatus === 'verified'
+      ? `HCS ${data.hcsTopicId} #${data.hcsSequence}`
+      : `HCS ${data.hcsTopicId} ${data.hcsStatus}`;
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
   <defs>
@@ -278,20 +279,24 @@ function renderHbarChart(
 
   // Y-axis labels (4 levels)
   const yLabels = [min, min + span * 0.33, min + span * 0.67, max];
-  const gridLines = yLabels.map((price) => {
-    const gy = chartY + chartH - ((price - min) / span) * chartH;
-    return `<line x1="${chartX}" y1="${gy.toFixed(1)}" x2="${chartX + chartW}" y2="${gy.toFixed(1)}" stroke="#1E293B" stroke-width="1" stroke-dasharray="3,3"/>
+  const gridLines = yLabels
+    .map(price => {
+      const gy = chartY + chartH - ((price - min) / span) * chartH;
+      return `<line x1="${chartX}" y1="${gy.toFixed(1)}" x2="${chartX + chartW}" y2="${gy.toFixed(1)}" stroke="#1E293B" stroke-width="1" stroke-dasharray="3,3"/>
       <text x="${chartX - 8}" y="${gy.toFixed(1)}" text-anchor="end" dominant-baseline="middle" fill="#64748B" font-family="Inter,Segoe UI,sans-serif" font-size="10">$${price.toFixed(4)}</text>`;
-  }).join('');
+    })
+    .join('');
 
   // X-axis time labels (start, middle, end)
   const timeLabels = [0, Math.floor(ticks.length / 2), ticks.length - 1];
-  const xAxisLabels = timeLabels.map(idx => {
-    const px = chartX + (idx / Math.max(1, ticks.length - 1)) * chartW;
-    const date = new Date(ticks[idx].time);
-    const label = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-    return `<text x="${px.toFixed(1)}" y="${chartY + chartH + 16}" text-anchor="middle" fill="#64748B" font-family="Inter,Segoe UI,sans-serif" font-size="10">${label}</text>`;
-  }).join('');
+  const xAxisLabels = timeLabels
+    .map(idx => {
+      const px = chartX + (idx / Math.max(1, ticks.length - 1)) * chartW;
+      const date = new Date(ticks[idx].time);
+      const label = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+      return `<text x="${px.toFixed(1)}" y="${chartY + chartH + 16}" text-anchor="middle" fill="#64748B" font-family="Inter,Segoe UI,sans-serif" font-size="10">${label}</text>`;
+    })
+    .join('');
 
   return `
     <defs>
@@ -326,9 +331,12 @@ function renderWorkerBar(x: number, y: number, name: string, value: number, colo
 }
 
 async function fetchMirrorTransaction(fetchFn: typeof fetch, mirrorTransactionId: string) {
-  const response = await fetchWithRetry(fetchFn, `${MIRROR_BASE}/transactions/${mirrorTransactionId}`);
+  const response = await fetchWithRetry(
+    fetchFn,
+    `${MIRROR_BASE}/transactions/${mirrorTransactionId}`,
+  );
   if (!response.ok) throw new Error(`Mirror transaction lookup failed: ${response.status}`);
-  const body = await response.json() as MirrorTransactionResponse;
+  const body = (await response.json()) as MirrorTransactionResponse;
   return body.transactions?.[0] ?? {};
 }
 
@@ -339,7 +347,7 @@ async function fetchHcsTopicStatus(fetchFn: typeof fetch, topicId: string, seque
   try {
     const response = await fetchWithRetry(fetchFn, path);
     if (!response.ok) return { status: 'unavailable' as const };
-    const body = await response.json() as MirrorTopicMessageResponse;
+    const body = (await response.json()) as MirrorTopicMessageResponse;
     const message = body.messages?.[0];
     if (!message) return { status: 'no_message' as const };
     return {
@@ -353,13 +361,19 @@ async function fetchHcsTopicStatus(fetchFn: typeof fetch, topicId: string, seque
 }
 
 async function fetchHbarTicks(fetchFn: typeof fetch): Promise<HbarTick[]> {
-  const response = await fetchWithRetry(fetchFn, 'https://api.coingecko.com/api/v3/coins/hedera-hashgraph/market_chart?vs_currency=usd&days=1&interval=hourly');
+  const response = await fetchWithRetry(
+    fetchFn,
+    'https://api.coingecko.com/api/v3/coins/hedera-hashgraph/market_chart?vs_currency=usd&days=1&interval=hourly',
+  );
   if (!response.ok) throw new Error(`HBAR market feed failed: ${response.status}`);
-  const body = await response.json() as CoinGeckoMarketChart;
-  return (body.prices ?? []).slice(-30).map(item => ({
-    time: item[0],
-    price: Number(item[1]),
-  })).filter(tick => Number.isFinite(tick.price));
+  const body = (await response.json()) as CoinGeckoMarketChart;
+  return (body.prices ?? [])
+    .slice(-30)
+    .map(item => ({
+      time: item[0],
+      price: Number(item[1]),
+    }))
+    .filter(tick => Number.isFinite(tick.price));
 }
 
 function escapeXml(value: string): string {

@@ -13,7 +13,7 @@ program
   .description('Show VNX agent leaderboard')
   .option('-f, --file <path>', 'ledger JSON file', 'ledger.json')
   .option('-l, --limit <n>', 'max entries', '10')
-  .action((opts) => {
+  .action(opts => {
     const ledger = new AgentLedger();
     try {
       const data = JSON.parse(readFileSync(opts.file as string, 'utf-8'));
@@ -26,7 +26,9 @@ program
       console.log('No recorded tasks yet.');
       return;
     }
-    console.log('\n  #  | ID                | Name                | Reputation | Tasks | Won | Paid (HBAR) | Streak');
+    console.log(
+      '\n  #  | ID                | Name                | Reputation | Tasks | Won | Paid (HBAR) | Streak',
+    );
     console.log('  ' + '-'.repeat(110));
     for (const e of entries) {
       console.log(

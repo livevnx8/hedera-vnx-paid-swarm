@@ -18,7 +18,9 @@
 <p align="center">
   <a href="#quick-start">Quick Start</a> ·
   <a href="#architecture">Architecture</a> ·
+  <a href="#nvidia--hedera-bare-metal">NVIDIA + Hedera</a> ·
   <a href="#live-mainnet-demo">Live Demo</a> ·
+  <a href="#release-quality">Release Quality</a> ·
   <a href="#payment-sdk">Payment SDK</a> ·
   <a href="#hiero-verify-vnx-agent">Hiero Verify Agent</a> ·
   <a href="#benchmarks">Benchmarks</a> ·
@@ -47,13 +49,13 @@ The VNX Paid Micro-Swarm is a deterministic, competition-grade system that dispa
 
 **Live Verification**
 
-| Resource | Link / ID |
-|----------|-------------|
-| **HCS Topic** | `0.0.10416185` — Vera lattice audit trail |
-| **Account** | `0.0.10294360` |
-| **Payment Transaction** | `0.0.10294360@1778958335.880736678` |
-| **Mirror Node** | `https://mainnet-public.mirrornode.hedera.com` |
-| **HashScan** | `https://hashscan.io/mainnet` |
+| Resource                | Link / ID                                      |
+| ----------------------- | ---------------------------------------------- |
+| **HCS Topic**           | `0.0.10416185` — Vera lattice audit trail      |
+| **Account**             | `0.0.10294360`                                 |
+| **Payment Transaction** | `0.0.10294360@1778958335.880736678`            |
+| **Mirror Node**         | `https://mainnet-public.mirrornode.hedera.com` |
+| **HashScan**            | `https://hashscan.io/mainnet`                  |
 
 ---
 
@@ -113,15 +115,15 @@ npm run demo:live -- \
 
 ### Component Reference
 
-| Component | File | Responsibility |
-|-----------|------|--------------|
-| `VnxWorkerAgent` | [`src/workers.ts`](src/workers.ts) | 4 deterministic agents with keyword confidence scoring |
-| `PaidSwarmCoordinator` | [`src/coordinator.ts`](src/coordinator.ts) | Dispatches tasks, scores votes, selects winner, triggers payment |
-| `HederaPaymentRail` | [`src/payment-rail.ts`](src/payment-rail.ts) | Wraps `HederaClient`; enforces mainnet, validates amount cap |
-| `ProofReceiptBuilder` | [`src/receipt-builder.ts`](src/receipt-builder.ts) | SHA-256 hashed JSON receipt with HashScan + mirror-node URLs |
-| `ProofVerifier` | [`src/proof-verifier.ts`](src/proof-verifier.ts) | Recomputes hashes and verifies transactions via Hiero mirror node |
-| `HieroVerifyVnxAgent` | [`src/hiero-verify-agent.ts`](src/hiero-verify-agent.ts) | Agent-style proof verdict for saved receipts |
-| `BenchmarkRunner` | [`src/benchmark.ts`](src/benchmark.ts) | Reproducible local benchmarks for deterministic package operations |
+| Component              | File                                                     | Responsibility                                                     |
+| ---------------------- | -------------------------------------------------------- | ------------------------------------------------------------------ |
+| `VnxWorkerAgent`       | [`src/workers.ts`](src/workers.ts)                       | 4 deterministic agents with keyword confidence scoring             |
+| `PaidSwarmCoordinator` | [`src/coordinator.ts`](src/coordinator.ts)               | Dispatches tasks, scores votes, selects winner, triggers payment   |
+| `HederaPaymentRail`    | [`src/payment-rail.ts`](src/payment-rail.ts)             | Wraps `HederaClient`; enforces mainnet, validates amount cap       |
+| `ProofReceiptBuilder`  | [`src/receipt-builder.ts`](src/receipt-builder.ts)       | SHA-256 hashed JSON receipt with HashScan + mirror-node URLs       |
+| `ProofVerifier`        | [`src/proof-verifier.ts`](src/proof-verifier.ts)         | Recomputes hashes and verifies transactions via Hiero mirror node  |
+| `HieroVerifyVnxAgent`  | [`src/hiero-verify-agent.ts`](src/hiero-verify-agent.ts) | Agent-style proof verdict for saved receipts                       |
+| `BenchmarkRunner`      | [`src/benchmark.ts`](src/benchmark.ts)                   | Reproducible local benchmarks for deterministic package operations |
 
 ### NPM Package Architecture
 
@@ -152,14 +154,54 @@ hedera-vnx-paid-swarm
 
 ### Worker Swarm
 
-| Name | Specialty | Price | Best For |
-|------|-----------|-------|----------|
+| Name                | Specialty  | Price      | Best For                 |
+| ------------------- | ---------- | ---------- | ------------------------ |
 | **BitLattice-ONNX** | prediction | 0.005 HBAR | price signals, forecasts |
-| **RSI-Momentum** | momentum | 0.003 HBAR | RSI, velocity tasks |
-| **BB-Volatility** | volatility | 0.003 HBAR | Bollinger bands, range |
-| **SMA-Trend** | trend | 0.002 HBAR | moving average, slope |
+| **RSI-Momentum**    | momentum   | 0.003 HBAR | RSI, velocity tasks      |
+| **BB-Volatility**   | volatility | 0.003 HBAR | Bollinger bands, range   |
+| **SMA-Trend**       | trend      | 0.002 HBAR | moving average, slope    |
 
 **Scoring Formula:** `score = confidence × specialty_match / (price_hbar + 0.0001)`
+
+---
+
+## NVIDIA + Hedera Bare Metal
+
+The business architecture is simple: **NVIDIA accelerates the intelligence, Hedera verifies the economic event, and VNX connects both into a paid agent workflow on Linux bare metal.** GPUs run the prediction and model-serving workloads locally; Hedera receives the compact proof artifacts: payments, task hashes, decision hashes, HCS messages, and mirror-node verification.
+
+<p align="center">
+  <picture>
+    <source srcset="assets/nvidia-hedera-stack.svg" type="image/svg+xml"/>
+    <img src="assets/nvidia-hedera-stack.png" alt="NVIDIA and Hedera bare-metal VNX stack" width="1000"/>
+  </picture>
+</p>
+
+| Layer                          | What it does in this stack                                                         | Why it matters                                                           |
+| ------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Linux bare metal               | Owns drivers, CUDA runtime, local services, logs, secrets, and process supervision | Low overhead and strong operational control                              |
+| NVIDIA CUDA / Triton / NIM     | Runs accelerated inference, model endpoints, and high-throughput agent workloads   | Fast local prediction without putting private model inputs on-chain      |
+| VNX swarm                      | Routes tasks, scores workers, selects winners, builds receipts, and pays agents    | Turns inference into a deterministic business workflow                   |
+| Hedera HBAR + HCS              | Settles agent payments and anchors verifiable proof messages                       | Creates public, timestamped, independently auditable records             |
+| Hiero mirror-node verification | Replays transaction and topic evidence after execution                             | Lets customers and operators verify outcomes without trusting our server |
+
+Data points used honestly:
+
+| Metric                         | Source                                                           | Value                                                                       |
+| ------------------------------ | ---------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| NVIDIA NIM published example   | Llama 3.1 8B Instruct, 1x H100 SXM, FP8, 200 concurrent requests | NIM ON: 1201 tokens/s, ITL 32ms; NIM OFF: 613 tokens/s, ITL 37ms            |
+| VNX local benchmark            | Deterministic plan-only worker selection on this repo            | 88,975.28 prediction tasks/sec                                              |
+| VNX receipt benchmark          | SHA-256 task and decision receipt construction                   | 416,466.94 receipts/sec                                                     |
+| VNX verifier benchmark         | Local Hiero verifier checks with mirror-node result injected     | 295,338.70 checks/sec                                                       |
+| Hedera public mirror-node note | Hedera HCS API docs                                              | Public mainnet mirror node throttled at 100 requests/sec at time of writing |
+
+What this unlocks:
+
+- GPU-backed prediction desks with paid winner selection
+- Enterprise AI audit trails without publishing private model inputs
+- Agent marketplaces with HBAR settlement and reputation history
+- Bare-metal AI appliances that produce customer-verifiable proof
+
+See [`docs/NVIDIA_HEDERA_BARE_METAL.md`](docs/NVIDIA_HEDERA_BARE_METAL.md) for the detailed architecture, operator workflow, performance boundaries, and source references.
 
 ---
 
@@ -182,18 +224,44 @@ npm run demo:render -- \
 
 What the visual proves:
 
-| Panel | Live or measured source |
-|-------|--------------------------|
-| Agent payment proof | `0.0.10294360@1778958335.880736678` via public mirror node |
-| HCS topic messaging | `0.0.10416185` latest topic message via public mirror node |
-| HBAR chart | Public HBAR/USD market data feed |
+| Panel                 | Live or measured source                                            |
+| --------------------- | ------------------------------------------------------------------ |
+| Agent payment proof   | `0.0.10294360@1778958335.880736678` via public mirror node         |
+| HCS topic messaging   | `0.0.10416185` latest topic message via public mirror node         |
+| HBAR chart            | Public HBAR/USD market data feed                                   |
 | Prediction throughput | Local deterministic benchmark, labeled separately from network TPS |
-| Verifier agents | Hiero verification checks over receipt and mirror-node data |
+| Verifier agents       | Hiero verification checks over receipt and mirror-node data        |
 
 Direct proof links:
 
 - HashScan: `https://hashscan.io/mainnet/transaction/0.0.10294360%401778958335.880736678`
 - Mirror node: `https://mainnet-public.mirrornode.hedera.com/api/v1/transactions/0.0.10294360-1778958335-880736678`
+
+---
+
+## Release Quality
+
+The package ships with release gates for formatting, linting, typechecking, tests, build output, and npm packaging. GitHub Actions runs the same gates on Node.js 20 and 22.
+
+<p align="center">
+  <picture>
+    <source srcset="assets/release-readiness.svg" type="image/svg+xml"/>
+    <img src="assets/release-readiness.png" alt="Release readiness gates" width="1000"/>
+  </picture>
+</p>
+
+Release commands:
+
+```bash
+npm run format:check
+npm run lint
+npm run typecheck
+npm test -- --runInBand
+npm run build
+npm pack --dry-run
+```
+
+NPM package entrypoints resolve to compiled JavaScript under `dist/`, while development commands continue to use the TypeScript sources through `tsx`.
 
 ---
 
@@ -209,8 +277,8 @@ import { HederaPaymentRail } from 'hedera-vnx-paid-swarm';
 const rail = new HederaPaymentRail({ requireMainnet: true, maxHbar: 0.01 });
 const result = await rail.transfer('0.0.10294360', 0.005, 'memo');
 
-console.log(result.status);        // 'success' | 'payment_failed'
-console.log(result.transactionId);  // '0.0.12345@1234567890.000000001'
+console.log(result.status); // 'success' | 'payment_failed'
+console.log(result.transactionId); // '0.0.12345@1234567890.000000001'
 ```
 
 ### CLI
@@ -307,13 +375,13 @@ writeFileSync('ledger.json', JSON.stringify(client.ledger.export()));
 
 All errors extend `SwarmError` with a `code` field:
 
-| Class | Code | When |
-|-------|------|------|
-| `SwarmError` | `CREDENTIALS_MISSING` | Missing `accountId` or `privateKey` |
-| `PaymentError` | `PAYMENT_FAILED` | HBAR transfer fails or exceeds cap |
-| `VerificationError` | `VERIFICATION_FAILED` | Mirror node cannot confirm transaction |
-| `NetworkError` | `NETWORK_ERROR` | Hedera node unreachable (may be retryable) |
-| `AgentError` | `AGENT_ERROR` | Worker execution or registry failure |
+| Class               | Code                  | When                                       |
+| ------------------- | --------------------- | ------------------------------------------ |
+| `SwarmError`        | `CREDENTIALS_MISSING` | Missing `accountId` or `privateKey`        |
+| `PaymentError`      | `PAYMENT_FAILED`      | HBAR transfer fails or exceeds cap         |
+| `VerificationError` | `VERIFICATION_FAILED` | Mirror node cannot confirm transaction     |
+| `NetworkError`      | `NETWORK_ERROR`       | Hedera node unreachable (may be retryable) |
+| `AgentError`        | `AGENT_ERROR`         | Worker execution or registry failure       |
 
 ---
 
@@ -321,13 +389,13 @@ All errors extend `SwarmError` with a `code` field:
 
 This package is designed around Hedera’s strengths: low-cost HBAR transfers, stable account IDs, public transaction IDs, and mirror-node verification.
 
-| Hedera capability | How the package uses it |
-|-------------------|-------------------------|
-| **HBAR transfers** | `HederaClient.transferHbar()` executes the winner payment through `@hashgraph/sdk` |
-| **Mainnet account model** | Receipts preserve payer/recipient style account IDs such as `0.0.10294360` |
-| **Transaction IDs** | Successful payments include `0.0.x@seconds.nanos` transaction IDs for explorer proof |
-| **HashScan** | `explorerUrl` links the receipt to a public Hedera mainnet transaction page |
-| **Hiero mirror node** | `HieroVerifyVnxAgent` confirms the transaction via `mainnet-public.mirrornode.hedera.com` |
+| Hedera capability             | How the package uses it                                                                       |
+| ----------------------------- | --------------------------------------------------------------------------------------------- |
+| **HBAR transfers**            | `HederaClient.transferHbar()` executes the winner payment through `@hashgraph/sdk`            |
+| **Mainnet account model**     | Receipts preserve payer/recipient style account IDs such as `0.0.10294360`                    |
+| **Transaction IDs**           | Successful payments include `0.0.x@seconds.nanos` transaction IDs for explorer proof          |
+| **HashScan**                  | `explorerUrl` links the receipt to a public Hedera mainnet transaction page                   |
+| **Hiero mirror node**         | `HieroVerifyVnxAgent` confirms the transaction via `mainnet-public.mirrornode.hedera.com`     |
 | **Deterministic audit trail** | Task hash and decision hash make the off-chain agent decision reproducible and tamper-evident |
 
 The live Hedera transaction proves settlement. The receipt hashes prove which deterministic worker decision caused that settlement.
@@ -343,9 +411,22 @@ The live Hedera transaction proves settlement. The receipt hashes prove which de
   "timestamp": 1778958345039,
   "taskHash": "d8779ea3f6750d565f07d5e014cd2b8ddc8b12b46847e9f981d90a7d42cba583",
   "votes": [
-    { "workerId": "onnx-primary", "name": "BitLattice-ONNX", "specialty": "prediction", "confidence": 0.9, "priceHbar": 0.005, "score": 176.47 }
+    {
+      "workerId": "onnx-primary",
+      "name": "BitLattice-ONNX",
+      "specialty": "prediction",
+      "confidence": 0.9,
+      "priceHbar": 0.005,
+      "score": 176.47
+    }
   ],
-  "selected": { "workerId": "onnx-primary", "name": "BitLattice-ONNX", "specialty": "prediction", "priceHbar": 0.005, "score": 176.47 },
+  "selected": {
+    "workerId": "onnx-primary",
+    "name": "BitLattice-ONNX",
+    "specialty": "prediction",
+    "priceHbar": 0.005,
+    "score": 176.47
+  },
   "payment": {
     "status": "success",
     "transactionId": "0.0.10294360@1778958335.880736678",
@@ -369,12 +450,12 @@ See [`data/receipt-example.json`](data/receipt-example.json) for a full verified
 
 The **Hiero Verify VNX Agent** is the verification worker for the swarm. It reads a saved receipt, recomputes the local hashes, checks the proof status, validates the HashScan link, and confirms the transaction through the Hedera/Hiero mirror node.
 
-| Field | Value |
-|-------|-------|
-| Agent ID | `hiero-verify-vnx` |
+| Field      | Value                    |
+| ---------- | ------------------------ |
+| Agent ID   | `hiero-verify-vnx`       |
 | Agent Name | `Hiero Verify VNX Agent` |
-| Specialty | `hiero-mainnet-proof` |
-| Verdicts | `accepted` or `rejected` |
+| Specialty  | `hiero-mainnet-proof`    |
+| Verdicts   | `accepted` or `rejected` |
 
 ### Agent CLI
 
@@ -456,11 +537,11 @@ Iterations: 1000
 
 Benchmark cases:
 
-| Case | What it measures |
-|------|------------------|
+| Case                         | What it measures                                                              |
+| ---------------------------- | ----------------------------------------------------------------------------- |
 | `worker_selection_plan_only` | Deterministic swarm vote, score, winner selection, and plan-only receipt path |
-| `receipt_build_sha256` | SHA-256 task/decision receipt construction |
-| `hiero_verify_agent_local` | Hiero Verify VNX Agent checks with mirror-node result injected locally |
+| `receipt_build_sha256`       | SHA-256 task/decision receipt construction                                    |
+| `hiero_verify_agent_local`   | Hiero Verify VNX Agent checks with mirror-node result injected locally        |
 
 ---
 
@@ -497,28 +578,28 @@ npm run test:watch      # watch mode
 
 ## Safety & Security
 
-| Guarantee | Implementation |
-|-----------|----------------|
-| **Max Amount Cap** | Default `--max-hbar` at `0.01` HBAR; configurable but never unlimited |
-| **Mainnet Enforcement** | `HEDERA_NETWORK=mainnet` required for competition runs; throws otherwise |
-| **Positive Amount** | Rejects non-positive or zero amounts |
-| **No Hardcoded Keys** | Private keys loaded exclusively from `HEDERA_PRIVATE_KEY` env var |
+| Guarantee               | Implementation                                                                                      |
+| ----------------------- | --------------------------------------------------------------------------------------------------- |
+| **Max Amount Cap**      | Default `--max-hbar` at `0.01` HBAR; configurable but never unlimited                               |
+| **Mainnet Enforcement** | `HEDERA_NETWORK=mainnet` required for competition runs; throws otherwise                            |
+| **Positive Amount**     | Rejects non-positive or zero amounts                                                                |
+| **No Hardcoded Keys**   | Private keys loaded exclusively from `HEDERA_PRIVATE_KEY` env var                                   |
 | **Plan-Only Isolation** | `--plan-only` mode explicitly labeled as dev-only; receipts show `proofStatus: "not_mainnet_proof"` |
-| **Receipt Guards** | `assertMainnetProofReceipt()` prevents mock receipts from being treated as live proof |
+| **Receipt Guards**      | `assertMainnetProofReceipt()` prevents mock receipts from being treated as live proof               |
 
 ---
 
 ## CLI Scripts
 
-| Script | Command | Purpose |
-|--------|---------|---------|
-| Demo | `npm run demo:plan` | Preview swarm without credentials |
-| Demo Live | `npm run demo:live` | Run on Hedera mainnet with real HBAR |
-| E2E Dry | `npm run e2e` | Structural validation, no network calls |
-| E2E Live | `npm run e2e:live` | Full live mainnet end-to-end run |
-| Verify | `npm run verify -- --receipt <file> --task <text>` | Verify a saved receipt |
-| Benchmark | `npm run benchmark` | Measure deterministic local package operations |
-| Mainnet Demo GIF | `npm run demo:render` | Render the live-data proof GIF from public Hedera/HCS/market sources |
+| Script           | Command                                            | Purpose                                                              |
+| ---------------- | -------------------------------------------------- | -------------------------------------------------------------------- |
+| Demo             | `npm run demo:plan`                                | Preview swarm without credentials                                    |
+| Demo Live        | `npm run demo:live`                                | Run on Hedera mainnet with real HBAR                                 |
+| E2E Dry          | `npm run e2e`                                      | Structural validation, no network calls                              |
+| E2E Live         | `npm run e2e:live`                                 | Full live mainnet end-to-end run                                     |
+| Verify           | `npm run verify -- --receipt <file> --task <text>` | Verify a saved receipt                                               |
+| Benchmark        | `npm run benchmark`                                | Measure deterministic local package operations                       |
+| Mainnet Demo GIF | `npm run demo:render`                              | Render the live-data proof GIF from public Hedera/HCS/market sources |
 
 ---
 
@@ -567,16 +648,22 @@ hedera-vnx-paid-swarm/
 │   ├── badge-hiero.svg       # Hiero Compatible badge (source)
 │   ├── badge-hiero.png       # Hiero Compatible badge (rendered)
 │   ├── badge-tests.svg       # Test badge source
-│   └── badge-tests.png       # Test badge rendered
+│   ├── badge-tests.png       # Test badge rendered
+│   ├── release-readiness.svg # Release quality gates visual
+│   ├── release-readiness.png # Release quality gates rendered
+│   └── vnx-mainnet-demo.gif  # Live mainnet proof demo
 ├── data/
 │   └── receipt-example.json   # Verified example receipt
 ├── docs/
 │   ├── HIERO.md              # Hiero compatibility & verification guide
+│   ├── NVIDIA_HEDERA_BARE_METAL.md # NVIDIA + Hedera bare-metal architecture
 │   └── PAYMENT.md            # Payment SDK reference & examples
 ├── .env.example              # Environment variable template
+├── .github/workflows/ci.yml  # CI quality gates
 ├── CHANGELOG.md              # Version history
 ├── CONTRIBUTING.md           # Contribution guidelines
 ├── LICENSE                   # MIT License
+├── SECURITY.md               # Vulnerability and key-handling policy
 └── package.json              # Scripts & dependencies
 ```
 

@@ -7,11 +7,7 @@
  */
 
 import { SwarmReceipt } from './types.js';
-import {
-  ProofCheck,
-  ProofVerifierOptions,
-  verifySwarmProof,
-} from './proof-verifier.js';
+import { ProofCheck, ProofVerifierOptions, verifySwarmProof } from './proof-verifier.js';
 
 export type HieroVerifyVerdict = 'accepted' | 'rejected';
 

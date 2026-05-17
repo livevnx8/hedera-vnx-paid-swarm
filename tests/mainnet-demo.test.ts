@@ -3,10 +3,7 @@
  */
 
 import { jest } from '@jest/globals';
-import {
-  fetchMainnetDemoData,
-  renderMainnetDemoFrame,
-} from '../src/mainnet-demo.js';
+import { fetchMainnetDemoData, renderMainnetDemoFrame } from '../src/mainnet-demo.js';
 
 function jsonResponse(body: unknown, ok = true, status = 200): Response {
   return {
@@ -21,27 +18,31 @@ describe('mainnet demo data', () => {
     const fetchFn = jest.fn(async (url: string) => {
       if (url.includes('/transactions/0.0.10294360-1778958335-880736678')) {
         return jsonResponse({
-          transactions: [{
-            result: 'SUCCESS',
-            transaction_id: '0.0.10294360-1778958335-880736678',
-            consensus_timestamp: '1778958341.300569000',
-          }],
+          transactions: [
+            {
+              result: 'SUCCESS',
+              transaction_id: '0.0.10294360-1778958335-880736678',
+              consensus_timestamp: '1778958341.300569000',
+            },
+          ],
         });
       }
       if (url.includes('/topics/0.0.10416185/messages')) {
         return jsonResponse({
-          messages: [{
-            sequence_number: 7,
-            consensus_timestamp: '1778958400.000000001',
-            topic_id: '0.0.10416185',
-          }],
+          messages: [
+            {
+              sequence_number: 7,
+              consensus_timestamp: '1778958400.000000001',
+              topic_id: '0.0.10416185',
+            },
+          ],
         });
       }
       if (url.includes('api.coingecko.com')) {
         return jsonResponse({
           prices: [
             [1, 0.0505],
-            [2, 0.0510],
+            [2, 0.051],
           ],
         });
       }
@@ -66,32 +67,36 @@ describe('mainnet demo data', () => {
   });
 
   it('renders a self-contained SVG frame with proof and HCS labels', () => {
-    const svg = renderMainnetDemoFrame({
-      transactionId: '0.0.10294360@1778958335.880736678',
-      hashScanUrl: 'https://hashscan.io/mainnet/transaction/x',
-      mirrorTransactionId: '0.0.10294360-1778958335-880736678',
-      transactionResult: 'SUCCESS',
-      transactionConsensusTimestamp: '1778958341.300569000',
-      hcsTopicId: '0.0.10416185',
-      hcsStatus: 'verified',
-      hcsSequence: 7,
-      hcsConsensusTimestamp: '1778958400.000000001',
-      hbarTicks: [
-        { time: 1, price: 0.0505 },
-        { time: 2, price: 0.051 },
-      ],
-      dataProvenance: {
-        source: 'CoinGecko API (public)',
-        fetchedAt: '2026-05-17T11:00:00.000Z',
-        dataHash: 'a1b2c3d4e5f67890',
-        sampleCount: 2,
+    const svg = renderMainnetDemoFrame(
+      {
+        transactionId: '0.0.10294360@1778958335.880736678',
+        hashScanUrl: 'https://hashscan.io/mainnet/transaction/x',
+        mirrorTransactionId: '0.0.10294360-1778958335-880736678',
+        transactionResult: 'SUCCESS',
+        transactionConsensusTimestamp: '1778958341.300569000',
+        hcsTopicId: '0.0.10416185',
+        hcsStatus: 'verified',
+        hcsSequence: 7,
+        hcsConsensusTimestamp: '1778958400.000000001',
+        hbarTicks: [
+          { time: 1, price: 0.0505 },
+          { time: 2, price: 0.051 },
+        ],
+        dataProvenance: {
+          source: 'CoinGecko API (public)',
+          fetchedAt: '2026-05-17T11:00:00.000Z',
+          dataHash: 'a1b2c3d4e5f67890',
+          sampleCount: 2,
+        },
+        benchmark: {
+          predictionsPerSecond: 88975.28,
+          receiptBuildOpsPerSecond: 416466.94,
+          verifierOpsPerSecond: 295338.7,
+        },
       },
-      benchmark: {
-        predictionsPerSecond: 88975.28,
-        receiptBuildOpsPerSecond: 416466.94,
-        verifierOpsPerSecond: 295338.7,
-      },
-    }, 10, 90);
+      10,
+      90,
+    );
 
     expect(svg).toContain('<svg');
     expect(svg).toContain('VNX Paid Micro-Swarm');

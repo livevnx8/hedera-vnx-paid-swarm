@@ -58,10 +58,15 @@ export class AgentLedger {
     let s = this._stats.get(id);
     if (!s) {
       s = {
-        id, name,
-        tasksCompleted: 0, tasksWon: 0,
-        totalPaymentsHbar: 0, avgConfidence: 0,
-        totalConfidence: 0, streak: 0, lastActivity: 0,
+        id,
+        name,
+        tasksCompleted: 0,
+        tasksWon: 0,
+        totalPaymentsHbar: 0,
+        avgConfidence: 0,
+        totalConfidence: 0,
+        streak: 0,
+        lastActivity: 0,
       };
       this._stats.set(id, s);
     }
@@ -96,7 +101,10 @@ export class AgentLedger {
     const accuracy = s.tasksWon / s.tasksCompleted;
     const reliability = Math.min(s.tasksCompleted / 10, 1);
     const volume = Math.min(s.totalPaymentsHbar / 0.1, 1);
-    const recency = s.lastActivity > 0 ? Math.min((Date.now() - s.lastActivity) / (7 * 24 * 60 * 60 * 1000), 1) : 0;
+    const recency =
+      s.lastActivity > 0
+        ? Math.min((Date.now() - s.lastActivity) / (7 * 24 * 60 * 60 * 1000), 1)
+        : 0;
     return accuracy * 0.4 + reliability * 0.3 + volume * 0.2 + (1 - recency) * 0.1;
   }
 

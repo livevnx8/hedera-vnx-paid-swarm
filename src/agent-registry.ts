@@ -40,7 +40,17 @@ export class AgentRegistry {
   }
 
   toWorkerAgents(): VnxWorkerAgent[] {
-    return this.list().map(r => new VnxWorkerAgent(r.id, r.name, r.specialty, r.priceHbar, r.paymentAccount, r.metadata?.evidence as string ?? ''));
+    return this.list().map(
+      r =>
+        new VnxWorkerAgent(
+          r.id,
+          r.name,
+          r.specialty,
+          r.priceHbar,
+          r.paymentAccount,
+          (r.metadata?.evidence as string) ?? '',
+        ),
+    );
   }
 
   export(): Record<string, AgentRecord> {

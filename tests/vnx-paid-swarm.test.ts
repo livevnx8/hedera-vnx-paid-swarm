@@ -67,9 +67,7 @@ describe('PaidSwarmCoordinator — Winner Selection', () => {
       { maxHbar: 0.1, planOnly: false },
       rail,
     );
-    const receipt = await coord.run(
-      'Predict the HBAR price direction and forecast the signal',
-    );
+    const receipt = await coord.run('Predict the HBAR price direction and forecast the signal');
 
     expect(receipt.selected.score).toBeGreaterThan(0);
     // ONNX-primary should win on price-signal tasks (higher confidence + match weight)
@@ -96,11 +94,7 @@ describe('PaidSwarmCoordinator — Winner Selection', () => {
 
   it('skips payment in plan-only mode', async () => {
     const rail = new MockPaymentRail();
-    const coord = new PaidSwarmCoordinator(
-      DEFAULT_WORKERS,
-      { maxHbar: 0.1, planOnly: true },
-      rail,
-    );
+    const coord = new PaidSwarmCoordinator(DEFAULT_WORKERS, { maxHbar: 0.1, planOnly: true }, rail);
     const receipt = await coord.run('Any task');
 
     expect(receipt.payment.status).toBe('skipped_plan_only');
@@ -287,7 +281,14 @@ describe('Mainnet proof validation', () => {
         paymentAccount: '0.0.1',
       },
     ],
-    selected: { workerId: 'a', name: 'A', specialty: 'prediction', priceHbar: 0.01, score: 10, paymentAccount: '0.0.1' },
+    selected: {
+      workerId: 'a',
+      name: 'A',
+      specialty: 'prediction',
+      priceHbar: 0.01,
+      score: 10,
+      paymentAccount: '0.0.1',
+    },
     payment: {
       status: 'success',
       transactionId: '0.0.123@1778951290.123456789',

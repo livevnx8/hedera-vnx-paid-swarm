@@ -8,18 +8,18 @@ Standalone HBAR transfer utilities built on `@hashgraph/sdk` with safety guards,
 import { HederaPaymentRail } from 'hedera-vnx-paid-swarm';
 
 const rail = new HederaPaymentRail({
-  requireMainnet: true,   // Enforce mainnet only
-  maxHbar: 0.01,          // Safety cap per transfer
+  requireMainnet: true, // Enforce mainnet only
+  maxHbar: 0.01, // Safety cap per transfer
 });
 
 const result = await rail.transfer(
-  '0.0.10294360',   // recipient
-  0.005,            // HBAR amount
-  'VNX swarm winner' // optional memo
+  '0.0.10294360', // recipient
+  0.005, // HBAR amount
+  'VNX swarm winner', // optional memo
 );
 
-console.log(result.status);        // 'success' | 'payment_failed'
-console.log(result.transactionId);  // '0.0.12345@1234567890.000000001'
+console.log(result.status); // 'success' | 'payment_failed'
+console.log(result.transactionId); // '0.0.12345@1234567890.000000001'
 ```
 
 ## Environment
@@ -46,24 +46,24 @@ npm run send -- --to 0.0.10294360 --amount 0.01
 
 Low-level wrapper around `@hashgraph/sdk` `Client`.
 
-| Method | Returns | Description |
-|--------|---------|-------------|
-| `transferHbar(to, amount, memo?)` | `{transactionId, status, consensusTimestampMs}` | Execute HBAR transfer |
-| `getBalance(accountId?)` | `{hbar, tokens, timestamp}` | Query account balance |
-| `close()` | `void` | Close client connection |
-| `static fromEnv()` | `HederaClient \| null` | Build from `HEDERA_*` env vars |
+| Method                            | Returns                                         | Description                    |
+| --------------------------------- | ----------------------------------------------- | ------------------------------ |
+| `transferHbar(to, amount, memo?)` | `{transactionId, status, consensusTimestampMs}` | Execute HBAR transfer          |
+| `getBalance(accountId?)`          | `{hbar, tokens, timestamp}`                     | Query account balance          |
+| `close()`                         | `void`                                          | Close client connection        |
+| `static fromEnv()`                | `HederaClient \| null`                          | Build from `HEDERA_*` env vars |
 
 ### `HederaPaymentRail`
 
 High-level guard rail with validation and error normalization.
 
-| Config | Default | Description |
-|--------|---------|-------------|
-| `requireMainnet` | `true` | Throw if `HEDERA_NETWORK !== 'mainnet'` |
-| `maxHbar` | `0.01` | Reject transfers above this cap |
+| Config           | Default | Description                             |
+| ---------------- | ------- | --------------------------------------- |
+| `requireMainnet` | `true`  | Throw if `HEDERA_NETWORK !== 'mainnet'` |
+| `maxHbar`        | `0.01`  | Reject transfers above this cap         |
 
-| Method | Returns | Description |
-|--------|---------|-------------|
+| Method                        | Returns         | Description                                  |
+| ----------------------------- | --------------- | -------------------------------------------- |
 | `transfer(to, amount, memo?)` | `PaymentResult` | Validate → init client → execute → normalize |
 
 ## PaymentResult

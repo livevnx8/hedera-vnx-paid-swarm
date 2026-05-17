@@ -5,6 +5,7 @@ All notable changes to this project are documented in this file.
 ## [1.0.0] — 2026-05-16
 
 ### Added
+
 - Core deterministic agent swarm with 4 pre-configured VNX workers
 - Hedera mainnet payment rail with enforced mainnet validation
 - SHA-256 cryptographic receipt builder with HashScan + mirror-node URLs
@@ -16,6 +17,7 @@ All notable changes to this project are documented in this file.
 - Example mainnet receipt with verified hashes
 
 ### Security
+
 - Default max-hbar cap at 0.01 HBAR
 - Private key loaded exclusively from environment variables
 - `--plan-only` mode clearly separated from mainnet runs

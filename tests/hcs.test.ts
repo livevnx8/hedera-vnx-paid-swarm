@@ -72,14 +72,14 @@ describe('HieroHcsVerifyAgent', () => {
                 topic_id: '0.0.10416185',
               },
             ],
-          } as HcsTopicMessageResponse),
+          }) as HcsTopicMessageResponse,
       }) as Response;
 
     const report = await agent.verify({ topicId: '0.0.10416185', sequenceNumber: 42 });
 
     expect(report.verdict).toBe('accepted');
     expect(report.agentId).toBe('hcs-verify-vnx');
-    expect(report.checks.every((c) => c.ok)).toBe(true);
+    expect(report.checks.every(c => c.ok)).toBe(true);
 
     globalThis.fetch = originalFetch;
   });
@@ -98,7 +98,7 @@ describe('HieroHcsVerifyAgent', () => {
     const report = await agent.verify({ topicId: '0.0.10416185', sequenceNumber: 999 });
 
     expect(report.verdict).toBe('rejected');
-    expect(report.checks.some((c) => !c.ok)).toBe(true);
+    expect(report.checks.some(c => !c.ok)).toBe(true);
 
     globalThis.fetch = originalFetch;
   });

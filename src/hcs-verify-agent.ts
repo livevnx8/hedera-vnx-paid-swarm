@@ -34,17 +34,13 @@ export class HieroHcsVerifyAgent {
   private _mirrorBaseUrl: string;
 
   constructor(mirrorBaseUrl?: string) {
-    this._mirrorBaseUrl =
-      mirrorBaseUrl ?? 'https://mainnet-public.mirrornode.hedera.com';
+    this._mirrorBaseUrl = mirrorBaseUrl ?? 'https://mainnet-public.mirrornode.hedera.com';
   }
 
   /**
    * Verify an HCS message by its topic ID and sequence number.
    */
-  async verify(params: {
-    topicId: string;
-    sequenceNumber: number;
-  }): Promise<HcsVerifyReport> {
+  async verify(params: { topicId: string; sequenceNumber: number }): Promise<HcsVerifyReport> {
     const checks: HcsVerifyReport['checks'] = [];
 
     // 1. Fetch message from mirror node
@@ -130,9 +126,7 @@ export class HieroHcsVerifyAgent {
     checks.push({
       name: 'consensus_timestamp',
       ok: hasTimestamp,
-      detail: hasTimestamp
-        ? `Consensus at ${msg.consensus_timestamp}`
-        : 'No consensus timestamp',
+      detail: hasTimestamp ? `Consensus at ${msg.consensus_timestamp}` : 'No consensus timestamp',
     });
 
     return this._buildReport(checks, decoded);
@@ -142,7 +136,7 @@ export class HieroHcsVerifyAgent {
     checks: HcsVerifyReport['checks'],
     message: HcsProofMessage | null,
   ): HcsVerifyReport {
-    const okCount = checks.filter((c) => c.ok).length;
+    const okCount = checks.filter(c => c.ok).length;
     const totalCount = checks.length;
     const allOk = okCount === totalCount;
 

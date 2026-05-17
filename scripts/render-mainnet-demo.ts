@@ -15,7 +15,11 @@ import { fetchMainnetDemoData, renderMainnetDemoFrame } from '../src/mainnet-dem
 const program = new Command()
   .name('render-mainnet-demo')
   .description('Render a 30-second VNX paid swarm mainnet proof demo GIF')
-  .option('--transaction-id <id>', 'Known Hedera mainnet payment transaction ID', '0.0.10294360@1778958335.880736678')
+  .option(
+    '--transaction-id <id>',
+    'Known Hedera mainnet payment transaction ID',
+    '0.0.10294360@1778958335.880736678',
+  )
   .option('--hcs-topic <id>', 'HCS topic ID to query for latest proof message', '0.0.10416185')
   .option('--hcs-sequence <n>', 'Specific HCS message sequence number')
   .option('--frames <n>', 'Number of frames to render', '90')
@@ -41,7 +45,9 @@ const opts = program.opts<{
 function checkFfmpeg(): void {
   const result = spawnSync('ffmpeg', ['-version'], { stdio: 'pipe' });
   if (result.error || result.status !== 0) {
-    throw new Error('ffmpeg is required but not found in PATH. Install ffmpeg (https://ffmpeg.org/download.html)');
+    throw new Error(
+      'ffmpeg is required but not found in PATH. Install ffmpeg (https://ffmpeg.org/download.html)',
+    );
   }
 }
 
@@ -61,7 +67,11 @@ async function writeFrame(dir: string, index: number, total: number, svg: string
   }
 }
 
-async function runInBatches<T>(items: T[], concurrency: number, fn: (item: T, idx: number) => Promise<void>): Promise<void> {
+async function runInBatches<T>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T, idx: number) => Promise<void>,
+): Promise<void> {
   let i = 0;
   while (i < items.length) {
     const batch = items.slice(i, i + concurrency);
@@ -113,8 +123,12 @@ async function main(): Promise<void> {
     console.log(`\nPreview frame rendered: ${outPath}`);
     console.log(`  Frame index: ${previewIndex}/${totalFrames}`);
     console.log(`  Transaction: ${data.transactionId}`);
-    console.log(`  HCS:         ${data.hcsTopicId} (${data.hcsStatus}${data.hcsSequence ? ` #${data.hcsSequence}` : ''})`);
-    console.log('  Note: renderer reads public data only; it does not submit new payments or HCS messages.');
+    console.log(
+      `  HCS:         ${data.hcsTopicId} (${data.hcsStatus}${data.hcsSequence ? ` #${data.hcsSequence}` : ''})`,
+    );
+    console.log(
+      '  Note: renderer reads public data only; it does not submit new payments or HCS messages.',
+    );
     return;
   }
 
@@ -122,7 +136,7 @@ async function main(): Promise<void> {
   const indices = Array.from({ length: totalFrames }, (_, i) => i);
 
   console.log(`Rendering ${totalFrames} SVG frames (concurrency: ${concurrency})...`);
-  await runInBatches(indices, concurrency, async (i) => {
+  await runInBatches(indices, concurrency, async i => {
     const frame = renderMainnetDemoFrame(data, i, totalFrames);
     await writeFrame(frameDir, i, totalFrames, frame);
     const progress = formatProgress(i + 1, totalFrames);
@@ -134,13 +148,20 @@ async function main(): Promise<void> {
   process.stdout.write('\n');
 
   console.log(`Encoding GIF with ffmpeg: ${opts.out}`);
-  const ffmpeg = spawnSync('ffmpeg', [
-    '-y',
-    '-framerate', String(fps),
-    '-i', `${frameDir}/frame-%04d.svg`,
-    '-vf', 'scale=960:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse',
-    opts.out,
-  ], { stdio: 'inherit' });
+  const ffmpeg = spawnSync(
+    'ffmpeg',
+    [
+      '-y',
+      '-framerate',
+      String(fps),
+      '-i',
+      `${frameDir}/frame-%04d.svg`,
+      '-vf',
+      'scale=960:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse',
+      opts.out,
+    ],
+    { stdio: 'inherit' },
+  );
 
   if (ffmpeg.status !== 0) {
     throw new Error(`ffmpeg failed with status ${ffmpeg.status}`);
@@ -153,9 +174,13 @@ async function main(): Promise<void> {
   console.log('\nMainnet demo GIF rendered.');
   console.log(`  Output:      ${opts.out}`);
   console.log(`  Transaction: ${data.transactionId}`);
-  console.log(`  HCS:         ${data.hcsTopicId} (${data.hcsStatus}${data.hcsSequence ? ` #${data.hcsSequence}` : ''})`);
+  console.log(
+    `  HCS:         ${data.hcsTopicId} (${data.hcsStatus}${data.hcsSequence ? ` #${data.hcsSequence}` : ''})`,
+  );
   console.log(`  HBAR ticks:  ${data.hbarTicks.length}`);
-  console.log('  Note: renderer reads public data only; it does not submit new payments or HCS messages.');
+  console.log(
+    '  Note: renderer reads public data only; it does not submit new payments or HCS messages.',
+  );
 }
 
 main().catch(err => {
