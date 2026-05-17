@@ -183,13 +183,16 @@ export function renderMainnetDemoFrame(
   </defs>
   <rect width="1280" height="720" fill="url(#bg)"/>
   <text x="640" y="54" text-anchor="middle" fill="#F8FAFC" font-family="Inter,Segoe UI,sans-serif" font-size="30" font-weight="800">VNX Paid Micro-Swarm · Live Mainnet Proof Demo</text>
+  <rect x="540" y="62" width="200" height="3" rx="1.5" fill="url(#cyan)" opacity="0.5"/>
   <text x="640" y="84" text-anchor="middle" fill="#94A3B8" font-family="Inter,Segoe UI,sans-serif" font-size="14">${escapeXml(phaseLabels[phase])} · ${Math.round(progress * 30)}s / 30s</text>
 
   <rect x="42" y="112" width="416" height="250" rx="14" fill="#0F172A" stroke="#1E293B" filter="url(#shadow)"/>
+  <rect x="70" y="148" width="80" height="3" rx="1.5" fill="#22D3EE" opacity="0.6"/>
   <text x="70" y="142" fill="#22D3EE" font-family="Inter,Segoe UI,sans-serif" font-size="16" font-weight="700">HBAR/USD Public Market Feed</text>
   ${chart}
 
   <rect x="486" y="112" width="350" height="210" rx="14" fill="#0F172A" stroke="#1E293B" filter="url(#shadow)"/>
+  <rect x="514" y="148" width="80" height="3" rx="1.5" fill="#A78BFA" opacity="0.6"/>
   <text x="514" y="142" fill="#A78BFA" font-family="Inter,Segoe UI,sans-serif" font-size="16" font-weight="700">Prediction Firehose</text>
   <text x="514" y="187" fill="#F8FAFC" font-family="Inter,Segoe UI,sans-serif" font-size="42" font-weight="800">${streamCount}</text>
   <text x="514" y="215" fill="#94A3B8" font-family="Inter,Segoe UI,sans-serif" font-size="13">demo prediction tasks streamed</text>
@@ -197,6 +200,7 @@ export function renderMainnetDemoFrame(
   <text x="514" y="286" fill="#64748B" font-family="Inter,Segoe UI,sans-serif" font-size="12">local deterministic benchmark · no fake network TPS</text>
 
   <rect x="864" y="112" width="374" height="210" rx="14" fill="#0F172A" stroke="#1E293B" filter="url(#shadow)"/>
+  <rect x="892" y="148" width="80" height="3" rx="1.5" fill="#34D399" opacity="0.6"/>
   <text x="892" y="142" fill="#34D399" font-family="Inter,Segoe UI,sans-serif" font-size="16" font-weight="700">VNX Agent Swarm</text>
   ${renderWorkerBar(892, 175, 'BitLattice-ONNX', workerBars[0], '#22D3EE')}
   ${renderWorkerBar(892, 212, 'RSI-Momentum', workerBars[1], '#34D399')}
@@ -204,22 +208,27 @@ export function renderMainnetDemoFrame(
   ${renderWorkerBar(892, 286, 'SMA-Trend', workerBars[3], '#FBBF24')}
 
   <rect x="42" y="354" width="378" height="250" rx="14" fill="#0F172A" stroke="#1E293B" filter="url(#shadow)"/>
+  <rect x="70" y="392" width="80" height="3" rx="1.5" fill="#FBBF24" opacity="0.6"/>
   <text x="70" y="386" fill="#FBBF24" font-family="Inter,Segoe UI,sans-serif" font-size="16" font-weight="700">Agent Payment Proof</text>
-  <text x="70" y="430" fill="#F8FAFC" font-family="Inter,Segoe UI,sans-serif" font-size="18" font-weight="700">${escapeXml(data.transactionResult)}</text>
+  <circle cx="62" cy="424" r="5" fill="${data.transactionResult === 'SUCCESS' ? '#34D399' : '#EF4444'}" opacity="0.85"/>
+  <text x="75" y="430" fill="#F8FAFC" font-family="Inter,Segoe UI,sans-serif" font-size="18" font-weight="700">${escapeXml(data.transactionResult)}</text>
   <text x="70" y="462" fill="#94A3B8" font-family="Inter,Segoe UI,sans-serif" font-size="12">Tx ${escapeXml(data.transactionId)}</text>
   <text x="70" y="492" fill="#94A3B8" font-family="Inter,Segoe UI,sans-serif" font-size="12">Mirror ${escapeXml(data.mirrorTransactionId)}</text>
   <text x="70" y="522" fill="#64748B" font-family="Inter,Segoe UI,sans-serif" font-size="12">Consensus ${escapeXml(data.transactionConsensusTimestamp)}</text>
   <rect x="70" y="552" width="${Math.max(20, progress * 300)}" height="10" rx="5" fill="url(#green)"/>
 
   <rect x="452" y="354" width="378" height="250" rx="14" fill="#0F172A" stroke="#1E293B" filter="url(#shadow)"/>
+  <rect x="480" y="392" width="80" height="3" rx="1.5" fill="#22D3EE" opacity="0.6"/>
   <text x="480" y="386" fill="#22D3EE" font-family="Inter,Segoe UI,sans-serif" font-size="16" font-weight="700">HCS Topic Messaging</text>
-  <text x="480" y="430" fill="#F8FAFC" font-family="Inter,Segoe UI,sans-serif" font-size="18" font-weight="700">${escapeXml(hcsLabel)}</text>
+  <circle cx="472" cy="424" r="5" fill="${data.hcsStatus === 'verified' ? '#34D399' : data.hcsStatus === 'no_message' ? '#FBBF24' : '#EF4444'}" opacity="0.85"/>
+  <text x="485" y="430" fill="#F8FAFC" font-family="Inter,Segoe UI,sans-serif" font-size="18" font-weight="700">${escapeXml(hcsLabel)}</text>
   <text x="480" y="462" fill="#94A3B8" font-family="Inter,Segoe UI,sans-serif" font-size="12">Proof payload: vnx.swarm.proof</text>
   <text x="480" y="492" fill="#94A3B8" font-family="Inter,Segoe UI,sans-serif" font-size="12">Mirror-node replay: ${escapeXml(data.hcsStatus.toUpperCase())}</text>
   <text x="480" y="522" fill="#64748B" font-family="Inter,Segoe UI,sans-serif" font-size="12">Consensus ${escapeXml(data.hcsConsensusTimestamp ?? 'latest message unavailable')}</text>
   <rect x="480" y="552" width="${Math.max(20, progress * 300)}" height="10" rx="5" fill="url(#cyan)"/>
 
   <rect x="862" y="354" width="376" height="250" rx="14" fill="#0F172A" stroke="#1E293B" filter="url(#shadow)"/>
+  <rect x="890" y="392" width="80" height="3" rx="1.5" fill="#A78BFA" opacity="0.6"/>
   <text x="890" y="386" fill="#A78BFA" font-family="Inter,Segoe UI,sans-serif" font-size="16" font-weight="700">Verifier Agents</text>
   <text x="890" y="430" fill="#F8FAFC" font-family="Inter,Segoe UI,sans-serif" font-size="18" font-weight="800">ACCEPTED</text>
   <text x="890" y="464" fill="#94A3B8" font-family="Inter,Segoe UI,sans-serif" font-size="12">Hiero Verify VNX Agent</text>
@@ -303,15 +312,17 @@ function renderHbarChart(
     <circle cx="${current.px.toFixed(1)}" cy="${current.py.toFixed(1)}" r="2.5" fill="#fff"/>
     <text x="${current.px.toFixed(1)}" y="${(current.py - 12).toFixed(1)}" text-anchor="middle" fill="#22D3EE" font-family="Inter,Segoe UI,sans-serif" font-size="11" font-weight="600">$${current.price.toFixed(5)}</text>
     ${xAxisLabels}
-    <text x="${chartX}" y="${chartY + chartH + 16}" text-anchor="start" fill="#475569" font-family="Inter,Segoe UI,sans-serif" font-size="9">${escapeXml(provenance.source)} · ${provenance.sampleCount} samples · hash ${provenance.dataHash}</text>
+    <text x="${chartX}" y="${chartY + chartH + 16}" text-anchor="start" fill="#475569" font-family="Inter,Segoe UI,sans-serif" font-size="9">${escapeXml(provenance.source)} · ${provenance.sampleCount}pts · ${provenance.dataHash}</text>
   `;
 }
 
 function renderWorkerBar(x: number, y: number, name: string, value: number, color: string): string {
   const width = Math.round(value * 190);
+  const pct = Math.round(value * 100);
   return `<text x="${x}" y="${y}" fill="#CBD5E1" font-family="Inter,Segoe UI,sans-serif" font-size="12">${escapeXml(name)}</text>
   <rect x="${x + 128}" y="${y - 13}" width="190" height="12" rx="6" fill="#1E293B"/>
-  <rect x="${x + 128}" y="${y - 13}" width="${width}" height="12" rx="6" fill="${color}"/>`;
+  <rect x="${x + 128}" y="${y - 13}" width="${Math.max(2, width)}" height="12" rx="6" fill="${color}"/>
+  <text x="${x + 128 + width + 6}" y="${y}" fill="${color}" font-family="Inter,Segoe UI,sans-serif" font-size="10" font-weight="600">${pct}%</text>`;
 }
 
 async function fetchMirrorTransaction(fetchFn: typeof fetch, mirrorTransactionId: string) {
