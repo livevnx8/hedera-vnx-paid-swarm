@@ -34,7 +34,8 @@ export class PaidSwarmCoordinator {
     // 2. Score each worker
     const scoredVotes: WorkerVote[] = rawVotes.map(r => {
       const matchWeight = this._specialtyMatch(taskDescription, r.specialty);
-      const score = (r.confidence * matchWeight) / (r.priceHbar + 0.0001);
+      const effectivePrice = Math.max(r.priceHbar, 0.001); // minimum floor prevents price=0 gaming
+      const score = (r.confidence * matchWeight) / (effectivePrice + 0.0001);
       return {
         workerId: r.workerId,
         name: r.name,

@@ -161,11 +161,17 @@ hedera-vnx-paid-swarm
 | **BB-Volatility**   | volatility | 0.003 HBAR | Bollinger bands, range   |
 | **SMA-Trend**       | trend      | 0.002 HBAR | moving average, slope    |
 
-**Scoring Formula:** `score = confidence × specialty_match / (price_hbar + 0.0001)`
+> Workers use deterministic keyword-confidence scoring to demonstrate the competitive dispatch pattern. They are designed to be replaced with real inference backends (ONNX, REST, gRPC) via the `VnxWorkerAgent` interface.
+
+**Scoring Formula:** `score = confidence × specialty_match / (max(price_hbar, 0.001) + 0.0001)`
+
+A minimum effective price of 0.001 HBAR prevents agents from gaming the formula by bidding near zero.
 
 ---
 
 ## NVIDIA + Hedera Bare Metal
+
+> **Reference Architecture** — This section describes the target production stack. GPU-accelerated inference (Nemotron, TensorRT, NIM) is implemented in the companion [`nemotron-vnx-paid-swarm`](https://github.com/livevnx8/hedera-vnx-nvidia) repository. This package provides the deterministic task dispatch, payment, and proof layer that sits beneath the inference tier.
 
 The business architecture is simple: **NVIDIA accelerates the intelligence, Hedera verifies the economic event, and VNX connects both into a paid agent workflow on Linux bare metal.** GPUs run the prediction and model-serving workloads locally; Hedera receives the compact proof artifacts: payments, task hashes, decision hashes, HCS messages, and mirror-node verification.
 
@@ -537,11 +543,13 @@ Iterations: 1000
 
 Benchmark cases:
 
-| Case                         | What it measures                                                              |
-| ---------------------------- | ----------------------------------------------------------------------------- |
-| `worker_selection_plan_only` | Deterministic swarm vote, score, winner selection, and plan-only receipt path |
-| `receipt_build_sha256`       | SHA-256 task/decision receipt construction                                    |
-| `hiero_verify_agent_local`   | Hiero Verify VNX Agent checks with mirror-node result injected locally        |
+> **Note:** These benchmarks measure local in-memory deterministic operations (keyword scoring, SHA-256 hashing, and local verification logic). They do not measure inference, network latency, or Hedera transaction throughput.
+
+| Case                         | What it measures                                                            |
+| ---------------------------- | --------------------------------------------------------------------------- |
+| `worker_selection_plan_only` | Deterministic keyword scoring, winner selection, and plan-only receipt path |
+| `receipt_build_sha256`       | SHA-256 task/decision hash construction (pure CPU)                          |
+| `hiero_verify_agent_local`   | Hiero Verify VNX Agent checks with mirror-node result injected locally      |
 
 ---
 
