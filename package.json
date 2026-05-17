@@ -23,6 +23,7 @@
     "vnx-prediction-firehose": "./scripts/vnx-prediction-firehose.ts",
     "hcs-topic-publisher": "./scripts/hcs-topic-publisher.ts",
     "hcs-verify-agent": "./scripts/hcs-verify-agent.ts",
+    "vnx-mainnet-demo": "./scripts/render-mainnet-demo.ts",
     "send-hbar": "./scripts/send-hbar.ts",
     "vnx-leaderboard": "./scripts/leaderboard.ts"
   },
@@ -37,6 +38,7 @@
     "e2e:live": "tsx scripts/vnx-paid-swarm-e2e.ts --live",
     "verify": "tsx scripts/vnx-paid-swarm-verify-proof.ts",
     "benchmark": "tsx scripts/benchmark.ts",
+    "demo:render": "tsx scripts/render-mainnet-demo.ts",
     "demo:firehose": "tsx scripts/vnx-prediction-firehose.ts",
     "demo:hcs": "tsx scripts/hcs-topic-publisher.ts",
     "verify:hcs": "tsx scripts/hcs-verify-agent.ts",

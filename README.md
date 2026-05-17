@@ -8,7 +8,7 @@
   <img src="assets/badge-swarm.png" alt="VNX Swarm Protocol"/>
   <img src="assets/badge-hedera.png" alt="Verified on Hedera Mainnet"/>
   <img src="assets/badge-hiero.png" alt="Hiero Compatible"/>
-  <img src="assets/badge-tests.svg" alt="23 Tests Passing"/>
+  <img src="assets/badge-tests.svg" alt="32 Tests Passing"/>
 </p>
 
 <p align="center">
@@ -18,6 +18,7 @@
 <p align="center">
   <a href="#quick-start">Quick Start</a> ·
   <a href="#architecture">Architecture</a> ·
+  <a href="#live-mainnet-demo">Live Demo</a> ·
   <a href="#payment-sdk">Payment SDK</a> ·
   <a href="#hiero-verify-vnx-agent">Hiero Verify Agent</a> ·
   <a href="#benchmarks">Benchmarks</a> ·
@@ -42,7 +43,7 @@ The VNX Paid Micro-Swarm is a deterministic, competition-grade system that dispa
 - **Standalone Payment SDK** — send HBAR from CLI or code without swarm logic
 - **SHA-256 cryptographic receipts** with HashScan and mirror-node URLs
 - **Hiero Verify VNX Agent** — 5 independent checks with live mirror-node confirmation
-- **23 passing Jest tests** covering edge cases, tamper detection, verifier-agent verdicts, and benchmark invariants
+- **32 passing Jest tests** covering edge cases, tamper detection, HCS verification, demo rendering, verifier-agent verdicts, and benchmark invariants
 
 **Live Verification**
 
@@ -50,6 +51,7 @@ The VNX Paid Micro-Swarm is a deterministic, competition-grade system that dispa
 |----------|-------------|
 | **HCS Topic** | `0.0.10416185` — Vera lattice audit trail |
 | **Account** | `0.0.10294360` |
+| **Payment Transaction** | `0.0.10294360@1778958335.880736678` |
 | **Mirror Node** | `https://mainnet-public.mirrornode.hedera.com` |
 | **HashScan** | `https://hashscan.io/mainnet` |
 
@@ -131,11 +133,15 @@ hedera-vnx-paid-swarm
 │  ├─ HederaPaymentRail / HederaClient
 │  ├─ ProofReceiptBuilder
 │  ├─ HieroVerifyVnxAgent
-│  └─ runLocalBenchmarks
+│  ├─ HieroHcsVerifyAgent
+│  ├─ runLocalBenchmarks
+│  └─ fetchMainnetDemoData / renderMainnetDemoFrame
 ├─ CLI Tools
 │  ├─ vnx-swarm-demo
 │  ├─ vnx-swarm-e2e
 │  ├─ vnx-swarm-verify
+│  ├─ vnx-mainnet-demo
+│  ├─ hcs-topic-publisher / hcs-verify-agent
 │  ├─ send-hbar
 │  └─ npm run benchmark
 └─ Proof Data
@@ -154,6 +160,40 @@ hedera-vnx-paid-swarm
 | **SMA-Trend** | trend | 0.002 HBAR | moving average, slope |
 
 **Scoring Formula:** `score = confidence × specialty_match / (price_hbar + 0.0001)`
+
+---
+
+## Live Mainnet Demo
+
+The demo GIF is rendered from public data sources: an existing Hedera mainnet payment transaction, the latest message from the Vera HCS topic, a public HBAR/USD market feed, and local deterministic benchmark results. Rendering the GIF does **not** submit a new payment or HCS message.
+
+<p align="center">
+  <img src="assets/vnx-mainnet-demo.gif" alt="VNX paid swarm live mainnet proof demo" width="960"/>
+</p>
+
+Render it locally:
+
+```bash
+npm run demo:render -- \
+  --transaction-id 0.0.10294360@1778958335.880736678 \
+  --hcs-topic 0.0.10416185 \
+  --out assets/vnx-mainnet-demo.gif
+```
+
+What the visual proves:
+
+| Panel | Live or measured source |
+|-------|--------------------------|
+| Agent payment proof | `0.0.10294360@1778958335.880736678` via public mirror node |
+| HCS topic messaging | `0.0.10416185` latest topic message via public mirror node |
+| HBAR chart | Public HBAR/USD market data feed |
+| Prediction throughput | Local deterministic benchmark, labeled separately from network TPS |
+| Verifier agents | Hiero verification checks over receipt and mirror-node data |
+
+Direct proof links:
+
+- HashScan: `https://hashscan.io/mainnet/transaction/0.0.10294360%401778958335.880736678`
+- Mirror node: `https://mainnet-public.mirrornode.hedera.com/api/v1/transactions/0.0.10294360-1778958335-880736678`
 
 ---
 
@@ -430,7 +470,7 @@ Benchmark cases:
 npm test
 ```
 
-**23 passing tests** covering:
+**32 passing tests** covering:
 
 - Worker confidence determinism and specialty keyword matching
 - Winner selection by highest score
@@ -444,6 +484,9 @@ npm test
 - Tampered hash detection
 - Hiero Verify VNX Agent accepted/rejected verdicts
 - Benchmark output shape, numeric timing fields, and invalid input handling
+- Prediction firehose and HCS topic publisher dry-run behavior
+- HCS verifier-agent verdicts
+- Live mainnet demo data fetching and SVG rendering
 
 ```bash
 npm run test:coverage   # coverage report
@@ -475,6 +518,7 @@ npm run test:watch      # watch mode
 | E2E Live | `npm run e2e:live` | Full live mainnet end-to-end run |
 | Verify | `npm run verify -- --receipt <file> --task <text>` | Verify a saved receipt |
 | Benchmark | `npm run benchmark` | Measure deterministic local package operations |
+| Mainnet Demo GIF | `npm run demo:render` | Render the live-data proof GIF from public Hedera/HCS/market sources |
 
 ---
 
@@ -492,6 +536,7 @@ hedera-vnx-paid-swarm/
 │   ├── proof-verifier.ts     # verifySwarmProof + Hiero mirror-node lookup
 │   ├── hiero-verify-agent.ts # Hiero Verify VNX Agent wrapper
 │   ├── benchmark.ts          # Local deterministic benchmark runner
+│   ├── mainnet-demo.ts       # Live-data demo renderer
 │   ├── proof-urls.ts         # HashScan + mirror-node URL builders
 │   ├── hedera-client.ts      # Minimal HederaClient wrapper
 │   └── index.ts              # Barrel exports
@@ -500,9 +545,10 @@ hedera-vnx-paid-swarm/
 │   ├── vnx-paid-swarm-e2e.ts         # End-to-end validation
 │   ├── vnx-paid-swarm-verify-proof.ts # CLI proof verifier
 │   ├── benchmark.ts                  # Benchmark CLI
+│   ├── render-mainnet-demo.ts        # Mainnet proof GIF renderer
 │   └── send-hbar.ts                   # Standalone HBAR transfer CLI
 ├── tests/
-│   └── vnx-paid-swarm.test.ts        # 23 passing Jest tests
+│   └── vnx-paid-swarm.test.ts        # Jest unit and integration tests
 ├── assets/
 │   ├── architecture.svg      # System architecture diagram (source)
 │   ├── architecture.png      # System architecture diagram (rendered)
@@ -540,7 +586,7 @@ hedera-vnx-paid-swarm/
 
 **Topic ID:** `0.0.10416185`
 
-This is the Vera lattice HCS topic used for audit trail anchoring. Future releases will publish swarm receipts to this topic for immutable, consensus-timestamped settlement proof.
+This is the Vera lattice HCS topic used for audit trail anchoring. The demo renderer and HCS verifier can replay topic messages through the public mirror node for consensus-timestamped proof checks.
 
 ---
 

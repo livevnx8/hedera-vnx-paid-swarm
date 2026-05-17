@@ -15,6 +15,7 @@ export { VnxPredictionFirehose, formatFirehoseSummary } from './firehose.js';
 export { HcsTopicPublisher, DryRunHcsPublisher } from './hcs-publisher.js';
 export { HieroHcsVerifyAgent } from './hcs-verify-agent.js';
 export { runLocalBenchmarks, formatBenchmarkSummary } from './benchmark.js';
+export { fetchMainnetDemoData, renderMainnetDemoFrame } from './mainnet-demo.js';
 export { VnxSwarmClient } from './sdk.js';
 export { AgentRegistry } from './agent-registry.js';
 export { AgentLedger } from './agent-ledger.js';
