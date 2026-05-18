@@ -1,7 +1,7 @@
 {
   "name": "hedera-vnx-paid-swarm",
   "version": "1.0.0",
-  "description": "Deterministic VNX agent swarm with Hedera mainnet HBAR payment and cryptographically verifiable proof receipts",
+  "description": "Deterministic Verified Network Exchange (VNX) agent swarm with Hedera mainnet HBAR payment and cryptographically verifiable proof receipts",
   "type": "module",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",

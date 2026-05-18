@@ -16,7 +16,12 @@
 </p>
 
 <p align="center">
+  <strong>VNX = Verified Network Exchange</strong>
+</p>
+
+<p align="center">
   <a href="#quick-start">Quick Start</a> ·
+  <a href="#bounty-fit">Bounty Fit</a> ·
   <a href="#architecture">Architecture</a> ·
   <a href="#nvidia--hedera-bare-metal">NVIDIA + Hedera</a> ·
   <a href="#live-mainnet-demo">Live Demo</a> ·
@@ -36,7 +41,7 @@
 Task → 4 VNX Workers Vote → Highest-Score Winner → HBAR Paid on Mainnet → Cryptographic Receipt
 ```
 
-The VNX Paid Micro-Swarm is a deterministic, competition-grade system that dispatches trading-signal tasks to a swarm of specialized agent workers, selects the highest-confidence winner, pays them in HBAR on Hedera mainnet, and produces a **cryptographically verifiable proof receipt** with SHA-256 hashes and live mirror-node confirmation.
+The VNX (**Verified Network Exchange**) Paid Micro-Swarm is a deterministic, competition-grade system that dispatches trading-signal tasks to a swarm of specialized agent workers, selects the highest-confidence winner, pays them in HBAR on Hedera mainnet, and produces a **cryptographically verifiable proof receipt** with SHA-256 hashes and live mirror-node confirmation.
 
 **Features**
 
@@ -56,6 +61,27 @@ The VNX Paid Micro-Swarm is a deterministic, competition-grade system that dispa
 | **Payment Transaction** | `0.0.10294360@1778958335.880736678`            |
 | **Mirror Node**         | `https://mainnet-public.mirrornode.hedera.com` |
 | **HashScan**            | `https://hashscan.io/mainnet`                  |
+
+---
+
+## Bounty Fit
+
+This repo is positioned for the **Fun Basic Hedera Agent** bounty as a small but complete Hedera agent workflow: one task enters the swarm, deterministic workers vote, one agent wins, HBAR is paid on mainnet, and the result is turned into a verifiable proof receipt.
+
+| Bounty expectation    | Where this repo satisfies it                                                        |
+| --------------------- | ----------------------------------------------------------------------------------- |
+| Fun Hedera agent      | The VNX swarm acts as a paid prediction agent system with four worker personalities |
+| Public GitHub repo    | Package-ready TypeScript repo with README, diagrams, docs, tests, and release gates |
+| Hedera transaction    | Live mainnet HBAR payment: `0.0.10294360@1778958335.880736678`                      |
+| Verifiable output     | HashScan URL, mirror-node URL, SHA-256 task hash, SHA-256 decision hash             |
+| HCS / audit direction | HCS topic `0.0.10416185`, HCS publisher, and HCS verifier agent paths included      |
+| Demo material         | Terminal demo image, workflow diagrams, benchmark visual, live mainnet GIF          |
+
+### Hedera Agent Kit Alignment
+
+The bounty page asks builders to use Hedera Agent Kit JS or Python. This package currently uses the low-level Hedera SDK directly for the payment rail so the mainnet proof path stays deterministic and easy to audit. For judges reviewing Agent Kit fit, see [`docs/BOUNTY_SUBMISSION.md`](docs/BOUNTY_SUBMISSION.md), which maps the current implementation to Hedera Agent Kit concepts and gives an optional Agent Kit wrapper path.
+
+The core agent behavior is intentionally simple for Week 1: **select a worker, pay the winner, and verify the proof.**
 
 ---
 

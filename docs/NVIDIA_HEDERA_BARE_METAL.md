@@ -2,6 +2,8 @@
 
 This document explains how NVIDIA acceleration, Hedera proof services, and the VNX paid micro-swarm fit together on Linux bare metal.
 
+**VNX means Verified Network Exchange**: a coordination layer for paid agents, proof receipts, and independently verifiable network events.
+
 <p align="center">
   <picture>
     <source srcset="../assets/nvidia-hedera-stack.svg" type="image/svg+xml"/>
@@ -19,7 +21,7 @@ The clean positioning is:
 
 ```text
 NVIDIA = fast private intelligence
-VNX    = deterministic paid agent coordination
+VNX    = Verified Network Exchange coordination
 Hedera = public settlement and audit proof
 Linux  = bare-metal operational control
 ```
