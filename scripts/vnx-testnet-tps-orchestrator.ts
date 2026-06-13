@@ -34,6 +34,7 @@ const program = new Command()
   .option('--amount <hbar>', 'HBAR amount per transfer', '0.0001')
   .option('--network <name>', 'testnet | previewnet', 'testnet')
   .option('--min-balance <hbar>', 'Min wallet balance to be used as a sender', '1')
+  .option('--shard', 'Give each worker a disjoint wallet shard (no shared payer accounts)')
   .parse();
 
 const opts = program.opts();
@@ -63,7 +64,7 @@ interface CohortResult {
 
 const PROBE = path.join(path.dirname(fileURLToPath(import.meta.url)), 'vnx-testnet-max-tps.ts');
 
-function runWorker(): Promise<WorkerSummary | null> {
+function runWorker(shardIndex: number, shardCount: number): Promise<WorkerSummary | null> {
   return new Promise(resolve => {
     const args = [
       'tsx',
@@ -82,6 +83,9 @@ function runWorker(): Promise<WorkerSummary | null> {
       '--min-balance',
       String(opts.minBalance),
     ];
+    if (opts.shard) {
+      args.push('--shard-index', String(shardIndex), '--shard-count', String(shardCount));
+    }
     const child = spawn('npx', args, { env: process.env, cwd: process.cwd() });
     let stdout = '';
     let stderr = '';
@@ -106,9 +110,9 @@ function runWorker(): Promise<WorkerSummary | null> {
 
 async function runCohort(workers: number): Promise<CohortResult> {
   const start = performance.now();
-  const summaries = (await Promise.all(Array.from({ length: workers }, () => runWorker()))).filter(
-    (s): s is WorkerSummary => s !== null,
-  );
+  const summaries = (
+    await Promise.all(Array.from({ length: workers }, (_, i) => runWorker(i, workers)))
+  ).filter((s): s is WorkerSummary => s !== null);
   const wallSec = (performance.now() - start) / 1000;
 
   const totalSubmitted = summaries.reduce((a, s) => a + s.submitted, 0);
@@ -166,6 +170,7 @@ async function main(): Promise<void> {
 ╚════════════════════════════════════════════════════════════╝
   Network:        ${opts.network}
   Mode:           ${opts.mode}
+  Sharding:       ${opts.shard ? 'on (disjoint wallet slice per worker)' : 'off (shared pool)'}
   Per-worker:     ${opts.duration}s @ concurrency ${opts.concurrency}
   Worker cohorts: ${cohorts.join(', ')}`);
 

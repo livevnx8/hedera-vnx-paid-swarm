@@ -43,6 +43,12 @@ const program = new Command()
   .option('--amount <hbar>', 'HBAR amount per transfer', '0.0001')
   .option('--network <name>', 'testnet | previewnet', 'testnet')
   .option('--min-balance <hbar>', 'Min wallet balance to be used as a sender', '1')
+  .option('--shard-index <i>', 'This shard index (0-based) for disjoint wallet sharding', '0')
+  .option(
+    '--shard-count <m>',
+    'Total number of shards; each shard owns a disjoint wallet slice',
+    '1',
+  )
   .option('--json', 'Emit a single machine-readable JSON summary line (suppresses pretty output)')
   .parse();
 
@@ -97,6 +103,8 @@ async function main(): Promise<void> {
   const amount = parseFloat(opts.amount as string);
   const minBalance = parseFloat(opts.minBalance as string);
   const mode = opts.mode as 'transfers' | 'hcs' | 'both';
+  const shardCount = Math.max(1, parseInt(opts.shardCount as string, 10));
+  const shardIndex = Math.max(0, parseInt(opts.shardIndex as string, 10));
   const jsonMode = Boolean(opts.json);
   // In JSON mode all human-readable output is suppressed so the orchestrator can
   // parse a single summary line from stdout; warnings still go to stderr.
@@ -144,6 +152,44 @@ async function main(): Promise<void> {
     console.error('\nNo funded wallets above the min-balance threshold.');
     process.exit(1);
   }
+
+  // Sharding: each shard owns a disjoint slice of the funded wallets so shards
+  // never share a payer account (no cross-shard DUPLICATE_TRANSACTION risk).
+  // This is what lets shards run independently on separate cores or machines.
+  if (shardCount > 1) {
+    const mine: Wallet[] = [];
+    wallets.forEach((w, i) => {
+      if (i % shardCount === shardIndex) mine.push(w);
+      else w.client.close();
+    });
+    if (mine.length === 0) {
+      // More shards than funded wallets — this shard has no work. Emit zeros so
+      // the orchestrator can still aggregate cleanly.
+      if (jsonMode) {
+        process.stdout.write(
+          JSON.stringify({
+            submitted: 0,
+            throttled: 0,
+            failed: 0,
+            dispatched: 0,
+            elapsedSec: 0,
+            submissionTps: 0,
+            senders: 0,
+            errorBreakdown: {},
+          }) + '\n',
+        );
+      } else {
+        console.warn(
+          `  Shard ${shardIndex}/${shardCount} has no wallets (only ${wallets.length} funded).`,
+        );
+      }
+      return;
+    }
+    wallets.length = 0;
+    wallets.push(...mine);
+    log(`  Shard ${shardIndex + 1}/${shardCount} owns ${wallets.length} wallet(s).`);
+  }
+
   log(`\n  Funded senders: ${wallets.length}\n`);
 
   // Create a shared HCS topic if needed.
