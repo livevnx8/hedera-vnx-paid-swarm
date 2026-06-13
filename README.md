@@ -579,6 +579,51 @@ Benchmark cases:
 
 ---
 
+## Testnet Throughput & Scaling
+
+Three tools measure real submission throughput against Hedera **testnet** from a pool of funded wallets:
+
+- `npm run loadtest:live` — full swarm cycles, **awaiting consensus** each cycle (gated by finality ~1.7s).
+- `npm run maxtps` — **fire-and-forget** submission probe (`setMaxAttempts(1)`, no `getReceipt`); measures raw submit TPS for HBAR transfers and/or HCS topic messages.
+- `npm run tps` — orchestrator that spawns N worker processes of the probe (one per core) and aggregates TPS; `--sweep` charts TPS vs. worker count; `--shard` gives each worker a **disjoint wallet slice**.
+
+### Submission TPS is CPU-bound, not network-bound
+
+A single Node process plateaus at ~290 submit TPS regardless of `--concurrency` — the bottleneck is single-threaded ECDSA signing. Scaling across processes is linear up to one worker per core. Measured sweep on an 8-vCPU VM (testnet, transfers, fire-and-forget):
+
+| Workers | Aggregate TPS         | BUSY | Failed |
+| ------- | --------------------- | ---- | ------ |
+| 1       | ~280                  | 0    | 0      |
+| 2       | ~520                  | 0    | 0      |
+| 4       | ~830                  | 0    | 0      |
+| 8       | **~1,040**            | 0    | 0      |
+| 16      | ~950 (oversubscribed) | 0    | 0      |
+
+Throughput peaks at **one worker per vCPU** and declines past it. Testnet returned **0 `BUSY`/throttling** the entire time, so a single box runs out of CPU long before the network throttles — a higher-core rig scales proportionally higher.
+
+### Sharding across cores / machines
+
+Each shard owns a disjoint slice of the funded wallets, so shards share no payer account (no cross-shard `DUPLICATE_TRANSACTION`) and run independently. The number of disjoint shards is bounded by the **funded wallet count**.
+
+```bash
+# Single high-core rig: one worker per core, sharded across wallets
+npm run tps -- --shard --sweep 4,8,12 --duration 20 --concurrency 150 --mode transfers
+
+# Push past wallet count with shared-pool mode (wallets reused across workers)
+npm run tps -- --sweep 8,16,32 --duration 20 --concurrency 150
+```
+
+To fan out across **multiple machines**, run the probe directly on each host with the same `--shard-count` and a distinct `--shard-index` (each host needs the wallet pool in `HEDERA_TESTNET_ACCOUNTS`):
+
+```bash
+# host k of M
+npm run maxtps -- --shard-index <k> --shard-count <M> --duration 30 --concurrency 150 --mode transfers
+```
+
+At ~1k submit TPS per 8-core box, approaching 10k TPS means ~8–10 boxes (or one rig with proportionally more cores) plus enough funded payer wallets to keep shards disjoint; only then do Hedera's network-wide testnet throttles become the ceiling.
+
+---
+
 ## Tests
 
 ```bash
