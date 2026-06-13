@@ -43,6 +43,7 @@ const program = new Command()
   .option('--amount <hbar>', 'HBAR amount per transfer', '0.0001')
   .option('--network <name>', 'testnet | previewnet', 'testnet')
   .option('--min-balance <hbar>', 'Min wallet balance to be used as a sender', '1')
+  .option('--json', 'Emit a single machine-readable JSON summary line (suppresses pretty output)')
   .parse();
 
 const opts = program.opts();
@@ -96,8 +97,12 @@ async function main(): Promise<void> {
   const amount = parseFloat(opts.amount as string);
   const minBalance = parseFloat(opts.minBalance as string);
   const mode = opts.mode as 'transfers' | 'hcs' | 'both';
+  const jsonMode = Boolean(opts.json);
+  // In JSON mode all human-readable output is suppressed so the orchestrator can
+  // parse a single summary line from stdout; warnings still go to stderr.
+  const log = jsonMode ? (): void => {} : (msg: string): void => console.log(msg);
 
-  console.log(`
+  log(`
 ╔════════════════════════════════════════════════════════════╗
 ║  VNX Swarm — Testnet Max-Throughput Probe (fire-and-forget) ║
 ╚════════════════════════════════════════════════════════════╝
@@ -123,7 +128,7 @@ async function main(): Promise<void> {
         .setAccountId(AccountId.fromString(op.accountId))
         .execute(client);
       const hbar = bal.hbars.to(HbarUnit.Hbar).toNumber();
-      console.log(`  ${op.accountId.padEnd(16)} ${hbar} ℏ`);
+      log(`  ${op.accountId.padEnd(16)} ${hbar} ℏ`);
       if (hbar > minBalance) {
         wallets.push({ accountId: AccountId.fromString(op.accountId), client });
       } else {
@@ -139,7 +144,7 @@ async function main(): Promise<void> {
     console.error('\nNo funded wallets above the min-balance threshold.');
     process.exit(1);
   }
-  console.log(`\n  Funded senders: ${wallets.length}\n`);
+  log(`\n  Funded senders: ${wallets.length}\n`);
 
   // Create a shared HCS topic if needed.
   let topicId: TopicId | undefined;
@@ -149,7 +154,7 @@ async function main(): Promise<void> {
       .execute(wallets[0].client);
     const receipt = await resp.getReceipt(wallets[0].client);
     topicId = receipt.topicId ?? undefined;
-    console.log(`  HCS topic: ${topicId?.toString()}\n`);
+    log(`  HCS topic: ${topicId?.toString()}\n`);
   }
 
   let submitted = 0;
@@ -203,7 +208,7 @@ async function main(): Promise<void> {
   await Promise.all(Array.from({ length: concurrency }, () => worker()));
   const elapsedSec = (performance.now() - start) / 1000;
 
-  console.log(`╔════════════════════════════════════════════════════════════╗
+  log(`╔════════════════════════════════════════════════════════════╗
 ║  Results                                                    ║
 ╚════════════════════════════════════════════════════════════╝
   Elapsed:            ${elapsedSec.toFixed(2)} s
@@ -216,31 +221,49 @@ async function main(): Promise<void> {
 
   const errors = Object.entries(errorBreakdown).sort((a, b) => b[1] - a[1]);
   if (errors.length > 0) {
-    console.log('  Error/throttle breakdown:');
+    log('  Error/throttle breakdown:');
     for (const [bucket, count] of errors) {
-      console.log(`    ${bucket.padEnd(36)} ${count.toLocaleString().padStart(8)}`);
+      log(`    ${bucket.padEnd(36)} ${count.toLocaleString().padStart(8)}`);
     }
-    console.log('');
+    log('');
   }
 
   // Async consensus verification via mirror node.
+  let mirrorSequence: number | undefined;
   if (topicId) {
     await new Promise(r => setTimeout(r, 6000));
     try {
       const url = `https://${network}.mirrornode.hedera.com/api/v1/topics/${topicId.toString()}/messages?limit=1&order=desc`;
       const res = await fetch(url);
       const json = (await res.json()) as { messages?: Array<{ sequence_number?: number }> };
-      const seq = json.messages?.[0]?.sequence_number;
-      console.log(
-        `  Mirror node: topic ${topicId.toString()} reached sequence #${seq ?? 'n/a'} at consensus`,
+      mirrorSequence = json.messages?.[0]?.sequence_number;
+      log(
+        `  Mirror node: topic ${topicId.toString()} reached sequence #${mirrorSequence ?? 'n/a'} at consensus`,
       );
-      console.log(`  View: https://hashscan.io/${network}/topic/${topicId.toString()}\n`);
+      log(`  View: https://hashscan.io/${network}/topic/${topicId.toString()}\n`);
     } catch (err) {
       console.warn(`  Mirror verification failed: ${(err as Error).message}`);
     }
   }
 
   for (const w of wallets) w.client.close();
+
+  if (jsonMode) {
+    process.stdout.write(
+      JSON.stringify({
+        submitted,
+        throttled,
+        failed,
+        dispatched,
+        elapsedSec,
+        submissionTps: submitted / elapsedSec,
+        senders: wallets.length,
+        topicId: topicId?.toString(),
+        mirrorSequence,
+        errorBreakdown,
+      }) + '\n',
+    );
+  }
 }
 
 main().catch(err => {
