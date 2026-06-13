@@ -125,15 +125,33 @@ async function main(): Promise<void> {
         `    ${b.accountId.padEnd(16)} ${Number.isNaN(b.hbar) ? 'unavailable' : `${b.hbar} ℏ`}`,
       );
     }
-    const funded = balances.filter(b => !Number.isNaN(b.hbar) && b.hbar > 0);
-    if (funded.length === 0) {
+    // Keep only operators with enough balance to cover a capped transfer + fee,
+    // so unfunded accounts don't pollute the run with INSUFFICIENT_PAYER_BALANCE.
+    const fundThreshold = maxHbar + 0.05;
+    const fundedIds = new Set(
+      balances.filter(b => !Number.isNaN(b.hbar) && b.hbar > fundThreshold).map(b => b.accountId),
+    );
+    if (fundedIds.size === 0) {
       console.error(
-        '\nError: no funded operator accounts available. Fund via the Hedera portal faucet.',
+        `\nError: no operator accounts funded above ${fundThreshold} ℏ. Fund via the Hedera portal faucet.`,
       );
       process.exit(1);
     }
+    if (fundedIds.size < operators.length) {
+      console.log(
+        `  Skipping ${operators.length - fundedIds.size} underfunded account(s); using ${fundedIds.size} sender(s).`,
+      );
+      multiRail.close();
+      multiRail = new MultiOperatorHederaRail({
+        operators: operators.filter(o => fundedIds.has(o.accountId)),
+        network,
+        maxHbar,
+        allowMainnet: Boolean(opts.allowMainnet),
+      });
+      rail = multiRail;
+    }
 
-    // Default recipient pool = operator accounts (valid + funded on this network).
+    // Default recipient pool = funded operator accounts (valid on this network).
     const pool = opts.recipient ? [opts.recipient as string] : multiRail.accountIds;
     recipientOverride = (i: number) => pool[i % pool.length];
     console.log('');
