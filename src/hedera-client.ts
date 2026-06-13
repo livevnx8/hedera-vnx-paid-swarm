@@ -98,6 +98,9 @@ export class HederaClient {
 
     if (memo) tx.setTransactionMemo(memo);
 
+    // Must freeze before signing: sign() computes the transaction hash, which
+    // requires the transaction body (node account IDs, valid start) to be set.
+    tx.freezeWith(this._client);
     const signedTx = await tx.sign(this._privateKey);
     const response = await signedTx.execute(this._client);
     const receipt = await response.getReceipt(this._client);

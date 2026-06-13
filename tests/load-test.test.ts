@@ -206,6 +206,23 @@ describe('MultiOperatorHederaRail', () => {
     expect(transfers.map(t => t.operator)).toEqual(['0.0.1', '0.0.2', '0.0.1']);
   });
 
+  it('never pays from an operator to itself', async () => {
+    const { factory, transfers } = fakeClientFactory();
+    const rail = new MultiOperatorHederaRail({
+      operators: [
+        { accountId: '0.0.1', privateKey: 'k1' },
+        { accountId: '0.0.2', privateKey: 'k2' },
+      ],
+      network: 'testnet',
+      maxHbar: 0.01,
+      clientFactory: factory,
+    });
+    // First cursor pick would be operator 0.0.1; recipient is also 0.0.1, so
+    // the rail must advance to 0.0.2 as the sender.
+    await rail.transfer('0.0.1', 0.001);
+    expect(transfers[0]).toEqual({ operator: '0.0.2', to: '0.0.1' });
+  });
+
   it('enforces the max-hbar cap and positive amounts', async () => {
     const { factory } = fakeClientFactory();
     const rail = new MultiOperatorHederaRail({

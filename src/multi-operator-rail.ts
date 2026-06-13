@@ -116,7 +116,14 @@ export class MultiOperatorHederaRail implements PaymentRail {
       );
     }
 
-    const index = this._cursor++ % this._config.operators.length;
+    const n = this._config.operators.length;
+    let index = this._cursor++ % n;
+    // Never pay from an operator to itself: a net-zero self-transfer is rejected
+    // by Hedera (ACCOUNT_REPEATED_IN_ACCOUNT_AMOUNTS). Advance to the next
+    // operator, which is guaranteed distinct (account IDs are unique).
+    if (n > 1 && this._config.operators[index].accountId === toAccountId) {
+      index = this._cursor++ % n;
+    }
     try {
       const client = this._client(index);
       const result = await client.transferHbar(toAccountId, amountHbar, memo);
