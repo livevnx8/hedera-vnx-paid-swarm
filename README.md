@@ -625,17 +625,18 @@ npm run test:watch      # watch mode
 
 ## CLI Scripts
 
-| Script           | Command                                                 | Purpose                                                              |
-| ---------------- | ------------------------------------------------------- | -------------------------------------------------------------------- |
-| Demo             | `npm run demo:plan`                                     | Preview swarm without credentials                                    |
-| Demo Live        | `npm run demo:live`                                     | Run on Hedera mainnet with real HBAR                                 |
-| E2E Dry          | `npm run e2e`                                           | Structural validation, no network calls                              |
-| E2E Live         | `npm run e2e:live`                                      | Full live mainnet end-to-end run                                     |
-| Load Test        | `npm run loadtest -- --tasks 1000 --concurrency 32`     | Local heavy load/stress run (mock rail, no network)                  |
-| Load Test Live   | `npm run loadtest:live -- --tasks 500 --concurrency 16` | Concurrent real-network load/stress run (testnet by default)         |
-| Verify           | `npm run verify -- --receipt <file> --task <text>`      | Verify a saved receipt                                               |
-| Benchmark        | `npm run benchmark`                                     | Measure deterministic local package operations                       |
-| Mainnet Demo GIF | `npm run demo:render`                                   | Render the live-data proof GIF from public Hedera/HCS/market sources |
+| Script           | Command                                                         | Purpose                                                                          |
+| ---------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Demo             | `npm run demo:plan`                                             | Preview swarm without credentials                                                |
+| Demo Live        | `npm run demo:live`                                             | Run on Hedera mainnet with real HBAR                                             |
+| E2E Dry          | `npm run e2e`                                                   | Structural validation, no network calls                                          |
+| E2E Live         | `npm run e2e:live`                                              | Full live mainnet end-to-end run                                                 |
+| Load Test        | `npm run loadtest -- --tasks 1000 --concurrency 32`             | Local heavy load/stress run (mock rail, no network)                              |
+| Load Test Live   | `npm run loadtest:live -- --tasks 500 --concurrency 16`         | Concurrent real-network load/stress run (testnet by default)                     |
+| Max TPS Probe    | `npm run maxtps -- --duration 15 --concurrency 200 --mode both` | Fire-and-forget submission-rate probe (HBAR + HCS) across the funded wallet pool |
+| Verify           | `npm run verify -- --receipt <file> --task <text>`              | Verify a saved receipt                                                           |
+| Benchmark        | `npm run benchmark`                                             | Measure deterministic local package operations                                   |
+| Mainnet Demo GIF | `npm run demo:render`                                           | Render the live-data proof GIF from public Hedera/HCS/market sources             |
 
 ---
 
@@ -665,6 +666,7 @@ hedera-vnx-paid-swarm/
 │   ├── vnx-paid-swarm-verify-proof.ts # CLI proof verifier
 │   ├── benchmark.ts                  # Benchmark CLI
 │   ├── vnx-swarm-load-test.ts        # Heavy load/stress test CLI (testnet)
+│   ├── vnx-testnet-max-tps.ts        # Max-throughput submission probe (testnet)
 │   ├── render-mainnet-demo.ts        # Mainnet proof GIF renderer
 │   └── send-hbar.ts                   # Standalone HBAR transfer CLI
 ├── tests/
