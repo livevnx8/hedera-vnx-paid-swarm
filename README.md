@@ -601,6 +601,51 @@ Benchmark cases:
 
 ---
 
+## Testnet Throughput & Scaling
+
+Three tools measure real submission throughput against Hedera **testnet** from a pool of funded wallets:
+
+- `npm run loadtest:live` — full swarm cycles, **awaiting consensus** each cycle (gated by finality ~1.7s).
+- `npm run maxtps` — **fire-and-forget** submission probe (`setMaxAttempts(1)`, no `getReceipt`); measures raw submit TPS for HBAR transfers and/or HCS topic messages.
+- `npm run tps` — orchestrator that spawns N worker processes of the probe (one per core) and aggregates TPS; `--sweep` charts TPS vs. worker count; `--shard` gives each worker a **disjoint wallet slice**.
+
+### Submission TPS is CPU-bound, not network-bound
+
+A single Node process plateaus at ~290 submit TPS regardless of `--concurrency` — the bottleneck is single-threaded ECDSA signing. Scaling across processes is linear up to one worker per core. Measured sweep on an 8-vCPU VM (testnet, transfers, fire-and-forget):
+
+| Workers | Aggregate TPS         | BUSY | Failed |
+| ------- | --------------------- | ---- | ------ |
+| 1       | ~280                  | 0    | 0      |
+| 2       | ~520                  | 0    | 0      |
+| 4       | ~830                  | 0    | 0      |
+| 8       | **~1,040**            | 0    | 0      |
+| 16      | ~950 (oversubscribed) | 0    | 0      |
+
+Throughput peaks at **one worker per vCPU** and declines past it. Testnet returned **0 `BUSY`/throttling** the entire time, so a single box runs out of CPU long before the network throttles — a higher-core rig scales proportionally higher.
+
+### Sharding across cores / machines
+
+Each shard owns a disjoint slice of the funded wallets, so shards share no payer account (no cross-shard `DUPLICATE_TRANSACTION`) and run independently. The number of disjoint shards is bounded by the **funded wallet count**.
+
+```bash
+# Single high-core rig: one worker per core, sharded across wallets
+npm run tps -- --shard --sweep 4,8,12 --duration 20 --concurrency 150 --mode transfers
+
+# Push past wallet count with shared-pool mode (wallets reused across workers)
+npm run tps -- --sweep 8,16,32 --duration 20 --concurrency 150
+```
+
+To fan out across **multiple machines**, run the probe directly on each host with the same `--shard-count` and a distinct `--shard-index` (each host needs the wallet pool in `HEDERA_TESTNET_ACCOUNTS`):
+
+```bash
+# host k of M
+npm run maxtps -- --shard-index <k> --shard-count <M> --duration 30 --concurrency 150 --mode transfers
+```
+
+At ~1k submit TPS per 8-core box, approaching 10k TPS means ~8–10 boxes (or one rig with proportionally more cores) plus enough funded payer wallets to keep shards disjoint; only then do Hedera's network-wide testnet throttles become the ceiling.
+
+---
+
 ## Tests
 
 ```bash
@@ -647,15 +692,20 @@ npm run test:watch      # watch mode
 
 ## CLI Scripts
 
-| Script           | Command                                            | Purpose                                                              |
-| ---------------- | -------------------------------------------------- | -------------------------------------------------------------------- |
-| Demo             | `npm run demo:plan`                                | Preview swarm without credentials                                    |
-| Demo Live        | `npm run demo:live`                                | Run on Hedera mainnet with real HBAR                                 |
-| E2E Dry          | `npm run e2e`                                      | Structural validation, no network calls                              |
-| E2E Live         | `npm run e2e:live`                                 | Full live mainnet end-to-end run                                     |
-| Verify           | `npm run verify -- --receipt <file> --task <text>` | Verify a saved receipt                                               |
-| Benchmark        | `npm run benchmark`                                | Measure deterministic local package operations                       |
-| Mainnet Demo GIF | `npm run demo:render`                              | Render the live-data proof GIF from public Hedera/HCS/market sources |
+| Script           | Command                                                          | Purpose                                                                           |
+| ---------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Demo             | `npm run demo:plan`                                              | Preview swarm without credentials                                                 |
+| Demo Live        | `npm run demo:live`                                              | Run on Hedera mainnet with real HBAR                                              |
+| E2E Dry          | `npm run e2e`                                                    | Structural validation, no network calls                                           |
+| E2E Live         | `npm run e2e:live`                                               | Full live mainnet end-to-end run                                                  |
+| Load Test        | `npm run loadtest -- --tasks 1000 --concurrency 32`              | Local heavy load/stress run (mock rail, no network)                               |
+| Load Test Live   | `npm run loadtest:live -- --tasks 500 --concurrency 16`          | Concurrent real-network load/stress run (testnet by default)                      |
+| Max TPS Probe    | `npm run maxtps -- --duration 15 --concurrency 200 --mode both`  | Fire-and-forget submission-rate probe (HBAR + HCS) across the funded wallet pool  |
+| TPS Orchestrator | `npm run tps -- --sweep 1,2,4,8 --duration 10 --concurrency 150` | Spawn N worker processes of the probe, aggregate TPS, sweep TPS vs. worker count  |
+| TPS Sharded      | `npm run tps -- --shard --sweep 1,2,4,8 --concurrency 120`       | Same, but each worker owns a disjoint wallet shard (deploy one shard per machine) |
+| Verify           | `npm run verify -- --receipt <file> --task <text>`               | Verify a saved receipt                                                            |
+| Benchmark        | `npm run benchmark`                                              | Measure deterministic local package operations                                    |
+| Mainnet Demo GIF | `npm run demo:render`                                            | Render the live-data proof GIF from public Hedera/HCS/market sources              |
 
 ---
 
@@ -673,6 +723,8 @@ hedera-vnx-paid-swarm/
 │   ├── proof-verifier.ts     # verifySwarmProof + Hiero mirror-node lookup
 │   ├── hiero-verify-agent.ts # Hiero Verify VNX Agent wrapper
 │   ├── benchmark.ts          # Local deterministic benchmark runner
+│   ├── load-test.ts          # VnxSwarmLoadTester — concurrent load/stress harness
+│   ├── multi-operator-rail.ts # Round-robin payment rail over a pool of accounts
 │   ├── mainnet-demo.ts       # Live-data demo renderer
 │   ├── proof-urls.ts         # HashScan + mirror-node URL builders
 │   ├── hedera-client.ts      # Minimal HederaClient wrapper
@@ -682,10 +734,14 @@ hedera-vnx-paid-swarm/
 │   ├── vnx-paid-swarm-e2e.ts         # End-to-end validation
 │   ├── vnx-paid-swarm-verify-proof.ts # CLI proof verifier
 │   ├── benchmark.ts                  # Benchmark CLI
+│   ├── vnx-swarm-load-test.ts        # Heavy load/stress test CLI (testnet)
+│   ├── vnx-testnet-max-tps.ts        # Max-throughput submission probe (testnet)
+│   ├── vnx-testnet-tps-orchestrator.ts # Multi-process TPS orchestrator + sweep
 │   ├── render-mainnet-demo.ts        # Mainnet proof GIF renderer
 │   └── send-hbar.ts                   # Standalone HBAR transfer CLI
 ├── tests/
-│   └── vnx-paid-swarm.test.ts        # Jest unit and integration tests
+│   ├── vnx-paid-swarm.test.ts        # Jest unit and integration tests
+│   └── load-test.test.ts             # Load/stress harness tests (mock rail)
 ├── assets/
 │   ├── architecture.svg      # System architecture diagram (source)
 │   ├── architecture.png      # System architecture diagram (rendered)

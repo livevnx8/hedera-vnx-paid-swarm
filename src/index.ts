@@ -12,6 +12,8 @@ export { assertMainnetProofReceipt } from './proof-validation.js';
 export { verifySwarmProof, fetchMirrorTransactionFromHiero } from './proof-verifier.js';
 export { HieroVerifyVnxAgent } from './hiero-verify-agent.js';
 export { VnxPredictionFirehose, formatFirehoseSummary } from './firehose.js';
+export { VnxSwarmLoadTester, formatLoadTestSummary, generateLoadTask } from './load-test.js';
+export { MultiOperatorHederaRail, parseOperatorCredentials } from './multi-operator-rail.js';
 export { HcsTopicPublisher, DryRunHcsPublisher } from './hcs-publisher.js';
 export { HieroHcsVerifyAgent } from './hcs-verify-agent.js';
 export { runLocalBenchmarks, formatBenchmarkSummary } from './benchmark.js';
