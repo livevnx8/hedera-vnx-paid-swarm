@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# One-shot health check for live testnet swarm drivers.
+set -euo pipefail
+
+TOPIC="${VNX_HCS_TOPIC_ID:-0.0.9227346}"
+OPERATOR="${HEDERA_ACCOUNT_ID:-0.0.9035798}"
+MIRROR="https://testnet.mirrornode.hedera.com"
+
+echo "=== VNX Testnet Swarm Monitor ==="
+echo "Time:    $(date -u -Iseconds)"
+echo "Topic:   $TOPIC"
+echo "Operator: $OPERATOR"
+echo ""
+
+drivers=$(pgrep -f '/high-tps-driver\.ts$' 2>/dev/null | wc -l | tr -d ' ')
+bursts=$(pgrep -f '/hcs-burst-driver\.ts$' 2>/dev/null | wc -l | tr -d ' ')
+echo "Drivers: $drivers high-tps | $bursts hcs-burst"
+
+balance=$(curl -sf "$MIRROR/api/v1/accounts/$OPERATOR" | python3 -c "import json,sys; print(f\"{json.load(sys.stdin)['balance']['balance']/1e8:.2f}\")" 2>/dev/null || echo "?")
+seq1=$(curl -sf "$MIRROR/api/v1/topics/$TOPIC/messages?limit=1&order=desc" | python3 -c "import json,sys; print(json.load(sys.stdin)['messages'][0]['sequence_number'])" 2>/dev/null || echo 0)
+sleep 10
+seq2=$(curl -sf "$MIRROR/api/v1/topics/$TOPIC/messages?limit=1&order=desc" | python3 -c "import json,sys; print(json.load(sys.stdin)['messages'][0]['sequence_number'])" 2>/dev/null || echo 0)
+
+delta=$((seq2 - seq1))
+tps=$(python3 -c "print(f'{$delta / 10:.1f}')")
+
+echo "Balance: ${balance} HBAR"
+echo "Sequence: $seq1 -> $seq2 (+$delta in 10s)"
+echo "Live TPS: $tps"
+echo "Dashboard: https://livevnx8.github.io/verlattice/dashboard/"
+echo "HashScan:  https://hashscan.io/testnet/topic/$TOPIC"
+
+latest_log=$(ls -td "$(dirname "$0")/../../vnx-live-testnet-logs"/*/ 2>/dev/null | head -1 || true)
+if [[ -n "$latest_log" ]]; then
+  echo "Latest logs: $latest_log"
+fi
+
+if python3 -c "exit(0 if float('${balance:-0}') >= 50 else 1)" 2>/dev/null; then
+  :
+else
+  echo ""
+  echo "⚠️  Operator balance low — run: npm run live:testnet:topup"
+fi
+
+if [[ "$delta" -eq 0 && "$drivers" -gt 0 ]]; then
+  echo "⚠️  Drivers running but 0 TPS — check balance and logs"
+fi

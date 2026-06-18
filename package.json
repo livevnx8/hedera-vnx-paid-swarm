@@ -1,7 +1,7 @@
 {
   "name": "hedera-vnx-paid-swarm",
   "version": "1.0.0",
-  "description": "Deterministic Verified Network Exchange (VNX) agent swarm with Hedera mainnet HBAR payment and cryptographically verifiable proof receipts",
+  "description": "Deterministic Verifiable Network Exchange (VNX) agent swarm with Hedera mainnet HBAR payment and cryptographically verifiable proof receipts",
   "type": "module",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -9,6 +9,22 @@
     ".": {
       "types": "./dist/src/index.d.ts",
       "import": "./dist/src/index.js"
+    },
+    "./topic-oracle": {
+      "types": "./dist/src/topic-oracle.d.ts",
+      "import": "./dist/src/topic-oracle.js"
+    },
+    "./topic-creator": {
+      "types": "./dist/src/topic-creator.d.ts",
+      "import": "./dist/src/topic-creator.js"
+    },
+    "./pipeline": {
+      "types": "./dist/src/pipeline-types.d.ts",
+      "import": "./dist/src/pipeline-types.js"
+    },
+    "./domain-hcs": {
+      "types": "./dist/src/domain-hcs-publisher.d.ts",
+      "import": "./dist/src/domain-hcs-publisher.js"
     },
     "./package.json": "./package.json"
   },
@@ -57,7 +73,16 @@
     "format:check": "prettier --check \"**/*.{ts,js,json,md,yml,yaml}\"",
     "prepack": "npm run build",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist/ coverage/ .tsbuildinfo"
+    "clean": "rm -rf dist/ coverage/ .tsbuildinfo",
+    "scaffold": "tsx scripts/scaffold-domain.ts",
+    "proof:expansion": "tsx scripts/run-expansion-proof.ts",
+    "live-data:smoke": "tsx scripts/live-data-smoke.ts",
+    "live:testnet:all": "tsx scripts/run-live-testnet-all.ts",
+    "live:testnet:keep": "bash scripts/launch-testnet-persistent.sh",
+    "live:testnet:burst800": "bash scripts/launch-testnet-burst-800.sh",
+    "live:testnet:monitor": "bash scripts/monitor-testnet-swarm.sh",
+    "live:testnet:topup": "bash scripts/topup-testnet-operator.sh",
+    "bounty:deck": "node docs/hedera-bounty-video/build-deck.mjs"
   },
   "keywords": [
     "hedera",
