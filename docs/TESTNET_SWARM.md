@@ -31,7 +31,16 @@ npm run live:testnet:monitor
 npm run live-data:smoke
 ```
 
-Credentials live in `.env.testnet` (not committed). Copy from `.env.example` and fund the operator.
+Credentials live in `.env.testnet` (not committed). Worker set 4 has **four funded operators**:
+
+| Account | Typical role | Balance (when funded) |
+|---------|--------------|------------------------|
+| `0.0.9035160` | ai-inference, supply-chain, burst-1 | ~1000 HBAR |
+| `0.0.9035171` | rwa-claim, wv-carbon, burst-2 | ~1000 HBAR |
+| `0.0.9035258` | water-biodiversity, burst-3 | ~1000 HBAR |
+| `0.0.9035798` | legacy default / worker payments | drains fast if sole payer |
+
+**Multi-wallet mode** (`npm run live:testnet:burst800`) assigns each driver its own payer so one wallet draining does not stop the whole swarm.
 
 ## Architecture
 
@@ -66,7 +75,7 @@ For scale tests, `launch-testnet-burst-800.sh` adds compact **HCS burst drivers*
 | Component | Script | Default concurrency | Role |
 |-----------|--------|---------------------|------|
 | Domain drivers (×5) | `scripts/high-tps-driver.ts` | 80 each | Full pipeline + 2-stage HIP |
-| HCS burst (×2) | `scripts/hcs-burst-driver.ts` | 450 each | Single-chunk `vnx.swarm.proof.burst` msgs |
+| HCS burst (×3) | `scripts/hcs-burst-driver.ts` | 250 each (3 payers) | Single-chunk `vnx.swarm.proof.burst` msgs |
 
 **Observed peak (2026-06-18):** 1,154 TPS over 15s wall clock (+17,314 sequences). Dashboard **Live TPS** uses mirror sequence delta / timestamp span.
 
@@ -114,7 +123,9 @@ Logs are written under `vnx-live-testnet-logs/` with timestamps. Burst runs use 
 
 ## Operator funding
 
-High-TPS burst drains the operator fast (~170 HBAR/min at 1,100 TPS). Worker set 4 accounts hold payment reserves; top up the operator when balance drops below ~50 HBAR:
+High-TPS burst drains a single payer fast (~170 HBAR/min at 1,100 TPS). **Use multi-wallet launch** so load spreads across `9035160`, `9035171`, and `9035258`.
+
+If a wallet drops below ~50 HBAR, relaunch (drivers pick up funded payers) or top up manually:
 
 ```bash
 # From funded worker 0.0.9035258 (see vnx-hedera-agent wallet registry)
