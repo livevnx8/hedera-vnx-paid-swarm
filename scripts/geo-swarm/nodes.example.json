@@ -1,0 +1,52 @@
+{
+  "topicId": "0.0.9227346",
+  "network": "testnet",
+  "durationSec": 60,
+  "burstConcurrency": 600,
+  "burstsPerWallet": 4,
+  "nodes": [
+    {
+      "id": "us-east",
+      "region": "us-east-1",
+      "provider": "digitalocean-nyc",
+      "host": "YOUR_US_EAST_IP",
+      "sshUser": "root",
+      "wallets": [
+        { "accountId": "0.0.9035798", "privateKeyEnv": "KEY_9035798" },
+        { "accountId": "0.0.9035171", "privateKeyEnv": "KEY_9035171" }
+      ]
+    },
+    {
+      "id": "us-west",
+      "region": "us-west-2",
+      "provider": "digitalocean-sfo",
+      "host": "YOUR_US_WEST_IP",
+      "sshUser": "root",
+      "wallets": [
+        { "accountId": "0.0.9032608", "privateKeyEnv": "KEY_9032608" },
+        { "accountId": "0.0.9034044", "privateKeyEnv": "KEY_9034044" }
+      ]
+    },
+    {
+      "id": "eu-west",
+      "region": "eu-west-1",
+      "provider": "hetzner-fsn",
+      "host": "YOUR_EU_IP",
+      "sshUser": "root",
+      "wallets": [
+        { "accountId": "0.0.8834217", "privateKeyEnv": "KEY_8834217" },
+        { "accountId": "0.0.9034925", "privateKeyEnv": "KEY_9034925" }
+      ]
+    },
+    {
+      "id": "ap-south",
+      "region": "ap-south-1",
+      "provider": "digitalocean-blr",
+      "host": "YOUR_AP_IP",
+      "sshUser": "root",
+      "wallets": [
+        { "accountId": "0.0.9035024", "privateKeyEnv": "KEY_9035024" }
+      ]
+    }
+  ]
+}

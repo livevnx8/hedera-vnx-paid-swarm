@@ -1,0 +1,23 @@
+#cloud-config
+# Bootstrap a geo burst worker VM for VNX testnet swarm.
+# Paste into DigitalOcean / Hetzner / AWS user-data on Ubuntu 24.04.
+
+package_update: true
+packages:
+  - git
+  - curl
+  - rsync
+
+write_files:
+  - path: /opt/vnx-geo/env.keys
+    permissions: '0600'
+    content: |
+      # Fill before launch or sync from coordinator via remote-sync.sh
+      export KEY_9035798=0x...
+      export KEY_9035171=0x...
+
+runcmd:
+  - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+  - apt-get install -y nodejs
+  - mkdir -p /opt/vnx-geo/logs
+  - echo "VNX geo worker ready — sync repo from coordinator" > /opt/vnx-geo/READY

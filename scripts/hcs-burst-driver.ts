@@ -15,29 +15,34 @@ import {
 function createLimiter(maxConcurrent: number) {
   let active = 0;
   const waiting: Array<() => void> = [];
-  return async function runLimited<T>(fn: () => Promise<T>): Promise<T> {
+  return function runLimited<T>(fn: () => Promise<T>): Promise<T> {
     if (active >= maxConcurrent) {
-      await new Promise<void>((resolve) => waiting.push(resolve));
+      return new Promise<T>((resolve, reject) => {
+        waiting.push(() => {
+          runLimited(fn).then(resolve).catch(reject);
+        });
+      });
     }
     active++;
-    try {
-      return await fn();
-    } finally {
+    return fn().finally(() => {
       active--;
       const next = waiting.shift();
       if (next) next();
-    }
+    });
   };
 }
 
 async function main() {
   const concurrency = Math.max(1, parseInt(process.env.HIGH_TPS_CONCURRENCY || '500', 10));
-  const durationSec = Math.max(10, parseInt(process.env.HIGH_TPS_DURATION || '600', 10));
+  const durationSec = Math.max(5, parseInt(process.env.HIGH_TPS_DURATION || '600', 10));
+  const maxMode = process.env.BURST_MAX_MODE === '1';
   const network = (process.env.HEDERA_NETWORK || 'testnet') as 'testnet' | 'mainnet';
   const topicId = process.env.VNX_HCS_TOPIC_ID || '0.0.9227346';
   const accountId = process.env.HEDERA_ACCOUNT_ID;
   const privateKey = process.env.HEDERA_PRIVATE_KEY;
   const label = process.env.BURST_DRIVER_LABEL || 'burst-1';
+  const geoRegion = process.env.GEO_REGION || process.env.VNX_GEO_REGION || 'local';
+  const geoHost = process.env.GEO_HOST || process.env.HOSTNAME || 'unknown';
 
   if (!accountId || !privateKey) {
     console.error('Missing HEDERA_ACCOUNT_ID / HEDERA_PRIVATE_KEY');
@@ -45,11 +50,14 @@ async function main() {
   }
 
   const client = Client.forName(network);
-  client.setOperator(AccountId.fromString(accountId), PrivateKey.fromStringECDSA(privateKey));
+  const key = privateKey.startsWith('0x')
+    ? PrivateKey.fromStringECDSA(privateKey)
+    : PrivateKey.fromString(privateKey);
+  client.setOperator(AccountId.fromString(accountId), key);
   const topic = TopicId.fromString(topicId);
 
   console.log(`=== VNX HCS Burst Driver [${label}] ===`);
-  console.log(`topic=${topicId} concurrency=${concurrency} duration=${durationSec}s payer=${accountId}\n`);
+  console.log(`topic=${topicId} concurrency=${concurrency} duration=${durationSec}s maxMode=${maxMode} payer=${accountId}\n`);
 
   const limiter = createLimiter(concurrency);
   const start = Date.now();
@@ -57,43 +65,72 @@ async function main() {
   let submitted = 0;
   let executed = 0;
   let failed = 0;
-  const pending: Promise<void>[] = [];
+  const pending = new Set<Promise<void>>();
 
   const stat = setInterval(() => {
     const elapsed = (Date.now() - start) / 1000;
     const tps = elapsed > 0 ? (executed / elapsed).toFixed(1) : '0';
-    console.log(`[${label}] t=${elapsed.toFixed(0)}s submitted=${submitted} executed=${executed} fail=${failed} tps=${tps}`);
-  }, 10000);
+    console.log(`[${label}] t=${elapsed.toFixed(0)}s submitted=${submitted} executed=${executed} fail=${failed} inflight=${pending.size} tps=${tps}`);
+  }, 5000);
 
-  while (Date.now() < end) {
-    const n = ++submitted;
-    pending.push(
-      limiter(async () => {
-        try {
-          const body = JSON.stringify({
-            type: 'vnx.swarm.proof.burst',
-            burstId: `${label}-${n}`,
-            ts: Date.now(),
-            network,
-            topicId,
-          });
-          const tx = new TopicMessageSubmitTransaction().setTopicId(topic).setMessage(body);
-          await tx.execute(client);
-          executed++;
-        } catch {
-          failed++;
-        }
-      }),
-    );
-    if (pending.length >= concurrency) {
-      await Promise.allSettled(pending.splice(0, concurrency));
+  const fire = (n: number) => {
+    const body = JSON.stringify({
+      type: 'vnx.swarm.proof.burst',
+      burstId: `${label}-${n}`,
+      ts: Date.now(),
+      network,
+      topicId,
+      geo: { region: geoRegion, host: geoHost, payer: accountId },
+    });
+    const tx = new TopicMessageSubmitTransaction().setTopicId(topic).setMessage(body);
+    const p = limiter(() =>
+      tx.execute(client).then(
+        () => { executed++; },
+        () => { failed++; },
+      ),
+    ).finally(() => { pending.delete(p); });
+    pending.add(p);
+  };
+
+  if (maxMode) {
+    // Saturate limiter — never block the submit loop on batch drains
+    while (Date.now() < end) {
+      fire(++submitted);
+      if (pending.size >= concurrency * 3) {
+        await Promise.race(pending);
+      }
+    }
+  } else {
+    const batch: Promise<void>[] = [];
+    while (Date.now() < end) {
+      const n = ++submitted;
+      const body = JSON.stringify({
+        type: 'vnx.swarm.proof.burst',
+        burstId: `${label}-${n}`,
+        ts: Date.now(),
+        network,
+        topicId,
+        geo: { region: geoRegion, host: geoHost, payer: accountId },
+      });
+      const tx = new TopicMessageSubmitTransaction().setTopicId(topic).setMessage(body);
+      batch.push(
+        limiter(() =>
+          tx.execute(client).then(
+            () => { executed++; },
+            () => { failed++; },
+          ),
+        ),
+      );
+      if (batch.length >= concurrency) {
+        await Promise.allSettled(batch.splice(0, concurrency));
+      }
+    }
+    while (batch.length > 0) {
+      await Promise.allSettled(batch.splice(0, concurrency));
     }
   }
 
-  while (pending.length > 0) {
-    await Promise.allSettled(pending.splice(0, concurrency));
-  }
-
+  await Promise.allSettled([...pending]);
   clearInterval(stat);
   const wall = (Date.now() - start) / 1000;
   console.log(`\n=== ${label} RESULTS ===`);

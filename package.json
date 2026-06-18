@@ -80,6 +80,10 @@
     "live:testnet:all": "tsx scripts/run-live-testnet-all.ts",
     "live:testnet:keep": "bash scripts/launch-testnet-persistent.sh",
     "live:testnet:burst800": "bash scripts/launch-testnet-burst-800.sh",
+    "live:testnet:10k-1min": "bash scripts/launch-testnet-10k-1min.sh",
+    "live:testnet:geo-sim": "bash scripts/geo-swarm/local-simulate.sh",
+    "live:testnet:geo-sync": "bash scripts/geo-swarm/remote-sync.sh scripts/geo-swarm/nodes.json",
+    "live:testnet:geo-10k": "bash scripts/geo-swarm/coordinator-10k.sh scripts/geo-swarm/nodes.json",
     "live:testnet:monitor": "bash scripts/monitor-testnet-swarm.sh",
     "live:testnet:topup": "bash scripts/topup-testnet-operator.sh",
     "bounty:deck": "node docs/hedera-bounty-video/build-deck.mjs"

@@ -167,6 +167,15 @@ pkill -f 'tsx scripts/hcs-burst-driver.ts'
 | Supply chain smoke fails | OpenFoodFacts 429 | Transient; falls back but still publishes |
 | `INSUFFICIENT_PAYER_BALANCE` in burst logs | Operator drained | Top up and restart |
 
+## Geo-distributed 10K+ (multi-VM)
+
+For **10,000+ TPS**, spread wallets across geo-located VMs. See **[GEO_SWARM_10K.md](./GEO_SWARM_10K.md)**.
+
+```bash
+npm run live:testnet:geo-sim   # local proof pipeline test
+npm run live:testnet:geo-10k   # coordinated remote burst (needs nodes.json)
+```
+
 ## Related repos
 
 | Repo | Domain |
