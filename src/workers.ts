@@ -3,13 +3,7 @@
  */
 
 import { WorkerResult } from './types.js';
-
-const SPECIALTY_KEYWORDS: Record<string, string[]> = {
-  prediction: ['signal', 'predict', 'direction', 'price', 'risk', 'forecast', 'trend'],
-  momentum: ['momentum', 'rsi', 'overbought', 'oversold', 'velocity', 'speed'],
-  volatility: ['volatility', 'bollinger', 'bb', 'band', 'range', 'squeeze', 'expand'],
-  trend: ['trend', 'sma', 'cross', 'moving average', 'ema', 'slope'],
-};
+import { SPECIALTY_KEYWORDS } from './specialty-keywords.js';
 
 export class VnxWorkerAgent {
   private _id: string;

@@ -43,6 +43,11 @@ export class VnxSwarmClient {
     );
   }
 
+  /**
+   * Validate credentials and set environment variables required by HederaClient.
+   * Environment mutation is isolated here and documented — HederaClient.fromEnv()
+   * reads these values, so they must be set before the first live transfer.
+   */
   async init(_opts?: Record<string, unknown>): Promise<void> {
     if (!this._config.accountId || !this._config.privateKey) {
       throw new SwarmError(

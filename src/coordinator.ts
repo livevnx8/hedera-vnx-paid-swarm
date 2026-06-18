@@ -5,13 +5,7 @@
 import { WorkerVote, SwarmReceipt, PaymentRail } from './types.js';
 import { VnxWorkerAgent } from './workers.js';
 import { ProofReceiptBuilder } from './receipt-builder.js';
-
-const SPECIALTY_MATCH_WEIGHTS: Record<string, Record<string, number>> = {
-  prediction: { prediction: 1.0, momentum: 0.5, volatility: 0.6, trend: 0.7 },
-  momentum: { prediction: 0.5, momentum: 1.0, volatility: 0.7, trend: 0.6 },
-  volatility: { prediction: 0.6, momentum: 0.7, volatility: 1.0, trend: 0.5 },
-  trend: { prediction: 0.7, momentum: 0.6, volatility: 0.5, trend: 1.0 },
-};
+import { SPECIALTY_MATCH_WEIGHTS, inferTaskDomain } from './specialty-keywords.js';
 
 export interface CoordinatorConfig {
   maxHbar: number;
@@ -92,26 +86,8 @@ export class PaidSwarmCoordinator {
   }
 
   private _specialtyMatch(task: string, workerSpecialty: string): number {
-    const lower = task.toLowerCase();
-    // Derive task domain from keywords
-    let bestDomain = 'prediction';
-    let bestScore = 0;
-    for (const [domain, keywords] of Object.entries({
-      prediction: ['signal', 'predict', 'direction', 'price', 'risk', 'forecast', 'trend'],
-      momentum: ['momentum', 'rsi', 'overbought', 'oversold', 'velocity'],
-      volatility: ['volatility', 'bollinger', 'band', 'range', 'squeeze'],
-      trend: ['trend', 'sma', 'cross', 'moving average', 'ema'],
-    })) {
-      let score = 0;
-      for (const kw of keywords) {
-        if (lower.includes(kw)) score++;
-      }
-      if (score > bestScore) {
-        bestScore = score;
-        bestDomain = domain;
-      }
-    }
-    const map = SPECIALTY_MATCH_WEIGHTS[bestDomain] ?? SPECIALTY_MATCH_WEIGHTS.prediction;
+    const domain = inferTaskDomain(task);
+    const map = SPECIALTY_MATCH_WEIGHTS[domain] ?? SPECIALTY_MATCH_WEIGHTS.prediction;
     return map[workerSpecialty] ?? 0.3;
   }
 }

@@ -3,6 +3,7 @@
  */
 
 export * from './types.js';
+export { SPECIALTY_KEYWORDS, SPECIALTY_MATCH_WEIGHTS, inferTaskDomain } from './specialty-keywords.js';
 export { VnxWorkerAgent, DEFAULT_WORKERS } from './workers.js';
 export { PaidSwarmCoordinator } from './coordinator.js';
 export { ProofReceiptBuilder } from './receipt-builder.js';
