@@ -44,9 +44,7 @@
       "provider": "digitalocean-blr",
       "host": "YOUR_AP_IP",
       "sshUser": "root",
-      "wallets": [
-        { "accountId": "0.0.9035024", "privateKeyEnv": "KEY_9035024" }
-      ]
+      "wallets": [{ "accountId": "0.0.9035024", "privateKeyEnv": "KEY_9035024" }]
     }
   ]
 }

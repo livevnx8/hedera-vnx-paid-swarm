@@ -26,22 +26,22 @@ Single-host tests cap at **~2,000–2,700 TPS** (CPU, outbound bandwidth, SDK pr
 
 ## What gets proved
 
-| Proof point | How |
-|-------------|-----|
-| **10K+ TPS** | Mirror sequence delta / 60s wall clock |
-| **Geo distribution** | `geo.region` + `geo.host` in burst HCS JSON |
-| **Multi-payer** | Distinct `geo.payer` per region on HashScan |
-| **Independent audit** | HashScan topic + mirror node replay |
-| **Reproducible** | `PROOF-GEO-10K.md` + per-VM logs |
+| Proof point           | How                                         |
+| --------------------- | ------------------------------------------- |
+| **10K+ TPS**          | Mirror sequence delta / 60s wall clock      |
+| **Geo distribution**  | `geo.region` + `geo.host` in burst HCS JSON |
+| **Multi-payer**       | Distinct `geo.payer` per region on HashScan |
+| **Independent audit** | HashScan topic + mirror node replay         |
+| **Reproducible**      | `PROOF-GEO-10K.md` + per-VM logs            |
 
 ## Wallet assignment (7 × ~1000 HBAR)
 
-| Region | Wallets |
-|--------|---------|
-| us-east-1 | `0.0.9035798`, `0.0.9035171` |
-| us-west-2 | `0.0.9032608`, `0.0.9034044` |
-| eu-west-1 | `0.0.8834217`, `0.0.9034925` |
-| ap-south-1 | `0.0.9035024` |
+| Region     | Wallets                      |
+| ---------- | ---------------------------- |
+| us-east-1  | `0.0.9035798`, `0.0.9035171` |
+| us-west-2  | `0.0.9032608`, `0.0.9034044` |
+| eu-west-1  | `0.0.8834217`, `0.0.9034925` |
+| ap-south-1 | `0.0.9035024`                |
 
 Keys live in `.env.testnet` on the coordinator (never commit).
 
@@ -91,13 +91,13 @@ npm run live:testnet:geo-10k      # coordinator 60s burst (needs nodes.json)
 
 ## VM requirements
 
-| Spec | Minimum |
-|------|---------|
-| OS | Ubuntu 24.04 |
-| CPU | 2 vCPU |
-| RAM | 4 GB |
-| Network | Low-latency egress to `testnet.mirrornode.hedera.com` |
-| Software | Node 22+, git, rsync, ssh |
+| Spec     | Minimum                                               |
+| -------- | ----------------------------------------------------- |
+| OS       | Ubuntu 24.04                                          |
+| CPU      | 2 vCPU                                                |
+| RAM      | 4 GB                                                  |
+| Network  | Low-latency egress to `testnet.mirrornode.hedera.com` |
+| Software | Node 22+, git, rsync, ssh                             |
 
 ## Burst message format
 

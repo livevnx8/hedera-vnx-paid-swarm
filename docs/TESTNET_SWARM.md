@@ -4,14 +4,14 @@ Ongoing multi-domain agent swarm on Hedera testnet with real API data, HIP v1.3.
 
 ## Live resources
 
-| Resource | Value |
-|----------|-------|
-| **HCS topic** | `0.0.9227346` |
-| **HashScan** | https://hashscan.io/testnet/topic/0.0.9227346 |
-| **Dashboard** | https://livevnx8.github.io/verlattice/dashboard/ |
-| **Operator** | `0.0.9035798` (worker set 4) |
-| **Worker payers** | `0.0.9035160`, `0.0.9035171`, `0.0.9035258` |
-| **Network** | testnet |
+| Resource          | Value                                            |
+| ----------------- | ------------------------------------------------ |
+| **HCS topic**     | `0.0.9227346`                                    |
+| **HashScan**      | https://hashscan.io/testnet/topic/0.0.9227346    |
+| **Dashboard**     | https://livevnx8.github.io/verlattice/dashboard/ |
+| **Operator**      | `0.0.9035798` (worker set 4)                     |
+| **Worker payers** | `0.0.9035160`, `0.0.9035171`, `0.0.9035258`      |
+| **Network**       | testnet                                          |
 
 ## Quick start
 
@@ -33,12 +33,12 @@ npm run live-data:smoke
 
 Credentials live in `.env.testnet` (not committed). Worker set 4 has **four funded operators**:
 
-| Account | Typical role | Balance (when funded) |
-|---------|--------------|------------------------|
-| `0.0.9035160` | ai-inference, supply-chain, burst-1 | ~1000 HBAR |
-| `0.0.9035171` | rwa-claim, wv-carbon, burst-2 | ~1000 HBAR |
-| `0.0.9035258` | water-biodiversity, burst-3 | ~1000 HBAR |
-| `0.0.9035798` | legacy default / worker payments | drains fast if sole payer |
+| Account       | Typical role                        | Balance (when funded)     |
+| ------------- | ----------------------------------- | ------------------------- |
+| `0.0.9035160` | ai-inference, supply-chain, burst-1 | ~1000 HBAR                |
+| `0.0.9035171` | rwa-claim, wv-carbon, burst-2       | ~1000 HBAR                |
+| `0.0.9035258` | water-biodiversity, burst-3         | ~1000 HBAR                |
+| `0.0.9035798` | legacy default / worker payments    | drains fast if sole payer |
 
 **Multi-wallet mode** (`npm run live:testnet:burst800`) assigns each driver its own payer so one wallet draining does not stop the whole swarm.
 
@@ -72,10 +72,10 @@ Five domain drivers run in parallel, each executing the full VNX pipeline:
 
 For scale tests, `launch-testnet-burst-800.sh` adds compact **HCS burst drivers** alongside domain drivers:
 
-| Component | Script | Default concurrency | Role |
-|-----------|--------|---------------------|------|
-| Domain drivers (×5) | `scripts/high-tps-driver.ts` | 80 each | Full pipeline + 2-stage HIP |
-| HCS burst (×3) | `scripts/hcs-burst-driver.ts` | 250 each (3 payers) | Single-chunk `vnx.swarm.proof.burst` msgs |
+| Component           | Script                        | Default concurrency | Role                                      |
+| ------------------- | ----------------------------- | ------------------- | ----------------------------------------- |
+| Domain drivers (×5) | `scripts/high-tps-driver.ts`  | 80 each             | Full pipeline + 2-stage HIP               |
+| HCS burst (×3)      | `scripts/hcs-burst-driver.ts` | 250 each (3 payers) | Single-chunk `vnx.swarm.proof.burst` msgs |
 
 **Observed peak (2026-06-18):** 1,154 TPS over 15s wall clock (+17,314 sequences). Dashboard **Live TPS** uses mirror sequence delta / timestamp span.
 
@@ -90,18 +90,18 @@ npm run live:testnet:burst800
 
 ## Environment variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `HEDERA_ACCOUNT_ID` | — | Operator / HCS payer |
-| `HEDERA_PRIVATE_KEY` | — | ECDSA key for operator |
-| `VNX_HCS_TOPIC_ID` | `0.0.9227346` | Shared testnet topic |
-| `TESTNET_WORKER_SET` | `4` | Worker payer set (1–4) |
-| `HIGH_TPS_CONCURRENCY` | `30` (keep) / `80` (burst domains) | Concurrent tasks per driver |
-| `HIGH_TPS_DURATION` | `7200` | Driver run time (seconds) |
-| `BURST_TPS_CONCURRENCY` | `450` | Per burst driver concurrency |
-| `BURST_DRIVER_COUNT` | `2` | Number of burst processes |
-| `USE_TOPIC_ORACLE` | `1` | Topic oracle in WV carbon orchestrator |
-| `EIA_API_KEY` | — | Required for WV carbon live EIA data |
+| Variable                | Default                            | Description                            |
+| ----------------------- | ---------------------------------- | -------------------------------------- |
+| `HEDERA_ACCOUNT_ID`     | —                                  | Operator / HCS payer                   |
+| `HEDERA_PRIVATE_KEY`    | —                                  | ECDSA key for operator                 |
+| `VNX_HCS_TOPIC_ID`      | `0.0.9227346`                      | Shared testnet topic                   |
+| `TESTNET_WORKER_SET`    | `4`                                | Worker payer set (1–4)                 |
+| `HIGH_TPS_CONCURRENCY`  | `30` (keep) / `80` (burst domains) | Concurrent tasks per driver            |
+| `HIGH_TPS_DURATION`     | `7200`                             | Driver run time (seconds)              |
+| `BURST_TPS_CONCURRENCY` | `450`                              | Per burst driver concurrency           |
+| `BURST_DRIVER_COUNT`    | `2`                                | Number of burst processes              |
+| `USE_TOPIC_ORACLE`      | `1`                                | Topic oracle in WV carbon orchestrator |
+| `EIA_API_KEY`           | —                                  | Required for WV carbon live EIA data   |
 
 ## Monitoring
 
@@ -160,12 +160,12 @@ pkill -f 'tsx scripts/hcs-burst-driver.ts'
 
 ## Troubleshooting
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| TPS drops to 0 | Operator out of HBAR | `npm run live:testnet:topup` then relaunch |
-| Dashboard shows 0 messages | HIP chunks need reassembly | Fixed in verlattice `reassembleChunkedMessages` |
-| Supply chain smoke fails | OpenFoodFacts 429 | Transient; falls back but still publishes |
-| `INSUFFICIENT_PAYER_BALANCE` in burst logs | Operator drained | Top up and restart |
+| Symptom                                    | Cause                      | Fix                                             |
+| ------------------------------------------ | -------------------------- | ----------------------------------------------- |
+| TPS drops to 0                             | Operator out of HBAR       | `npm run live:testnet:topup` then relaunch      |
+| Dashboard shows 0 messages                 | HIP chunks need reassembly | Fixed in verlattice `reassembleChunkedMessages` |
+| Supply chain smoke fails                   | OpenFoodFacts 429          | Transient; falls back but still publishes       |
+| `INSUFFICIENT_PAYER_BALANCE` in burst logs | Operator drained           | Top up and restart                              |
 
 ## Geo-distributed 10K+ (multi-VM)
 
@@ -178,11 +178,11 @@ npm run live:testnet:geo-10k   # coordinated remote burst (needs nodes.json)
 
 ## Related repos
 
-| Repo | Domain |
-|------|--------|
-| `hedera-vnx-ai-inference-attestation` | AI inference attestation |
-| `hedera-vnx-rwa-claim` | RWA claim verification |
-| `hedera-vnx-water-biodiversity` | Water / biodiversity credits |
-| `hedera-vnx-supply-chain-provenance` | Supply chain provenance |
-| `hedera-vnx-wv-carbon-swarm` | WV energy → carbon retirement |
-| `verlattice` | Live dashboard (GitHub Pages) |
+| Repo                                  | Domain                        |
+| ------------------------------------- | ----------------------------- |
+| `hedera-vnx-ai-inference-attestation` | AI inference attestation      |
+| `hedera-vnx-rwa-claim`                | RWA claim verification        |
+| `hedera-vnx-water-biodiversity`       | Water / biodiversity credits  |
+| `hedera-vnx-supply-chain-provenance`  | Supply chain provenance       |
+| `hedera-vnx-wv-carbon-swarm`          | WV energy → carbon retirement |
+| `verlattice`                          | Live dashboard (GitHub Pages) |

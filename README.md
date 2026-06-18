@@ -545,13 +545,13 @@ See [`docs/HIERO.md`](docs/HIERO.md) for the full proof standard and mirror-node
 
 Multi-domain VNX swarm running on Hedera testnet with real API data and HIP v1.3.0 HCS anchoring on topic **`0.0.9227346`**.
 
-| Command | Purpose |
-|---------|---------|
-| `npm run live:testnet:keep` | 5 domain drivers (~80–150 TPS) |
+| Command                         | Purpose                                  |
+| ------------------------------- | ---------------------------------------- |
+| `npm run live:testnet:keep`     | 5 domain drivers (~80–150 TPS)           |
 | `npm run live:testnet:burst800` | 800+ TPS scale test (domain + HCS burst) |
-| `npm run live:testnet:monitor` | Health check + 10s TPS sample |
-| `npm run live:testnet:topup` | Refill operator HBAR from worker wallet |
-| `npm run live-data:smoke` | Live API smoke across 5 domains |
+| `npm run live:testnet:monitor`  | Health check + 10s TPS sample            |
+| `npm run live:testnet:topup`    | Refill operator HBAR from worker wallet  |
+| `npm run live-data:smoke`       | Live API smoke across 5 domains          |
 
 **Dashboard:** https://livevnx8.github.io/verlattice/dashboard/
 
