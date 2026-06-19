@@ -4,6 +4,7 @@
  */
 
 import { PaymentRail, PaymentResult } from './types.js';
+import type { HederaClient } from './hedera-client.js';
 
 /** Configuration for HederaPaymentRail safety guards */
 export interface PaymentRailConfig {
@@ -12,8 +13,6 @@ export interface PaymentRailConfig {
   /** Maximum HBAR allowed per transfer */
   maxHbar: number;
 }
-
-type HederaClientType = any;
 
 /**
  * High-level HBAR payment rail with validation, mainnet enforcement,
@@ -25,7 +24,7 @@ type HederaClientType = any;
  * const result = await rail.transfer('0.0.12345', 0.005, 'memo');
  */
 export class HederaPaymentRail implements PaymentRail {
-  private _client: HederaClientType | null = null;
+  private _client: HederaClient | null = null;
 
   constructor(private _config: PaymentRailConfig) {
     const network = (process.env['HEDERA_NETWORK'] ?? 'mainnet') as string;
@@ -76,7 +75,7 @@ export class HederaPaymentRail implements PaymentRail {
 
     try {
       await this._init();
-      const result = await this._client.transferHbar(toAccountId, amountHbar, memo);
+      const result = await this._client!.transferHbar(toAccountId, amountHbar, memo);
       return {
         status: 'success',
         transactionId: result.transactionId,

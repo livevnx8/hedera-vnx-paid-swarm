@@ -57,7 +57,9 @@ async function main() {
   const topic = TopicId.fromString(topicId);
 
   console.log(`=== VNX HCS Burst Driver [${label}] ===`);
-  console.log(`topic=${topicId} concurrency=${concurrency} duration=${durationSec}s maxMode=${maxMode} payer=${accountId}\n`);
+  console.log(
+    `topic=${topicId} concurrency=${concurrency} duration=${durationSec}s maxMode=${maxMode} payer=${accountId}\n`,
+  );
 
   const limiter = createLimiter(concurrency);
   const start = Date.now();
@@ -70,7 +72,9 @@ async function main() {
   const stat = setInterval(() => {
     const elapsed = (Date.now() - start) / 1000;
     const tps = elapsed > 0 ? (executed / elapsed).toFixed(1) : '0';
-    console.log(`[${label}] t=${elapsed.toFixed(0)}s submitted=${submitted} executed=${executed} fail=${failed} inflight=${pending.size} tps=${tps}`);
+    console.log(
+      `[${label}] t=${elapsed.toFixed(0)}s submitted=${submitted} executed=${executed} fail=${failed} inflight=${pending.size} tps=${tps}`,
+    );
   }, 5000);
 
   const fire = (n: number) => {
@@ -85,10 +89,16 @@ async function main() {
     const tx = new TopicMessageSubmitTransaction().setTopicId(topic).setMessage(body);
     const p = limiter(() =>
       tx.execute(client).then(
-        () => { executed++; },
-        () => { failed++; },
+        () => {
+          executed++;
+        },
+        () => {
+          failed++;
+        },
       ),
-    ).finally(() => { pending.delete(p); });
+    ).finally(() => {
+      pending.delete(p);
+    });
     pending.add(p);
   };
 
@@ -116,8 +126,12 @@ async function main() {
       batch.push(
         limiter(() =>
           tx.execute(client).then(
-            () => { executed++; },
-            () => { failed++; },
+            () => {
+              executed++;
+            },
+            () => {
+              failed++;
+            },
           ),
         ),
       );
@@ -139,7 +153,7 @@ async function main() {
   client.close();
 }
 
-main().catch((e) => {
+main().catch(e => {
   console.error(e);
   process.exit(1);
 });
