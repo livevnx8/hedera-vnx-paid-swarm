@@ -118,9 +118,7 @@ describe('E2E: Full swarm lifecycle — mainnet-confirmed path', () => {
   });
 
   it('proof verifier confirms task hash and decision hash', async () => {
-    const mockMirrorFetch = async (
-      transactionId: string,
-    ): Promise<MirrorTransactionCheck> => ({
+    const mockMirrorFetch = async (transactionId: string): Promise<MirrorTransactionCheck> => ({
       ok: true,
       transactionId,
       status: 'SUCCESS',
