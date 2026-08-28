@@ -2,6 +2,10 @@
  * VNX Paid Micro-Swarm — Shared Types
  */
 
+import type { CallerIdentity, IdentityStatus } from './identity-gate.js';
+
+export type { CallerIdentity, IdentityStatus } from './identity-gate.js';
+
 export interface SwarmTask {
   id: string;
   description: string;
@@ -39,6 +43,10 @@ export interface PaymentResult {
   recipient: string;
   consensusTimestampMs?: number;
   error?: string;
+  identity_status?: IdentityStatus;
+  caller_canonical_present?: boolean;
+  manufactured?: boolean;
+  mirror_bytes_match?: boolean;
 }
 
 export interface SwarmReceipt {
@@ -68,8 +76,17 @@ export interface SwarmReceipt {
   proofStatus: 'mainnet_confirmed' | 'not_mainnet_proof';
   explorerUrl?: string;
   mirrorNodeUrl?: string;
+  identity_status?: IdentityStatus;
+  caller_canonical_present?: boolean;
+  manufactured?: boolean;
+  mirror_bytes_match?: boolean;
 }
 
 export interface PaymentRail {
-  transfer(toAccountId: string, amountHbar: number, memo?: string): Promise<PaymentResult>;
+  transfer(
+    toAccountId: string,
+    amountHbar: number,
+    memo?: string,
+    identity?: CallerIdentity,
+  ): Promise<PaymentResult>;
 }

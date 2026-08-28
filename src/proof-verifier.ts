@@ -3,19 +3,22 @@
  *
  * Recomputes local receipt hashes and verifies the Hedera/Hiero mainnet
  * transaction through a mirror-node lookup.
+ * BIND HCS-PAYMENT-RAIL-BIND-011: 6th check caller_identity_not_manufactured.
  */
 
 import { createHash } from 'crypto';
 import { SwarmReceipt } from './types.js';
 import { assertMainnetProofReceipt } from './proof-validation.js';
 import { toHashScanTransactionUrl, toMirrorNodeTransactionUrl } from './proof-urls.js';
+import { sixthCheckOk } from './identity-gate.js';
 
 export type ProofCheckName =
   | 'task_hash'
   | 'decision_hash'
   | 'mainnet_proof_status'
   | 'hashscan_url'
-  | 'mirror_node_transaction';
+  | 'mirror_node_transaction'
+  | 'caller_identity_not_manufactured';
 
 export interface ProofCheck {
   name: ProofCheckName;
@@ -111,6 +114,20 @@ export async function verifySwarmProof(
     detail: mirrorCheck.ok
       ? `${mirrorCheck.transactionId} ${mirrorCheck.status ?? 'confirmed'}`
       : (mirrorCheck.error ?? 'mirror-node transaction lookup failed'),
+  });
+
+  const sixthOk = sixthCheckOk({
+    identity_status: receipt.identity_status,
+    caller_canonical_present: receipt.caller_canonical_present,
+    manufactured: receipt.manufactured,
+    mirror_bytes_match: receipt.mirror_bytes_match,
+  });
+  checks.push({
+    name: 'caller_identity_not_manufactured',
+    ok: sixthOk,
+    detail: sixthOk
+      ? 'caller identity resolved with canonical integer present before Mirror and bytes match'
+      : `manufactured or incomplete identity (identity_status=${receipt.identity_status ?? 'missing'}, caller_canonical_present=${!!receipt.caller_canonical_present}, manufactured=${!!receipt.manufactured}, mirror_bytes_match=${!!receipt.mirror_bytes_match})`,
   });
 
   return {

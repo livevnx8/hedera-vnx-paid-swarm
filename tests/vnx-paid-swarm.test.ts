@@ -11,16 +11,40 @@ import {
   runLocalBenchmarks,
   formatBenchmarkSummary,
 } from '../src/index.js';
-import { PaymentRail, PaymentResult, SwarmReceipt } from '../src/types.js';
+import { PaymentRail, PaymentResult, SwarmReceipt, CallerIdentity } from '../src/types.js';
 import { assertMainnetProofReceipt } from '../src/proof-validation.js';
 import { verifySwarmProof } from '../src/proof-verifier.js';
+import { resolveCallerIdentity, identityBlocksPayment } from '../src/identity-gate.js';
+import { HieroHcsVerifyAgent } from '../src/hcs-verify-agent.js';
+import { HederaPaymentRail } from '../src/payment-rail.js';
 
-/** Mock payment rail for testing */
+const COMPLETE_IDENTITY: CallerIdentity = { sequence_number: 120, claimed_location: 120 };
+
+/** Mock payment rail for testing — uses REAL identity-gate, never real HBAR */
 class MockPaymentRail implements PaymentRail {
   transfers: Array<{ to: string; amount: number; memo?: string }> = [];
   failNext = false;
 
-  async transfer(toAccountId: string, amountHbar: number, memo?: string): Promise<PaymentResult> {
+  async transfer(
+    toAccountId: string,
+    amountHbar: number,
+    memo?: string,
+    identity?: CallerIdentity,
+  ): Promise<PaymentResult> {
+    const resolved = resolveCallerIdentity(identity);
+    if (identityBlocksPayment(resolved)) {
+      return {
+        status: 'payment_failed',
+        network: 'mainnet',
+        amountHbar: amountHbar,
+        recipient: toAccountId,
+        error: resolved.reason ?? 'CONSENSUS_IDENTITY_UNRESOLVED',
+        identity_status: resolved.identity_status,
+        caller_canonical_present: resolved.caller_canonical_present,
+        manufactured: resolved.manufactured,
+        mirror_bytes_match: resolved.mirror_bytes_match,
+      };
+    }
     this.transfers.push({ to: toAccountId, amount: amountHbar, memo });
     if (this.failNext) {
       return {
@@ -29,6 +53,10 @@ class MockPaymentRail implements PaymentRail {
         amountHbar: amountHbar,
         recipient: toAccountId,
         error: 'Mock transfer failure',
+        identity_status: resolved.identity_status,
+        caller_canonical_present: resolved.caller_canonical_present,
+        manufactured: resolved.manufactured,
+        mirror_bytes_match: resolved.mirror_bytes_match,
       };
     }
     return {
@@ -38,6 +66,10 @@ class MockPaymentRail implements PaymentRail {
       amountHbar: amountHbar,
       recipient: toAccountId,
       consensusTimestampMs: Date.now(),
+      identity_status: resolved.identity_status,
+      caller_canonical_present: resolved.caller_canonical_present,
+      manufactured: resolved.manufactured,
+      mirror_bytes_match: resolved.mirror_bytes_match,
     };
   }
 }
@@ -67,7 +99,7 @@ describe('PaidSwarmCoordinator — Winner Selection', () => {
       { maxHbar: 0.1, planOnly: false },
       rail,
     );
-    const receipt = await coord.run('Predict the HBAR price direction and forecast the signal');
+    const receipt = await coord.run('Predict the HBAR price direction and forecast the signal', COMPLETE_IDENTITY);
 
     expect(receipt.selected.score).toBeGreaterThan(0);
     // ONNX-primary should win on price-signal tasks (higher confidence + match weight)
@@ -85,7 +117,7 @@ describe('PaidSwarmCoordinator — Winner Selection', () => {
       { maxHbar: 0.001, planOnly: false },
       rail,
     );
-    const receipt = await coord.run('Any task');
+    const receipt = await coord.run('Any task', COMPLETE_IDENTITY);
 
     expect(receipt.payment.status).toBe('payment_failed');
     expect(receipt.payment.error).toContain('No eligible worker');
@@ -95,7 +127,7 @@ describe('PaidSwarmCoordinator — Winner Selection', () => {
   it('skips payment in plan-only mode', async () => {
     const rail = new MockPaymentRail();
     const coord = new PaidSwarmCoordinator(DEFAULT_WORKERS, { maxHbar: 0.1, planOnly: true }, rail);
-    const receipt = await coord.run('Any task');
+    const receipt = await coord.run('Any task', COMPLETE_IDENTITY);
 
     expect(receipt.payment.status).toBe('skipped_plan_only');
     expect(receipt.payment.network).toBe('plan-only');
@@ -110,7 +142,7 @@ describe('PaidSwarmCoordinator — Winner Selection', () => {
       { maxHbar: 0.1, planOnly: false },
       rail,
     );
-    const receipt = await coord.run('Any task');
+    const receipt = await coord.run('Any task', COMPLETE_IDENTITY);
 
     expect(receipt.payment.status).toBe('payment_failed');
     expect(receipt.payment.error).toBe('Mock transfer failure');
@@ -156,6 +188,10 @@ describe('ProofReceiptBuilder', () => {
       amountHbar: 0.01,
       recipient: '0.0.1',
       consensusTimestampMs: 0,
+      identity_status: 'resolved',
+      caller_canonical_present: true,
+      manufactured: false,
+      mirror_bytes_match: true,
     };
 
     const r1 = builder.build('task', votes, votes[0], payment);
@@ -188,6 +224,10 @@ describe('ProofReceiptBuilder', () => {
       amountHbar: 0.01,
       recipient: '0.0.1',
       consensusTimestampMs: 1778951290123,
+      identity_status: 'resolved',
+      caller_canonical_present: true,
+      manufactured: false,
+      mirror_bytes_match: true,
     };
 
     const receipt = builder.build('task', votes, votes[0], payment);
@@ -225,6 +265,10 @@ describe('ProofReceiptBuilder', () => {
       amountHbar: 0.01,
       recipient: '0.0.1',
       consensusTimestampMs: 1778951290123,
+      identity_status: 'resolved',
+      caller_canonical_present: true,
+      manufactured: false,
+      mirror_bytes_match: true,
     };
 
     const receipt = builder.build('task', votes, votes[0], payment);
@@ -296,9 +340,17 @@ describe('Mainnet proof validation', () => {
       amountHbar: 0.01,
       recipient: '0.0.1',
       consensusTimestampMs: 1778951290123,
+      identity_status: 'resolved',
+      caller_canonical_present: true,
+      manufactured: false,
+      mirror_bytes_match: true,
     },
     decisionHash: 'b'.repeat(64),
     proofStatus: 'mainnet_confirmed',
+    identity_status: 'resolved',
+    caller_canonical_present: true,
+    manufactured: false,
+    mirror_bytes_match: true,
     explorerUrl: 'https://hashscan.io/mainnet/transaction/0.0.123%401778951290.123456789',
     mirrorNodeUrl:
       'https://mainnet-public.mirrornode.hedera.com/api/v1/transactions/0.0.123-1778951290-123456789',
@@ -383,6 +435,10 @@ describe('Swarm proof verifier', () => {
       amountHbar: 0.005,
       recipient: '0.0.10294360',
       consensusTimestampMs: 1778958345039,
+      identity_status: 'resolved',
+      caller_canonical_present: true,
+      manufactured: false,
+      mirror_bytes_match: true,
     });
   }
 
@@ -403,6 +459,7 @@ describe('Swarm proof verifier', () => {
       ['mainnet_proof_status', true],
       ['hashscan_url', true],
       ['mirror_node_transaction', true],
+      ['caller_identity_not_manufactured', true],
     ]);
   });
 
@@ -473,6 +530,10 @@ describe('HieroVerifyVnxAgent', () => {
       amountHbar: 0.005,
       recipient: '0.0.10294360',
       consensusTimestampMs: 1778958345039,
+      identity_status: 'resolved',
+      caller_canonical_present: true,
+      manufactured: false,
+      mirror_bytes_match: true,
     });
   }
 
@@ -490,7 +551,7 @@ describe('HieroVerifyVnxAgent', () => {
     expect(report.agentId).toBe('hiero-verify-vnx');
     expect(report.agentName).toBe('Hiero Verify VNX Agent');
     expect(report.verdict).toBe('accepted');
-    expect(report.summary).toContain('5/5 checks passed');
+    expect(report.summary).toContain('6/6 checks passed');
     expect(report.proof.transactionId).toBe('0.0.10294360@1778958335.880736678');
     expect(report.proof.hashScanUrl).toContain('hashscan.io/mainnet/transaction');
     expect(report.checks.every(check => check.ok)).toBe(true);
@@ -512,7 +573,7 @@ describe('HieroVerifyVnxAgent', () => {
     const report = await agent.verify(receipt, task);
 
     expect(report.verdict).toBe('rejected');
-    expect(report.summary).toContain('4/5 checks passed');
+    expect(report.summary).toContain('5/6 checks passed');
     expect(report.checks.find(check => check.name === 'decision_hash')).toMatchObject({
       ok: false,
     });

@@ -1,8 +1,9 @@
 /**
  * VNX Paid Micro-Swarm — Paid Swarm Coordinator
+ * BIND HCS-PAYMENT-RAIL-BIND-011: step 7 passes identity into the rail; deny must not pay.
  */
 
-import { WorkerVote, SwarmReceipt, PaymentRail } from './types.js';
+import { WorkerVote, SwarmReceipt, PaymentRail, CallerIdentity } from './types.js';
 import { VnxWorkerAgent } from './workers.js';
 import { ProofReceiptBuilder } from './receipt-builder.js';
 
@@ -25,7 +26,7 @@ export class PaidSwarmCoordinator {
     private _paymentRail: PaymentRail,
   ) {}
 
-  async run(taskDescription: string): Promise<SwarmReceipt> {
+  async run(taskDescription: string, identity?: CallerIdentity): Promise<SwarmReceipt> {
     const builder = new ProofReceiptBuilder();
 
     // 1. Dispatch task to all workers
@@ -83,9 +84,14 @@ export class PaidSwarmCoordinator {
     // 6. Select winner
     const winner = eligible.reduce((best, cur) => (cur.score! > best.score! ? cur : best));
 
-    // 7. Execute payment
+    // 7. Execute payment — BIND: pass identity; rail denies UNRESOLVED/DISAGREEMENT without transferHbar
     const memo = `VNX-swarm:${winner.workerId}:${taskDescription.slice(0, 50)}`;
-    const payment = await this._paymentRail.transfer(winner.paymentAccount, winner.priceHbar, memo);
+    const payment = await this._paymentRail.transfer(
+      winner.paymentAccount,
+      winner.priceHbar,
+      memo,
+      identity,
+    );
 
     // 8. Build receipt
     return builder.build(taskDescription, scoredVotes, winner, payment);

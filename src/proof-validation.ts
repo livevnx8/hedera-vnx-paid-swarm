@@ -8,6 +8,12 @@
 import { SwarmReceipt } from './types.js';
 
 export function assertMainnetProofReceipt(receipt: SwarmReceipt): void {
+  if (receipt.identity_status === 'unresolved' || receipt.identity_status === 'disagreement' || !receipt.identity_status) {
+    throw new Error(
+      `Receipt is not confirmed mainnet proof: identity_status is ${receipt.identity_status ?? 'missing'}`,
+    );
+  }
+
   if (receipt.payment.status !== 'success') {
     const detail = receipt.payment.error ? ` (${receipt.payment.error})` : '';
     throw new Error(

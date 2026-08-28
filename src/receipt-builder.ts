@@ -1,5 +1,6 @@
 /**
  * VNX Paid Micro-Swarm — Proof Receipt Builder
+ * BIND HCS-PAYMENT-RAIL-BIND-011: persist identity_status; never success-receipt on deny.
  */
 
 import { createHash } from 'crypto';
@@ -17,10 +18,16 @@ export class ProofReceiptBuilder {
     const taskHash = this._sha256(taskDescription);
     const decisionPayload = `${selected.workerId}:${selected.score}:${payment.transactionId ?? 'no-tx'}:${taskHash}`;
     const decisionHash = this._sha256(decisionPayload);
+    const identityStatus = payment.identity_status;
+    const blocked = identityStatus === 'unresolved' || identityStatus === 'disagreement' || !identityStatus;
     const proofStatus =
-      payment.status === 'success' && payment.network === 'mainnet' && !!payment.transactionId
+      !blocked &&
+      payment.status === 'success' &&
+      payment.network === 'mainnet' &&
+      !!payment.transactionId
         ? 'mainnet_confirmed'
         : 'not_mainnet_proof';
+    const sha256Success = proofStatus === 'mainnet_confirmed' && payment.status === 'success' && !blocked;
 
     return {
       version: '1.0',
@@ -47,14 +54,12 @@ export class ProofReceiptBuilder {
       payment,
       decisionHash,
       proofStatus,
-      explorerUrl:
-        proofStatus === 'mainnet_confirmed'
-          ? toHashScanTransactionUrl(payment.transactionId!)
-          : undefined,
-      mirrorNodeUrl:
-        proofStatus === 'mainnet_confirmed'
-          ? toMirrorNodeTransactionUrl(payment.transactionId!)
-          : undefined,
+      explorerUrl: sha256Success ? toHashScanTransactionUrl(payment.transactionId!) : undefined,
+      mirrorNodeUrl: sha256Success ? toMirrorNodeTransactionUrl(payment.transactionId!) : undefined,
+      identity_status: identityStatus,
+      caller_canonical_present: payment.caller_canonical_present,
+      manufactured: payment.manufactured,
+      mirror_bytes_match: payment.mirror_bytes_match,
     };
   }
 

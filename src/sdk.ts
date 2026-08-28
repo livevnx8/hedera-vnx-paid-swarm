@@ -2,7 +2,7 @@
  * VNX Paid Micro-Swarm — High-Level SDK Client
  */
 
-import { SwarmReceipt } from './types.js';
+import { SwarmReceipt, CallerIdentity } from './types.js';
 import { PaidSwarmCoordinator } from './coordinator.js';
 import { HederaPaymentRail } from './payment-rail.js';
 import { VnxWorkerAgent, DEFAULT_WORKERS } from './workers.js';
@@ -58,10 +58,10 @@ export class VnxSwarmClient {
 
   async runTask(
     taskDescription: string,
-    _opts?: { maxHbar?: number; planOnly?: boolean },
+    _opts?: { maxHbar?: number; planOnly?: boolean; identity?: CallerIdentity },
   ): Promise<SwarmReceipt> {
     if (!this._initialized) await this.init();
-    const receipt = await this._coordinator.run(taskDescription);
+    const receipt = await this._coordinator.run(taskDescription, _opts?.identity);
     this._ledger.recordTask(receipt);
     return receipt;
   }

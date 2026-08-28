@@ -6,6 +6,7 @@
  */
 
 import type { HcsProofMessage } from './hcs-publisher.js';
+import { isCanonicalSequenceNumber } from './identity-gate.js';
 
 export interface HcsVerifyReport {
   agentId: string;
@@ -40,8 +41,18 @@ export class HieroHcsVerifyAgent {
   /**
    * Verify an HCS message by its topic ID and sequence number.
    */
-  async verify(params: { topicId: string; sequenceNumber: number }): Promise<HcsVerifyReport> {
+  async verify(params: { topicId: string; sequenceNumber?: number | string | null }): Promise<HcsVerifyReport> {
     const checks: HcsVerifyReport['checks'] = [];
+
+    // BIND 011: reject missing/non-canonical caller seq; do not mint identity from Mirror.
+    if (!isCanonicalSequenceNumber(params.sequenceNumber)) {
+      checks.push({
+        name: 'caller_sequence_present',
+        ok: false,
+        detail: 'Missing or non-canonical caller sequence_number; refuse to mint identity from Mirror',
+      });
+      return this._buildReport(checks, null);
+    }
 
     // 1. Fetch message from mirror node
     const url = `${this._mirrorBaseUrl}/api/v1/topics/${params.topicId}/messages/${params.sequenceNumber}`;
